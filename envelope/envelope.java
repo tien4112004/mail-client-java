@@ -3,7 +3,7 @@ package Envelope;
 import java.net.*;
 import java.util.*;
 
-import message.Message;
+import Message.Message;
 
 public class envelope {
     public String sender; // sender's address
