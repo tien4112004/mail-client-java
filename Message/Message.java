@@ -34,10 +34,13 @@ public class Message {
 
         boolean hasAttachments = attachments.length > 0;
         String boundary = "";
-
+        String isMIME = "";
         if (hasAttachments) {
             boundary = "------------" + UUID.randomUUID().toString().replaceAll("-", "");
             header += "Content-Type: multipart/mixed; boundary=\"" + boundary + "\"" + CRLF;
+            isMIME = (hasAttachments
+                    ? CRLF + "This is a multi-part message in MIME format." + CRLF + "--" + boundary + CRLF
+                    : "");
         }
 
         String messageID = "<" + UUID.randomUUID().toString() + ">";
@@ -61,11 +64,11 @@ public class Message {
         header += "From: " + this.sender + CRLF;
         header += this.recipientsType + ": " + this.recipients + CRLF; // recipientsType = To or Cc or Bcc
         header += "Subject: " + this.subject + CRLF;
-        body += (hasAttachments ? CRLF + "This is a multi-part message in MIME format." + CRLF + boundary + CRLF : "");
+        body += isMIME;
         body += "Content-Type: text/plain;" + " charset=UTF-8" + "; format=flowed" + CRLF; // MimeType of the content
-        body += "Content-Transfer-Encoding: 7bit" + CRLF;
+        body += "Content-Transfer-Encoding: 7bit" + CRLF + CRLF;
 
-        body += content + CRLF;
+        body += content + CRLF + CRLF;
 
         if (hasAttachments) {
             for (String attachment : attachments) {
@@ -102,6 +105,7 @@ public class Message {
         return recipients;
     }
 
+    //
     /*
      * private boolean isValidEmailAddress(String email) {
      * String regex = "^[A-Za-z0-9+_.-]+@(.+)$";
