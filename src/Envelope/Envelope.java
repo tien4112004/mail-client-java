@@ -5,26 +5,26 @@ import java.util.*;
 
 import Message.Message;
 
-public class envelope {
-    public String sender; // sender's address
-    public String recipient; // array of recipients
+public class Envelope {
+    public String sender;
+    public String recipients;
 
     public String destHost;
     public InetAddress destIP;
 
     public Message message;
 
-    public envelope() {
+    public Envelope() {
         sender = "";
-        recipient = "";
+        recipients = "";
         destHost = "";
         destIP = null;
         message = null;
     }
 
-    public envelope(Message message, String localServer) throws UnknownHostException{
+    public Envelope(Message message, String localServer) throws UnknownHostException {
         sender = message.getSender();
-        recipient = message.getRecipients();
+        recipients = message.getRecipients();
 
         message = escapeMessge(message);
 
@@ -58,7 +58,7 @@ public class envelope {
     public String toString() {
         String res = "";
         res += "Sender: " + sender + "\n";
-        res += "Recipient: " + recipient + "\n";
+        res += "recipients: " + recipients + "\n";
         res += "MX-hpst: " + destHost + ", address: " + destIP + "\n";
         res += message.toString();
         return res;
