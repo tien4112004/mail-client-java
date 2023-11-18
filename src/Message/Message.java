@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.UUID;
 
 import javax.activation.MimetypesFileTypeMap;
-import javax.security.auth.login.CredentialException;
+// import javax.security.auth.login.CredentialException;
 
 import java.util.Base64;
 import java.util.Date;
@@ -120,6 +120,6 @@ public class Message {
      */
 
     public String toString() {
-        return header + CRLF + body + CRLF + CRLF;
+        return header + body;
     }
 }
