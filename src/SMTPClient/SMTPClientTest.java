@@ -3,45 +3,26 @@ package SMTPClient;
 import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.*;
+import Envelope.Envelope;
+import Message.Message;
 
 class SMTPClientTest {
     @Test
-    void testSMTPClient() throws IOException {
-        TestSMTPClient client = new TestSMTPClient("localhost", 2225);
+    void testSMTPClient() {
+        SMTPClient client = new SMTPClient("localhost", 2225);
         assertEquals("localhost", client.getSMTPServer());
         assertEquals(2225, client.getPort());
     }
 
     @Test
-    void testSendCommand() throws IOException {
-        TestSMTPClient client = new TestSMTPClient("localhost", 2225);
-        assertDoesNotThrow(() -> client.sendCommand("MAIL FROM:<sender@example.com>", 250));
-    }
-
-    static class TestSMTPClient extends SMTPClient {
-
-        TestSMTPClient(String SMTPServer, int port) throws IOException {
-            super(SMTPServer, port);
-        }
-
-        // @Override
-        // protected void connect() {
-        // // do nothing
-        // }
-
-        // @Override
-        // protected void disconnect() {
-        // // do nothing
-        // }
-
-        // @Override
-        // protected String readResponse() throws IOException {
-        // return "250 Requested mail action okay, completed\r\n";
-        // }
-
-        // @Override
-        // protected void send(String command) throws IOException {
-        // // do nothing
-        // }
+    void testSendEmail() {
+        SMTPClient client = new SMTPClient("localhost", 2225);
+        Envelope envelope = new Envelope();
+        envelope.sender = "sender@localhost";
+        envelope.recipients = "recipient@localhost";
+        String subject = "Test Email";
+        String content = "This is a test email";
+        envelope.message = new Message(envelope.sender, "Cc", envelope.recipients, subject, content);
+        assertDoesNotThrow(() -> client.sendEmail(envelope));
     }
 }

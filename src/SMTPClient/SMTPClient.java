@@ -23,19 +23,7 @@ public class SMTPClient {
 
     public SMTPClient(String SMTPServer, int port) {
         try {
-            serverSocket = new Socket(SMTPServer, port);
-            toServer = new DataOutputStream(serverSocket.getOutputStream());
-            fromServer = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
-
-            System.out.println("Connected to server " + SMTPServer + ":" + port);
-            String response = fromServer.readLine();
-            System.out.println("[DEBUG][SERVER] " + response);
-
-            if (parseReplyCode(response) != CONNECTED) {
-                System.out.println("[ERROR][SMTPClient] Unexpected return code: " + response);
-                throw new IOException("Unexpected return code");
-            }
-
+            connect(SMTPServer, port);
             sendCommand("HELO " + SMTPServer, OK);
         } catch (Exception e) {
             System.out.println("[ERROR][SMTPClient]" + e.getMessage());
@@ -56,15 +44,31 @@ public class SMTPClient {
         sendCommand(envelope.message.toString() + CRLF + ".", OK);
     }
 
-    public void sendCommand(String command, int expectedReturnCode) throws IOException {
+    protected void sendCommand(String command, int expectedReturnCode) throws IOException {
         System.out.println("[CLIENT] " + command);
         toServer.writeBytes(command + CRLF);
+        toServer.flush();
 
         String response = fromServer.readLine();
         System.out.println("[SERVER] " + response);
         int responseCode = parseReplyCode(response);
         if (responseCode != expectedReturnCode) {
             System.out.println("[ERROR][sendCommand] Unexpected return code: " + response);
+            throw new IOException("Unexpected return code");
+        }
+    }
+
+    protected void connect(String SMTPServer, int port) throws IOException {
+        serverSocket = new Socket(SMTPServer, port);
+        toServer = new DataOutputStream(serverSocket.getOutputStream());
+        fromServer = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
+
+        System.out.println("Connected to server " + SMTPServer + ":" + port);
+        String response = fromServer.readLine();
+        System.out.println("[DEBUG][SERVER] " + response);
+
+        if (parseReplyCode(response) != CONNECTED) {
+            System.out.println("[ERROR][SMTPClient] Unexpected return code: " + response);
             throw new IOException("Unexpected return code");
         }
     }
