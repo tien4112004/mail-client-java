@@ -5,6 +5,7 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.*;
 import Envelope.Envelope;
 import Message.Message;
+import java.net.UnknownHostException;
 
 class SMTPClientTest {
     @Test
@@ -15,14 +16,19 @@ class SMTPClientTest {
     }
 
     @Test
-    void testSendEmail() {
+    void testSendEmail() throws UnknownHostException, IOException {
         SMTPClient client = new SMTPClient("localhost", 2225);
-        Envelope envelope = new Envelope();
-        envelope.sender = "sender@localhost";
-        envelope.recipients = "recipient@localhost";
+        String sender = "example@localhost";
+        String[] recipientsTo = new String[] { "pttien@fit.hcmus.edu.vn" };
+        String[] recipientsCc = new String[] { "example@localhost" };
+        String[] recipientsBcc = new String[] { "example@fit.hcmus.edu.vn" };
         String subject = "Test Email";
         String content = "This is a test email";
-        envelope.message = new Message(envelope.sender, "Cc", envelope.recipients, subject, content);
+        Message message = new Message(sender, recipientsTo, recipientsCc,
+                recipientsBcc, subject, content, new String[] {});
+        Envelope envelope = new Envelope(message, "localhost");
+        assertArrayEquals(new String[] { "pttien@fit.hcmus.edu.vn", "example@localhost", "example@fit.hcmus.edu.vn" },
+                envelope.recipients);
         assertDoesNotThrow(() -> client.sendEmail(envelope));
     }
 }
