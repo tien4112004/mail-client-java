@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.UUID;
 
 import javax.activation.MimetypesFileTypeMap;
-// import javax.security.auth.login.CredentialException;
+import javax.security.auth.login.CredentialException;
 
 import java.util.Base64;
 import java.util.Date;
@@ -19,35 +19,50 @@ public class Message {
     public String body;
 
     private String sender;
-    private String recipientsType;
-    private String recipients;
+    private String[] recipientsTo;
+    private String[] recipientsCc;
+    private String[] recipientsBcc;
     private String subject;
 
     private static final String CRLF = "\r\n";
     private static final String DEFAULT_CHARSET = "UTF-8";
 
-    public Message(String sender, String recipientsType, String recipients, String subject, String content,
-            String... attachments) {
-        // String contentType, String charset, String format, String
-        // contentTransferEncoding) {
+    public Message(String sender, String[] recipientsTo, String[] recipientsCC, String[] recipientsBCC,
+            String subject, String content, String... attachments) {
         header = "";
         body = "";
 
-        boolean hasAttachments = attachments.length > 0;
+        // attachments preprocessing
         String boundary = "";
         String isMIME = "";
+        boolean hasAttachments = attachments.length > 0;
         if (hasAttachments) {
             boundary = "------------" + UUID.randomUUID().toString().replaceAll("-", "");
-            header += "Content-Type: multipart/mixed; boundary=\"" + boundary + "\"" + CRLF;
+            header = "Content-Type: multipart/mixed; boundary=\"" + boundary + "\"" + CRLF;
             isMIME = (hasAttachments
                     ? CRLF + "This is a multi-part message in MIME format." + CRLF + "--" + boundary + CRLF
                     : "");
         }
 
+        // recipients preprocessing
+        this.recipientsTo = recipientsTo;
+        this.recipientsCc = recipientsCC;
+        this.recipientsBcc = recipientsBCC;
+
+        boolean hasRecipientsTo = recipientsTo.length > 0;
+        boolean hasRecipientsCc = recipientsCc.length > 0;
+        boolean hasRecipientsBcc = recipientsBcc.length > 0;
+
+        String recipientsToString = buildRecipientString(recipientsTo);
+        String recipientsCcString = buildRecipientString(recipientsCc);
+
+        if (!hasRecipientsTo && !hasRecipientsCc && hasRecipientsBcc) {
+            recipientsToString = "undisclosed-recipients";
+            hasRecipientsTo = true;
+        }
+
         String messageID = "<" + UUID.randomUUID().toString() + ">";
         this.sender = sender.trim();
-        this.recipientsType = recipientsType.trim();
-        this.recipients = recipients.trim();
         this.subject = subject.trim();
         content = content.trim();
         // if the message is too long to fit in a single line, it will be split into
@@ -63,7 +78,8 @@ public class Message {
         header += "User-Agent: " + CRLF; // Add User-Agent's name here
         header += "Content-Language: en-US" + CRLF;
         header += "From: " + this.sender + CRLF;
-        header += this.recipientsType + ": " + this.recipients + CRLF; // recipientsType = To or Cc or Bcc
+        header += hasRecipientsTo ? "To: " + recipientsToString + CRLF : "";
+        header += hasRecipientsCc ? "Cc: " + recipientsCcString + CRLF : "";
         header += "Subject: " + this.subject + CRLF;
         body += isMIME;
         body += "Content-Type: text/plain;" + " charset=UTF-8" + "; format=flowed" + CRLF; // MimeType of the content
@@ -71,28 +87,29 @@ public class Message {
 
         body += content + CRLF + CRLF;
 
-        if (hasAttachments) {
-            for (String attachment : attachments) {
-                try {
-                    Path filePath = Paths.get(attachment);
-                    String MimeType = new MimetypesFileTypeMap().getContentType(filePath.toString());
-                    byte[] fileContent = Files.readAllBytes(filePath);
-                    String encodedFile = Base64.getEncoder().encodeToString(fileContent).replaceAll("(.{76})",
-                            "$1" + CRLF);
-                    body += "--" + boundary + CRLF;
-                    body += "Content-Type: " + MimeType + ";";
-                    body += " charset=" + DEFAULT_CHARSET + ";";
-                    body += " name=\"" + filePath.getFileName() + "\"" + CRLF;
+        if (!hasAttachments)
+            return;
 
-                    body += "Content-Disposition: attachment;";
-                    body += " filename=\"" + filePath.getFileName() + "\"" + CRLF;
+        for (String attachment : attachments) {
+            try {
+                Path filePath = Paths.get(attachment);
+                String MimeType = new MimetypesFileTypeMap().getContentType(filePath.toString());
+                byte[] fileContent = Files.readAllBytes(filePath);
+                String encodedFile = Base64.getEncoder().encodeToString(fileContent).replaceAll("(.{76})",
+                        "$1" + CRLF);
+                body += "--" + boundary + CRLF;
+                body += "Content-Type: " + MimeType + ";";
+                body += " charset=" + DEFAULT_CHARSET + ";";
+                body += " name=\"" + filePath.getFileName() + "\"" + CRLF;
 
-                    body += "Content-Transfer-Encoding: base64" + CRLF + CRLF;
+                body += "Content-Disposition: attachment;";
+                body += " filename=\"" + filePath.getFileName() + "\"" + CRLF;
 
-                    body += encodedFile + CRLF;
-                } catch (Exception e) {
-                    System.out.println("Error: " + e.getMessage());
-                }
+                body += "Content-Transfer-Encoding: base64" + CRLF + CRLF;
+
+                body += encodedFile + CRLF;
+            } catch (Exception e) {
+                System.out.println("Error: " + e.getMessage());
             }
             body += "--" + boundary + "--" + CRLF;
         }
@@ -102,10 +119,25 @@ public class Message {
         return sender;
     }
 
-    public String getRecipients() {
+    public String[] getRecipients() {
+        String recipients[] = new String[recipientsTo.length + recipientsCc.length + recipientsBcc.length];
+        System.arraycopy(recipientsTo, 0, recipients, 0, recipientsTo.length);
+        System.arraycopy(recipientsCc, 0, recipients, recipientsTo.length, recipientsCc.length);
+        System.arraycopy(recipientsBcc, 0, recipients, recipientsTo.length + recipientsCc.length,
+                recipientsBcc.length);
+
         return recipients;
     }
 
+    protected String buildRecipientString(String[] recipients) {
+        String recipientString = "";
+        for (String recipient : recipients) {
+            recipientString += recipient + ',';
+        }
+        if (recipientString.length() == 0)
+            return "";
+        return recipientString.substring(0, recipientString.length() - 1); // remove the last ','
+    }
     //
     /*
      * private boolean isValidEmailAddress(String email) {
