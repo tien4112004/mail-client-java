@@ -21,13 +21,17 @@ public class SMTPClient {
     private static DataOutputStream toServer = null;
     private static BufferedReader fromServer = null;
 
+    private String SMTPServer;
+    private int port;
+
     public SMTPClient(String SMTPServer, int port) {
-        try {
-            connect(SMTPServer, port);
-            sendCommand("HELO " + SMTPServer, OK);
-        } catch (Exception e) {
-            System.out.println("[ERROR][SMTPClient]" + e.getMessage());
-        }
+        this.SMTPServer = SMTPServer.trim();
+        this.port = port;
+    }
+
+    public SMTPClient() {
+        this.SMTPServer = "localhost";
+        this.port = 2225;
     }
 
     public void sendEmail(Envelope envelope) throws IOException {
@@ -37,11 +41,27 @@ public class SMTPClient {
         // }
         // envelope.recipients = recipients.toString();
 
+        connect();
         sendCommand("MAIL FROM: " + envelope.sender, OK);
         // TODO: multiple recipients
         sendCommand("RCPT TO: " + envelope.recipients, OK);
         sendCommand("DATA", DATA);
         sendCommand(envelope.message.toString() + CRLF + ".", OK);
+        closeConnection();
+    }
+
+    protected void connect() throws IOException {
+        serverSocket = new Socket(SMTPServer, port);
+        toServer = new DataOutputStream(serverSocket.getOutputStream());
+        fromServer = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
+
+        System.out.println("Connected to server " + SMTPServer + ":" + port);
+        String response = getResponse();
+
+        if (parseReplyCode(response) != CONNECTED) {
+            System.out.println("[ERROR][SMTPClient] Unexpected return code: " + response);
+            throw new IOException("Unexpected return code");
+        }
     }
 
     protected void sendCommand(String command, int expectedReturnCode) throws IOException {
@@ -49,8 +69,7 @@ public class SMTPClient {
         toServer.writeBytes(command + CRLF);
         toServer.flush();
 
-        String response = fromServer.readLine();
-        System.out.println("[SERVER] " + response);
+        String response = getResponse();
         int responseCode = parseReplyCode(response);
         if (responseCode != expectedReturnCode) {
             System.out.println("[ERROR][sendCommand] Unexpected return code: " + response);
@@ -58,19 +77,27 @@ public class SMTPClient {
         }
     }
 
-    protected void connect(String SMTPServer, int port) throws IOException {
-        serverSocket = new Socket(SMTPServer, port);
-        toServer = new DataOutputStream(serverSocket.getOutputStream());
-        fromServer = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
-
-        System.out.println("Connected to server " + SMTPServer + ":" + port);
+    /*
+     * Handling multiline response from server (e.g. 354-Start mail input; end with
+     * <CRLF>.<CRLF>)
+     * Each line in response contains a 3-digit return code followed by a hyphen
+     * and a text string, followed by CRLF.
+     * If there is a "-" immediately after the 3-digit return code, then the server
+     * is indicating that the response is not complete and that another line of
+     * text will follow.
+     */
+    protected String getResponse() throws IOException {
         String response = fromServer.readLine();
-        System.out.println("[DEBUG][SERVER] " + response);
-
-        if (parseReplyCode(response) != CONNECTED) {
-            System.out.println("[ERROR][SMTPClient] Unexpected return code: " + response);
-            throw new IOException("Unexpected return code");
-        }
+        String line = "";
+        do {
+            line = fromServer.readLine();
+            if (line == null || line.length() < 3) {
+                throw new IOException("SMTPClient: getResponse: bad server response");
+            }
+            response += line + CRLF;
+        } while ((line.length() > 3) && (line.charAt(3) == '-'));
+        System.out.println("[SERVER] " + response);
+        return response;
     }
 
     int parseReplyCode(String reply) {
