@@ -7,7 +7,7 @@ import Message.Message;
 
 public class Envelope {
     public String sender;
-    public String recipients;
+    public String[] recipients;
 
     public String destHost;
     public InetAddress destIP;
@@ -16,7 +16,7 @@ public class Envelope {
 
     public Envelope() {
         sender = "";
-        recipients = "";
+        recipients = new String[0];
         destHost = "";
         destIP = null;
         message = null;
@@ -26,7 +26,7 @@ public class Envelope {
         sender = message.getSender();
         recipients = message.getRecipients();
 
-        message = escapeMessge(message);
+        this.message = escapeMessge(message);
 
         destHost = localServer;
         try {
@@ -58,8 +58,8 @@ public class Envelope {
     public String toString() {
         String res = "";
         res += "Sender: " + sender + "\n";
-        res += "recipients: " + recipients + "\n";
-        res += "MX-hpst: " + destHost + ", address: " + destIP + "\n";
+        res += "recipients: " + Arrays.toString(recipients) + "\n";
+        res += "MX-host: " + destHost + ", address: " + destIP + "\n";
         res += message.toString();
         return res;
     }
