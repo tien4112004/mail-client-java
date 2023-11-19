@@ -7,9 +7,9 @@ class MessageTest {
     @Test
     void testMessageConstructor() {
         String sender = "sender@localhost";
-        String[] recipientsTo = { "recipient1@localhost" };
-        String[] recipientsCc = { "recipient2@localhost" };
-        String[] recipientsBcc = { "recipient3@localhost" };
+        String[] recipientsTo = { "recipientTo1@localhost", "recipientTo2@localhost" };
+        String[] recipientsCc = { "recipientCc1@localhost", "recipientCc2@localhost" };
+        String[] recipientsBcc = { "recipientBcc1@localhost", "recipientBcc2@localhost" };
         String subject = "Test Email";
         String content = "This is a test email";
         String[] attachments = {};
@@ -17,8 +17,8 @@ class MessageTest {
         Message message = new Message(sender, recipientsTo, recipientsCc, recipientsBcc, subject, content, attachments);
 
         assertEquals(sender, message.getSender());
-        assertArrayEquals(new String[] { sender, recipientsTo[0], recipientsCc[0], recipientsBcc[0] },
-                message.getRecipients());
+        assertArrayEquals(new String[] { recipientsTo[0], recipientsTo[1], recipientsCc[0], recipientsCc[1],
+                recipientsBcc[0], recipientsBcc[1] }, message.getRecipients());
     }
 
     @Test
