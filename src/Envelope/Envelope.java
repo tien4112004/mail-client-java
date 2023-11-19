@@ -26,7 +26,7 @@ public class Envelope {
         sender = message.getSender();
         recipients = message.getRecipients().split(",");
 
-        message = escapeMessge(message);
+        this.message = escapeMessge(message);
 
         destHost = localServer;
         try {
