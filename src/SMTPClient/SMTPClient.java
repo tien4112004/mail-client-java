@@ -9,7 +9,6 @@ import java.net.Socket;
 import java.security.cert.CRL;
 import java.util.StringTokenizer;
 import Envelope.*;
-import Message.Message;
 
 public class SMTPClient {
     private final String CRLF = "\r\n";
@@ -35,16 +34,11 @@ public class SMTPClient {
     }
 
     public void sendEmail(Envelope envelope) throws IOException {
-        // StringBuilder recipients = new StringBuilder();
-        // for (String recipient : envelope.recipients) {
-        // recipients.append(recipient + ",");
-        // }
-        // envelope.recipients = recipients.toString();
-
         connect();
         sendCommand("MAIL FROM: " + envelope.sender, OK);
-        // TODO: multiple recipients
-        sendCommand("RCPT TO: " + envelope.recipients, OK);
+        for (String recipient : envelope.recipients) {
+            sendCommand("RCPT TO: " + recipient, OK);
+        }
         sendCommand("DATA", DATA);
         sendCommand(envelope.message.toString() + CRLF + ".", OK);
         closeConnection();
@@ -87,7 +81,8 @@ public class SMTPClient {
      * text will follow.
      */
     protected String getResponse() throws IOException {
-        String response = fromServer.readLine();
+        // String response = fromServer.readLine();
+        String response = "";
         String line = "";
         do {
             line = fromServer.readLine();

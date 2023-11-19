@@ -19,7 +19,7 @@ class EnvelopeTest {
     @Test
     void testConstructorWithMessage() {
         String sender = "sender@localhost";
-        String[] recipients = { "recipient@localhost" };
+        String[] recipients = { "recipient@localhost", "recipient2@localhost" };
         String subject = "Test Email";
         String content = "This is a test email";
         String[] attachments = {};
@@ -33,6 +33,7 @@ class EnvelopeTest {
             assertEquals("localhost", envelope.destHost);
             assertNotNull(envelope.destIP);
             assertEquals(message, envelope.message);
+            assertArrayEquals(recipients, envelope.recipients);
         });
     }
 }
