@@ -1,6 +1,9 @@
 package Message;
 
 import org.junit.jupiter.api.Test;
+
+import Message.Message;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class MessageTest {

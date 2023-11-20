@@ -5,6 +5,8 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.*;
 import Envelope.Envelope;
 import Message.Message;
+import SMTPClient.SMTPClient;
+
 import java.net.UnknownHostException;
 
 class SMTPClientTest {

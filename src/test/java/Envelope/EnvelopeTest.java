@@ -1,6 +1,9 @@
 package Envelope;
 
 import org.junit.jupiter.api.Test;
+
+import Envelope.Envelope;
+
 import java.net.UnknownHostException;
 import static org.junit.jupiter.api.Assertions.*;
 import Message.Message;
