@@ -7,7 +7,8 @@ import Message.Message;
 
 public class Envelope {
     public String sender;
-    public String recipients;
+    public String[] recipients;
+    public String subject;
 
     public String destHost;
     public InetAddress destIP;
@@ -25,6 +26,7 @@ public class Envelope {
     public Envelope(Message message, String localServer) throws UnknownHostException {
         sender = message.getSender();
         recipients = message.getRecipients();
+        subject = message.getSubject();
 
         message = escapeMessge(message);
 

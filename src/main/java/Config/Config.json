@@ -1,0 +1,17 @@
+[
+  {
+    "General": {
+      "SMTP Server:": 2500,
+      "POP3 Server:": 1100,
+      "Auto Reload:": 10
+    }
+  },
+  {
+    "Filter": {
+      "Subject:": "urgent, ASAP",
+      "Work:": "report, meeting",
+      "Spam:": "virus, hack, crack",
+      "From:": "ltttin@fit.hcmus, example@gmail.com, pttien@fit,hcmus.edu.vn, "
+    }
+  }
+]
