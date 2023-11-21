@@ -1,4 +1,11 @@
 {
+<<<<<<< HEAD
   "java.configuration.updateBuildConfiguration": "automatic",
   "cmake.configureOnOpen": true
 }
+=======
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.compile.nullAnalysis.mode": "automatic",
+    "r.lsp.promptToInstall": false
+}
+>>>>>>> config
