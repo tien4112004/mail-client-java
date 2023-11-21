@@ -33,4 +33,22 @@ class SMTPClientTest {
                 envelope.recipients);
         assertDoesNotThrow(() -> client.sendEmail(envelope));
     }
+
+    @Test
+    void testSendEmailWithAttachments() throws UnknownHostException, IOException {
+        SMTPClient client = new SMTPClient("localhost", 2225);
+        String sender = "example@localhost";
+        String[] recipientsTo = new String[] { "pttien@fit.hcmus.edu.vn" };
+        String[] recipientsCc = new String[] { "example@localhost" };
+        String[] recipientsBcc = new String[] { "example@fit.hcmus.edu.vn" };
+        String subject = "Test Email";
+        String content = "This is a test email";
+        String[] attachments = { "attachments/test.cpp", "attachments/test.txt" };
+        Message message = new Message(sender, recipientsTo, recipientsCc,
+                recipientsBcc, subject, content, attachments);
+        Envelope envelope = new Envelope(message, "localhost");
+        assertArrayEquals(new String[] { "pttien@fit.hcmus.edu.vn", "example@localhost", "example@fit.hcmus.edu.vn" },
+                envelope.recipients);
+        assertDoesNotThrow(() -> client.sendEmail(envelope));
+    }
 }
