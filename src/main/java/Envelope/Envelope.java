@@ -8,6 +8,7 @@ import Message.Message;
 public class Envelope {
     public String sender;
     public String[] recipients;
+    public String subject;
 
     public String destHost;
     public InetAddress destIP;

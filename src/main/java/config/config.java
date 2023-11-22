@@ -75,35 +75,35 @@ public class config {
         return filter;
     }
 
-    private JSONObject createGeneral(Editor editor) throws IOException {
-        String userName = editor.userName;
-        String password = editor.password;
-        int smtpServer = editor.smtpServer;
-        int pop3Server = editor.pop3Server;
-        int autoReload = editor.autoReload;
+    // private JSONObject createGeneral(Editor editor) throws IOException {
+    // String userName = editor.userName;
+    // String password = editor.password;
+    // int smtpServer = editor.smtpServer;
+    // int pop3Server = editor.pop3Server;
+    // int autoReload = editor.autoReload;
 
-        generalMap.put("User Name:", userName);
-        generalMap.put("Password:", password);
-        generalMap.put("SMTP Server:", smtpServer);
-        generalMap.put("POP3 Server:", pop3Server);
-        generalMap.put("Auto Reload:", autoReload);
+    // generalMap.put("User Name:", userName);
+    // generalMap.put("Password:", password);
+    // generalMap.put("SMTP Server:", smtpServer);
+    // generalMap.put("POP3 Server:", pop3Server);
+    // generalMap.put("Auto Reload:", autoReload);
 
-        JSONObject general = new JSONObject(generalMap);
-        return general;
-    }
+    // JSONObject general = new JSONObject(generalMap);
+    // return general;
+    // }
 
     public void writeConfig(Editor editor, Envelope envelope) throws IOException {
         JSONObject filter = createFilter(envelope);
-        JSONObject general = createGeneral(editor);
+        // JSONObject general = createGeneral(editor);
 
         JSONObject namedFilter = new JSONObject();
         namedFilter.put("Filter", filter);
 
-        JSONObject namedGeneral = new JSONObject();
-        namedGeneral.put("General", general);
+        // JSONObject namedGeneral = new JSONObject();
+        // namedGeneral.put("General", general);
 
         ArrayList<Object> config = new ArrayList<Object>();
-        config.add(namedGeneral);
+        // config.add(namedGeneral);
         config.add(namedFilter);
 
         JSONArray configArray = new JSONArray();
