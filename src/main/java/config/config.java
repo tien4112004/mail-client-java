@@ -9,66 +9,77 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonParser;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 
 import Envelope.Envelope;
 import Editor.Editor;
 
-public class config {
+public class Config {
     private Map<String, Object> filterMap = new HashMap<String, Object>();
     private Map<String, Object> generalMap = new HashMap<String, Object>();
 
     // Read keyword about work and spam from text files, then put it into JSONObject
     // filter.
-    private String workKeywordsHandler() {
+    private String[] workKeywordsHandler() {
         String data = "";
         try {
-            File workFile = new File("src/main/java/Config/Work_Keywords.docx");
+            File workFile = new File("src/main/java/Config/Work_Keywords.txt");
             Scanner myReader = new Scanner(workFile);
             while (myReader.hasNextLine()) {
-                data = (new StringBuilder()).append(data).append(myReader.nextLine()).append(", ").toString();
+                data = (new StringBuilder()).append(data).append(myReader.nextLine()).toString();
             }
             myReader.close();
         } catch (FileNotFoundException e) {
             System.out.println(e);
         }
-        data = data.substring(0, data.length() - 2);
-        return data;
+        return data.split(", ");
     }
 
-    private String spamKeywordsHandler() {
+    private String[] spamKeywordsHandler() {
         String data = "";
         try {
-            File spamFile = new File("src/main/java/Config/Spam_Keywords.docx");
+            File spamFile = new File("src/main/java/Config/Spam_Keywords.txt");
             Scanner myReader = new Scanner(spamFile);
             while (myReader.hasNextLine()) {
-                data = (new StringBuilder()).append(data).append(myReader.nextLine()).append(", ").toString();
+                data = (new StringBuilder()).append(data).append(myReader.nextLine()).toString();
             }
             myReader.close();
         } catch (FileNotFoundException e) {
             System.out.println(e);
         }
-        data = data.substring(0, data.length() - 2);
-        return data;
+        return data.split(", ");
     }
 
     private JSONObject createFilter(Envelope envelope) throws IOException {
-        String workKeywords = workKeywordsHandler();
-        String spamKeywords = spamKeywordsHandler();
-        String recipients = "";
-        for (String recipient : envelope.recipients) {
-            recipients = (new StringBuilder()).append(recipients).append(recipient).append(", ").toString();
-        }
-        String subject = envelope.subject;
+        String[] workKeywords = workKeywordsHandler();
+        String[] spamKeywords = spamKeywordsHandler();
+        String[] recipients = envelope.recipients;
 
-        filterMap.put("From:", recipients);
+        ArrayList<String> from = new ArrayList<String>();
+
+        for (String recipient : recipients) {
+            from.add(recipient);
+        }
+        filterMap.put("Recipients:", from);
+
+        String subject = envelope.subject;
         filterMap.put("Subject:", subject);
-        filterMap.put("Work:", workKeywords);
+
+        ArrayList<String> work = new ArrayList<String>();
+
+        for (String keyword : workKeywords) {
+            work.add(keyword);
+        }
+        filterMap.put("Work:", work);
+
+        for (String keyword : spamKeywords) {
+            work.add(keyword);
+        }
         filterMap.put("Spam:", spamKeywords);
 
         JSONObject filter = new JSONObject(filterMap);
@@ -99,23 +110,14 @@ public class config {
         JSONObject namedFilter = new JSONObject();
         namedFilter.put("Filter", filter);
 
-        // JSONObject namedGeneral = new JSONObject();
-        // namedGeneral.put("General", general);
-
-        ArrayList<Object> config = new ArrayList<Object>();
-        // config.add(namedGeneral);
-        config.add(namedFilter);
-
-        JSONArray configArray = new JSONArray();
-        for (Object jsonObject : config) {
-            configArray.add(jsonObject);
-        }
-
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        String prettyJsonString = gson.toJson(JsonParser.parseString(configArray.toJSONString()));
+        JsonElement je = gson.toJsonTree(namedFilter);
+        JsonArray jsonArray = new JsonArray();
+        jsonArray.add(je);
+        String prettyJson = gson.toJson(jsonArray);
 
         try (FileWriter file = new FileWriter("src/main/java/config/Config.json")) {
-            file.write(prettyJsonString);
+            file.write(prettyJson);
             file.flush();
         } catch (IOException e) {
             System.out.println(e);
