@@ -27,7 +27,9 @@ jobs:
           distribution: "temurin"
           cache: maven
       - name: Run test-mail-server-1.0.jar
-        run: java -jar test-mail-server-1.0.jar
+        run: |
+          java -jar ./lib/test-mail-server-1.0.jar -s 2225 -p 3335 -m ./ -c &
+          sleep 10 # Give the server some time to start
       - name: Build with Maven
         run: mvn -B package --file pom.xml
 
