@@ -29,10 +29,8 @@ class SMTPClientTest {
                 Message message = new Message(sender, recipientsTo, recipientsCc,
                                 recipientsBcc, subject, content, new String[] {});
                 Envelope envelope = new Envelope(message, "localhost");
-                assertArrayEquals(
-                                new String[] { "pttien@fit.hcmus.edu.vn", "example@localhost",
-                                                "example@fit.hcmus.edu.vn" },
-                                envelope.recipients);
+                assertArrayEquals(new String[] { "pttien@fit.hcmus.edu.vn", "example@localhost",
+                                "example@fit.hcmus.edu.vn" }, envelope.recipients);
                 assertDoesNotThrow(() -> client.sendEmail(envelope));
         }
 

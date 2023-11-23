@@ -65,22 +65,22 @@ public class Config {
         for (String recipient : recipients) {
             from.add(recipient);
         }
-        filterMap.put("Recipients:", from);
+        filterMap.put("Recipients", from);
 
         String subject = envelope.subject;
-        filterMap.put("Subject:", subject);
+        filterMap.put("Subject", subject);
 
         ArrayList<String> work = new ArrayList<String>();
 
         for (String keyword : workKeywords) {
             work.add(keyword);
         }
-        filterMap.put("Work:", work);
+        filterMap.put("Work", work);
 
         for (String keyword : spamKeywords) {
             work.add(keyword);
         }
-        filterMap.put("Spam:", spamKeywords);
+        filterMap.put("Spam", spamKeywords);
 
         JSONObject filter = new JSONObject(filterMap);
         return filter;

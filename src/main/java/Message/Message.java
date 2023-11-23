@@ -17,7 +17,7 @@ import java.nio.file.Path;
 public class Message {
     private static final String CRLF = "\r\n";
     private static final String DEFAULT_CHARSET = "UTF-8";
-    private static final String ERROR_EMPTY_RECIPIENT = "[ERROR][Message] Recipients cannot be empty.";
+    private static final String ERROR_RECIPIENT_EMPTY = "[ERROR][Message] Recipients cannot be empty.";
     private static final String ERROR_FILE_NOT_FOUND = "[ERROR][Message] File \"%s\" not found.";
     private static final String MIME_VERSION = "MIME-Version: 1.0";
     private static final String USER_AGENT = "User-Agent: "; // Add User-Agent's name here
@@ -51,7 +51,7 @@ public class Message {
         processMessageContent(content);
 
         if (attachments != null)
-            processFiles(attachments, boundary);
+            processAttachments(attachments, boundary);
     }
 
     public String getSender() {
@@ -85,7 +85,7 @@ public class Message {
         boolean hasRecipientsBcc = recipientsBcc != null && recipientsBcc.length > 0 && recipientsBcc[0].length() > 0;
 
         if (!hasRecipientsTo && !hasRecipientsCc && !hasRecipientsBcc) {
-            throw new IllegalArgumentException(ERROR_EMPTY_RECIPIENT);
+            throw new IllegalArgumentException(ERROR_RECIPIENT_EMPTY);
         }
     }
 
@@ -130,7 +130,7 @@ public class Message {
         body += content + CRLF + CRLF;
     }
 
-    private void processFiles(String[] attachments, String boundary) {
+    private void processAttachments(String[] attachments, String boundary) {
         if (attachments == null || attachments.length == 0) {
             return;
         }
