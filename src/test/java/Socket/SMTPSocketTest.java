@@ -8,7 +8,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
-import Envelope.Envelope;
+import nvelope.Envelope;
 import Message.Message;
 // import SMTPClient.SMTPClient;
 import Socket.SMTPSocket;
@@ -69,3 +69,5 @@ public class SMTPSocketTest {
         assertDoesNotThrow(() -> SMTPSocket.sendEmail(envelope));
     }
 }
+
+
