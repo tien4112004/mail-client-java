@@ -1,25 +1,43 @@
-package SMTPClient;
+package Socket;
 
-import org.junit.jupiter.api.Test;
-import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.*;
-import Envelope.Envelope;
-import Message.Message;
-import SMTPClient.SMTPClient;
 
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.IOException;
 import java.net.UnknownHostException;
 
-class SMTPClientTest {
-    @Test
-    void testSMTPClient() {
-        SMTPClient client = new SMTPClient("localhost", 2225);
-        assertEquals("localhost", client.getSMTPServer());
-        assertEquals(2225, client.getPort());
+import Envelope.Envelope;
+import Message.Message;
+// import SMTPClient.SMTPClient;
+import Socket.SMTPSocket;
+
+public class SMTPSocketTest {
+    private SMTPSocket SMTPSocket;
+
+    @Before
+    public void setUp() throws IOException {
+        SMTPSocket = new SMTPSocket("localhost", 2225);
+        SMTPSocket.connect();
     }
 
     @Test
-    void testSendEmail() throws UnknownHostException, IOException {
-        SMTPClient client = new SMTPClient("localhost", 2225);
+    public void testDoCommand() {
+        assertDoesNotThrow(() -> {
+            SMTPSocket.doCommand("HELO localhost", "250");
+        });
+    }
+
+    @Test
+    public void testDoCommandThrowsException() {
+        assertThrows(Exception.class, () -> {
+            SMTPSocket.doCommand("TEST", "250");
+        });
+    }
+
+    @Test
+    public void testSendEmail() throws UnknownHostException, IOException {
         String sender = "example@localhost";
         String[] recipientsTo = new String[] { "pttien@fit.hcmus.edu.vn" };
         String[] recipientsCc = new String[] { "example@localhost" };
@@ -31,12 +49,11 @@ class SMTPClientTest {
         Envelope envelope = new Envelope(message, "localhost");
         assertArrayEquals(new String[] { "pttien@fit.hcmus.edu.vn", "example@localhost", "example@fit.hcmus.edu.vn" },
                 envelope.recipients);
-        assertDoesNotThrow(() -> client.sendEmail(envelope));
+        assertDoesNotThrow(() -> SMTPSocket.sendEmail(envelope));
     }
 
     @Test
-    void testSendEmailWithAttachments() throws UnknownHostException, IOException {
-        SMTPClient client = new SMTPClient("localhost", 2225);
+    public void testSendEmailWithAttachments() throws UnknownHostException, IOException {
         String sender = "example@localhost";
         String[] recipientsTo = new String[] { "pttien@fit.hcmus.edu.vn" };
         String[] recipientsCc = new String[] { "example@localhost" };
@@ -49,6 +66,6 @@ class SMTPClientTest {
         Envelope envelope = new Envelope(message, "localhost");
         assertArrayEquals(new String[] { "pttien@fit.hcmus.edu.vn", "example@localhost", "example@fit.hcmus.edu.vn" },
                 envelope.recipients);
-        assertDoesNotThrow(() -> client.sendEmail(envelope));
+        assertDoesNotThrow(() -> SMTPSocket.sendEmail(envelope));
     }
 }
