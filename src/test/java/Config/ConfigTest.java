@@ -15,7 +15,7 @@ import Config.Config;
 import Editor.Editor;
 import Envelope.Envelope;
 
-public class configTest {
+public class ConfigTest {
   // @Test
   // public void testWorkKeywordsHandler() {
   // Config config = new Config();
@@ -48,7 +48,7 @@ public class configTest {
     Editor editor = new Editor();
     config.writeConfig(editor, envelope);
     // check if the file is created
-    boolean actual = Files.exists(Paths.get("src/main/java/config/Config.json"));
+    boolean actual = Files.exists(Paths.get("src/main/java/Config/Config.json"));
     assertTrue(actual);
   }
 }

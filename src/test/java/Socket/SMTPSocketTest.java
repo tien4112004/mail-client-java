@@ -58,8 +58,8 @@ public class SMTPSocketTest {
         String[] recipientsTo = new String[] { "pttien@fit.hcmus.edu.vn" };
         String[] recipientsCc = new String[] { "example@localhost" };
         String[] recipientsBcc = new String[] { "example@fit.hcmus.edu.vn" };
-        String subject = "Test Email";
-        String content = "This is a test email";
+        String subject = "Test Email w/ attachments";
+        String content = "This is a test email with long content...This is a test email with long content...This is a test email with long content...This is a test email with long content...This is a test email with long content...This is a test email with long content...This is a test email with long content...This is a test email with long content...";
         String[] attachments = { "attachments/test.cpp", "attachments/test.txt" };
         Message message = new Message(sender, recipientsTo, recipientsCc,
                 recipientsBcc, subject, content, attachments);
