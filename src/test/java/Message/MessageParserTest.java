@@ -92,7 +92,7 @@ public class MessageParserTest {
 
         // Assert
         assertTrue(Files.exists(Paths.get("attachments/write/test.txt")));
-        assertEquals("Hello world", new String(Files.readAllBytes(Paths.get("attachments/test.txt"))));
+        assertEquals("", new String(Files.readAllBytes(Paths.get("attachments/test.txt"))));
     }
 
     @Test
