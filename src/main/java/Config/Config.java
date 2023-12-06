@@ -1,23 +1,24 @@
 package Config;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.HashMap;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.io.FileNotFoundException;
 
 import org.json.simple.JSONObject;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 
-import Envelope.Envelope;
+import UI.UI;
 import Editor.Editor;
+import Envelope.Envelope;
 
 public class Config {
     private Map<String, Object> filterMap = new HashMap<String, Object>();
@@ -86,28 +87,28 @@ public class Config {
         return filter;
     }
 
-    // private JSONObject createGeneral(Editor editor) throws IOException {
-    // String userName = editor.userName;
-    // String password = editor.password;
-    // int smtpServer = editor.smtpServer;
-    // int pop3Server = editor.pop3Server;
-    // int autoReload = editor.autoReload;
+    private JSONObject createGeneral(UI UI) throws IOException {
+        String username = UI.username;
+        generalMap.put("Username", username);
+        String password = UI.password;
+        generalMap.put("Password", password);
+        int SMPTport = 2225;
+        generalMap.put("SMTPport", SMPTport);
+        int POP3port = 1225;
+        generalMap.put("POP3port", POP3port);
+        int autoReload = 10;
+        generalMap.put("AutoReload", autoReload);
 
-    // generalMap.put("User Name:", userName);
-    // generalMap.put("Password:", password);
-    // generalMap.put("SMTP Server:", smtpServer);
-    // generalMap.put("POP3 Server:", pop3Server);
-    // generalMap.put("Auto Reload:", autoReload);
+        JSONObject general = new JSONObject(generalMap);
+        return general;
+    }
 
-    // JSONObject general = new JSONObject(generalMap);
-    // return general;
-    // }
-
-    public void writeConfig(Editor editor, Envelope envelope) throws IOException {
+    public void writeConfig(UI UI, Envelope envelope) throws IOException {
         JSONObject filter = createFilter(envelope);
-        // JSONObject general = createGeneral(editor);
+        JSONObject general = createGeneral(UI);
 
         JSONObject namedFilter = new JSONObject();
+        namedFilter.put("General", general);
         namedFilter.put("Filter", filter);
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();

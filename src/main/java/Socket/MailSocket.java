@@ -28,12 +28,13 @@ public abstract class MailSocket {
         toServer = new DataOutputStream(serverSocket.getOutputStream());
         fromServer = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
 
-        System.out.println("Connecting to server " + server + ":" + port + "...");
+        // System.out.println("Connecting to server " + server + ":" + port + "...");
 
         if (isConnected()) {
-            System.out.println("Connected to server " + server + ":" + port);
+            // System.out.println("Connected to server " + server + ":" + port);
         } else {
-            System.out.println("[ERROR][MailSocket] Unable to connect to server " + server + ":" + port);
+            // System.out.println("[ERROR][MailSocket] Unable to connect to server " +
+            // server + ":" + port);
             throw new IOException("Unable to connect to server " + server + ":" + port);
         }
     }
@@ -43,7 +44,7 @@ public abstract class MailSocket {
     protected abstract void doCommand(String command, String expectedReturnCode) throws IOException;
 
     public void sendCommand(String command) throws IOException {
-        System.out.println("[CLIENT] " + command);
+        // System.out.println("[CLIENT] " + command);
         toServer.writeBytes(command + CRLF);
         toServer.flush();
     }
@@ -64,7 +65,7 @@ public abstract class MailSocket {
              */
             response += responseLine + CRLF;
         } while (isMultiLineResponse(responseLine));
-        System.out.println("[SERVER] " + response);
+        // System.out.println("[SERVER] " + response);
         return response;
     }
 
@@ -90,7 +91,7 @@ public abstract class MailSocket {
             toServer.close();
             serverSocket.close();
         } catch (IOException e) {
-            System.out.println("[ERROR][MailSocket] Unable to close connection: " + e);
+            // System.out.println("[ERROR][MailSocket] Unable to close connection: " + e);
         }
     }
 }
