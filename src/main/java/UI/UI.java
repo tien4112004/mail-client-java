@@ -17,13 +17,13 @@ public class UI {
     public String username; // TODO: get this from JSON
     public String password;
 
-    private Scanner readConsole;
+    protected Scanner readConsole;
 
     public UI() {
         this.readConsole = new Scanner(System.in);
     }
 
-    private void clearConsole() {
+    protected void clearConsole() {
         System.out.print("\033[H\033[2J");
     }
 
@@ -41,7 +41,7 @@ public class UI {
     // clearConsole();
     // }
 
-    private void showOption() throws IOException {
+    protected void showOption() throws IOException {
         System.out.println("Menu: ");
         System.out.println("1: Send email");
         System.out.println("2: Watch list of emails");
@@ -51,28 +51,18 @@ public class UI {
         clearConsole();
         switch (option) {
             case 1:
-                new SendFunction().send();
+                new SendEmails().send();
                 break;
             case 2:
-                listFunction();
+                new ListEmails().list();
                 break;
             default:
                 System.exit(0);
         }
     }
 
-    private void listFunction() throws IOException {
-        System.out.print("This function is in development! Want to goback? (Y/N) ");
-        readConsole.nextLine();
-        String answer = readConsole.nextLine();
-        if (answer.equalsIgnoreCase("Y")) {
-            clearConsole();
-            showOption();
-        }
-    }
-
     // This start the UI in console
-    private void start() throws IOException {
+    public void start() throws IOException {
         // login();
         showOption();
     }

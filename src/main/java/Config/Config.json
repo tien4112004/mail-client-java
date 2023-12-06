@@ -35,7 +35,7 @@
     "General": {
       "POP3port": 1225,
       "SMTPport": 2225,
-      "Username": "example@localhost",
+      "Username": "lttin@hmcus.edu.vn",
       "Password": "123456",
       "AutoReload": 10
     }

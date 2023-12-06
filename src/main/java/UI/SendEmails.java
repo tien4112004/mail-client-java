@@ -7,7 +7,7 @@ import Envelope.Envelope;
 import Message.Message;
 import Socket.SMTPSocket;
 
-public class SendFunction {
+public class SendEmails extends UI {
     private String username;
     private String[] recipientsTo;
     private String[] recipientsCc;
@@ -16,24 +16,17 @@ public class SendFunction {
     private String content;
     private String[] attachments;
 
-    private Scanner readConsole;
-
-    public SendFunction() {
-        this.readConsole = new Scanner(System.in);
-    }
-
-    private void clearConsole() {
-        System.out.print("\033[H\033[2J");
-    }
-
     private void attachmentsHandler() {
-        System.out.println("Send attachments? (Y/N)");
-        String answer = readConsole.nextLine();
-        if (answer == "Y") {
-            System.out.println("Please enter the path of attachments, separated by comma:");
-            String attachments = readConsole.hasNextLine() ? readConsole.nextLine() : "";
-            this.attachments = attachments.split(", ");
-        }
+        System.out.print("Send attachments? (Y/N) ");
+        String answer;
+        do {
+            answer = readConsole.nextLine();
+            if (answer.equalsIgnoreCase("Y")) {
+                System.out.println("Please enter the path of attachments, separated by comma:");
+                String attachments = readConsole.hasNextLine() ? readConsole.nextLine() : "";
+                this.attachments = attachments.split(", ");
+            }
+        } while (answer.equalsIgnoreCase("N"));
     }
 
     private void compose() {
@@ -60,7 +53,7 @@ public class SendFunction {
     }
 
     public void send() throws IOException {
-        username = "sender@localhost";
+        username = "lttin@hcmus.edu.vn";
         compose();
         Message message = new Message(username, recipientsTo, recipientsCc, recipientsBcc, subject, content,
                 attachments);
