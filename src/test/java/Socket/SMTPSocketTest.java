@@ -40,14 +40,14 @@ public class SMTPSocketTest {
     public void testSendEmail() throws UnknownHostException, IOException {
         String sender = "example@localhost";
         String[] recipientsTo = new String[] { "lttin@fit.hcmus.edu.vn" };
-        String[] recipientsCc = new String[] { "" };
-        String[] recipientsBcc = new String[] { "" };
+        String[] recipientsCc = new String[] { };
+        String[] recipientsBcc = new String[] { };
         String subject = "Test Email";
         String content = "This is a test email";
         Message message = new Message(sender, recipientsTo, recipientsCc,
                 recipientsBcc, subject, content, new String[] {});
         Envelope envelope = new Envelope(message, "localhost");
-        assertArrayEquals(new String[] { "pttien@fit.hcmus.edu.vn", "", "" },
+        assertArrayEquals(new String[] { "lttin@fit.hcmus.edu.vn" },
                 envelope.recipients);
         assertDoesNotThrow(() -> SMTPSocket.sendEmail(envelope));
     }
