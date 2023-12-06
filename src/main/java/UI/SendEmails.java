@@ -1,14 +1,13 @@
 package UI;
 
 import java.io.IOException;
-import java.util.Scanner;
+// import java.util.Scanner;
 
 import Envelope.Envelope;
 import Message.Message;
 import Socket.SMTPSocket;
 
 public class SendEmails extends UI {
-    private String username;
     private String[] recipientsTo;
     private String[] recipientsCc;
     private String[] recipientsBcc;
@@ -53,7 +52,6 @@ public class SendEmails extends UI {
     }
 
     public void send() throws IOException {
-        username = "lttin@hcmus.edu.vn";
         compose();
         Message message = new Message(username, recipientsTo, recipientsCc, recipientsBcc, subject, content,
                 attachments);

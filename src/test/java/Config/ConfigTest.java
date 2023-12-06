@@ -1,9 +1,7 @@
 package Config;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestTemplate;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
