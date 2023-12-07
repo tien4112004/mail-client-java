@@ -13,8 +13,8 @@ import java.util.Scanner;
 // import UI.SendFunction;
 
 public class UI {
-    public String username = new UserInfor().getUsername(); // TODO: get this from JSON
-    public String password = new UserInfor().getPassword();
+    public String username = new GetUserLoginInfomation().getUsername(); // TODO: get this from JSON
+    public String password = new GetUserLoginInfomation().getPassword();
 
     protected Scanner readConsole;
 
@@ -44,10 +44,10 @@ public class UI {
             case 3:
                 System.exit(0);
                 break;
-            default: 
+            default:
                 System.out.println("Invalid option! Aborting...");
                 System.exit(0);
-            }
+        }
     }
 
     // This start the UI in console
@@ -57,8 +57,8 @@ public class UI {
     }
 
     // public static void main(String[] args) throws IOException {
-    //     UI ui = new UI();
-    //     ui.start();
+    // UI ui = new UI();
+    // ui.start();
     // }
 
     // private boolean verifyEmail(String email) {

@@ -3,10 +3,10 @@ package UI;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
-public class UserInforTest {
+public class GetUserLoginInfomationTest {
     @Test
     public void test() {
-        UserInfor userInfor = new UserInfor();
+        GetUserLoginInfomation userInfor = new GetUserLoginInfomation();
 
         String usernameActual = userInfor.getUsername();
         String passwordActual = userInfor.getPassword();
