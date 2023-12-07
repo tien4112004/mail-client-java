@@ -10,16 +10,12 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 public class UserInfor {
-    // TODO: Get username and password from config.json
     JSONParser parser = new JSONParser();
     String Username;
     String Password;
-    // File fileJSON;
 
     public UserInfor() {
         try {
-            // fileJSON = new File("src/main/java/UI/config.json");
-            // Scanner readJSON = new Scanner(fileJSON);
             JSONArray configEleArray = (JSONArray) parser.parse(new FileReader("src/main/java/Config/Config.json"));
 
             for (Object configEle : configEleArray) {
@@ -36,11 +32,11 @@ public class UserInfor {
         }
     }
 
-    protected String getUsername() {
+    public String getUsername() {
         return Username;
     }
 
-    protected String getPassword() {
+    public String getPassword() {
         return Password;
     }
 }
