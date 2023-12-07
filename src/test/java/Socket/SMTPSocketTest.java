@@ -60,7 +60,7 @@ public class SMTPSocketTest {
         String[] recipientsBcc = new String[] { "example@fit.hcmus.edu.vn" };
         String subject = "Test Email w/ attachments";
         String content = "This is a test email with long content...This is a test email with long content...This is a test email with long content...This is a test email with long content...This is a test email with long content...This is a test email with long content...This is a test email with long content...This is a test email with long content...";
-        String[] attachments = { "src/test/java/attachments/test.cpp", "src/test/java/attachments/test.txt" };
+        String[] attachments = { "src/test/java/attachmentsTest/test.cpp", "src/test/java/attachmentsTest/test.txt" };
         Message message = new Message(sender, recipientsTo, recipientsCc,
                 recipientsBcc, subject, content, attachments);
         Envelope envelope = new Envelope(message, "localhost");
@@ -77,7 +77,7 @@ public class SMTPSocketTest {
         String[] recipientsBcc = new String[] { "example@fit.hcmus.edu.vn" };
         String subject = "pdf test";
         String content = "Pdf test";
-        String[] attachments = { "src/test/java/attachments/test.pdf" };
+        String[] attachments = { "src/test/java/attachmentsTest/test.pdf" };
         Message message = new Message(sender, recipientsTo, recipientsCc,
                 recipientsBcc, subject, content, attachments);
         Envelope envelope = new Envelope(message, "localhost");

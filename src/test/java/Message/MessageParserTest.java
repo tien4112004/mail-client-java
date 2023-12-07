@@ -87,13 +87,13 @@ public class MessageParserTest {
         MessageParser parser = new MessageParser();
 
         // Act
-        parser.parseFile(bodyLines[0], 2, bodyLines, "src/test/java/attachments/write");
-        parser.parseFile(bodyLines[4], 6, bodyLines, "src/test/java/attachments/write");
+        parser.parseFile(bodyLines[0], 2, bodyLines, "attachments/write");
+        parser.parseFile(bodyLines[4], 6, bodyLines, "attachments/write");
 
         // Assert
-        assertTrue(Files.exists(Paths.get("src/test/java/attachments/write/test.txt")));
-        assertEquals(new String(Files.readAllBytes(Paths.get("src/test/java/attachments/test.txt"))),
-                new String(Files.readAllBytes(Paths.get("src/test/java/attachments/write/test.txt"))));
+        assertTrue(Files.exists(Paths.get("attachments/write/test.txt")));
+        assertEquals(new String(Files.readAllBytes(Paths.get("src/test/java/attachmentsTest/test.txt"))),
+                new String(Files.readAllBytes(Paths.get("attachments/write/test.txt"))));
     }
 
     @Test
@@ -114,8 +114,8 @@ public class MessageParserTest {
         assertEquals("multipart/mixed; boundary=\"------------32dad99284e04931b6fd17697f2c2f61\"",
                 parser.getContentType());
         assertEquals("This is a test email", parser.getContent());
-        assertTrue(Files.exists(Paths.get("src/test/java/attachments/test.txt")));
-        assertEquals("cpp test", new String(Files.readAllBytes(Paths.get("src/test/java/attachments/test.cpp"))));
+        assertTrue(Files.exists(Paths.get("attachments/write/test.txt")));
+        assertEquals("cpp test", new String(Files.readAllBytes(Paths.get("attachments/write/test.cpp"))));
     }
 
     @Test
