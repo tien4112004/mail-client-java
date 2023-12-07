@@ -40,8 +40,8 @@ public class SMTPSocketTest {
     public void testSendEmail() throws UnknownHostException, IOException {
         String sender = "example@localhost";
         String[] recipientsTo = new String[] { "lttin@fit.hcmus.edu.vn" };
-        String[] recipientsCc = new String[] { };
-        String[] recipientsBcc = new String[] { };
+        String[] recipientsCc = new String[] {};
+        String[] recipientsBcc = new String[] {};
         String subject = "Test Email";
         String content = "This is a test email";
         Message message = new Message(sender, recipientsTo, recipientsCc,
@@ -60,7 +60,7 @@ public class SMTPSocketTest {
         String[] recipientsBcc = new String[] { "example@fit.hcmus.edu.vn" };
         String subject = "Test Email w/ attachments";
         String content = "This is a test email with long content...This is a test email with long content...This is a test email with long content...This is a test email with long content...This is a test email with long content...This is a test email with long content...This is a test email with long content...This is a test email with long content...";
-        String[] attachments = { "attachments/test.cpp", "attachments/test.txt" };
+        String[] attachments = { "src/test/java/attachments/test.cpp", "src/test/java/attachments/test.txt" };
         Message message = new Message(sender, recipientsTo, recipientsCc,
                 recipientsBcc, subject, content, attachments);
         Envelope envelope = new Envelope(message, "localhost");
@@ -77,7 +77,7 @@ public class SMTPSocketTest {
         String[] recipientsBcc = new String[] { "example@fit.hcmus.edu.vn" };
         String subject = "pdf test";
         String content = "Pdf test";
-        String[] attachments = { "attachments/test.pdf" };
+        String[] attachments = { "src/test/java/attachments/test.pdf" };
         Message message = new Message(sender, recipientsTo, recipientsCc,
                 recipientsBcc, subject, content, attachments);
         Envelope envelope = new Envelope(message, "localhost");
