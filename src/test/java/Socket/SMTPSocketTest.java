@@ -68,4 +68,21 @@ public class SMTPSocketTest {
                 envelope.recipients);
         assertDoesNotThrow(() -> SMTPSocket.sendEmail(envelope));
     }
+
+    @Test
+    public void testSendEmailWithPdf() throws UnknownHostException, IOException {
+        String sender = "example@localhost";
+        String[] recipientsTo = new String[] { "pttien@fit.hcmus.edu.vn" };
+        String[] recipientsCc = new String[] { "example@localhost" };
+        String[] recipientsBcc = new String[] { "example@fit.hcmus.edu.vn" };
+        String subject = "pdf test";
+        String content = "Pdf test";
+        String[] attachments = { "attachments/test.pdf" };
+        Message message = new Message(sender, recipientsTo, recipientsCc,
+                recipientsBcc, subject, content, attachments);
+        Envelope envelope = new Envelope(message, "localhost");
+        assertArrayEquals(new String[] { "pttien@fit.hcmus.edu.vn", "example@localhost", "example@fit.hcmus.edu.vn" },
+                envelope.recipients);
+        assertDoesNotThrow(() -> SMTPSocket.sendEmail(envelope));
+    }
 }

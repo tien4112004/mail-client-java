@@ -87,12 +87,13 @@ public class MessageParserTest {
         MessageParser parser = new MessageParser();
 
         // Act
-        parser.parseFile(bodyLines[0], 2, bodyLines);
-        parser.parseFile(bodyLines[4], 6, bodyLines);
+        parser.parseFile(bodyLines[0], 2, bodyLines, "attachments/write");
+        parser.parseFile(bodyLines[4], 6, bodyLines, "attachments/write");
 
         // Assert
         assertTrue(Files.exists(Paths.get("attachments/write/test.txt")));
-        assertEquals("", new String(Files.readAllBytes(Paths.get("attachments/test.txt"))));
+        assertEquals(new String(Files.readAllBytes(Paths.get("attachments/test.txt"))),
+                new String(Files.readAllBytes(Paths.get("attachments/write/test.txt"))));
     }
 
     @Test
@@ -115,5 +116,31 @@ public class MessageParserTest {
         assertEquals("This is a test email", parser.getContent());
         assertTrue(Files.exists(Paths.get("attachments/test.txt")));
         assertEquals("cpp test", new String(Files.readAllBytes(Paths.get("attachments/test.cpp"))));
+    }
+
+    @Test
+    public void testParseFullEmailWithPdf() {
+        // Arrange
+        Path filePath = Paths.get("src/test/java/Message/testPdf.msg");
+        String rawEmail = "";
+        try {
+            rawEmail = new String(Files.readAllBytes(filePath));
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+        MessageParser parser = new MessageParser();
+
+        // Act
+        parser.parse(rawEmail);
+
+        // Assert
+        assertEquals("example@localhost", parser.getSender());
+        assertArrayEquals(new String[] { "pttien@fit.hcmus.edu.vn" }, parser.getRecipientsTo());
+        assertArrayEquals(new String[] { "example@localhost" }, parser.getRecipientsCc());
+        assertEquals("pdf test", parser.getSubject());
+        assertEquals("multipart/mixed; boundary=\"------------c9a195a417c24c1890187baee07e8ad5\"",
+                parser.getContentType());
+        assertEquals("Pdf test", parser.getContent());
+        assertTrue(Files.exists(Paths.get("attachments/write/test.pdf")));
     }
 }

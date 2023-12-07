@@ -2,6 +2,7 @@ package Message;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Base64;
 
@@ -75,25 +76,37 @@ public class MessageParser {
         String[] bodyLines = body.split(CRLF);
         boolean isContent = false;
         for (int i = 0; i < bodyLines.length; i++) {
-            if (bodyLines[i].startsWith("--")) {
-                if (isContent) {
-                    break;
-                }
+            if (bodyLines[i].startsWith("--")) { // reach boundary
+                isContent = false;
                 continue;
             }
-            if (bodyLines[i].startsWith("Content-Type: ")) {
-                isContent = parseContentType(bodyLines[i]);
-            } else if (bodyLines[i].startsWith("Content-Transfer-Encoding: 7bit")) {
+            if (hasContent(bodyLines[i])) {
+                isContent = true;
+            }
+
+            if (!isContent)
+                continue;
+
+            if (bodyLines[i].startsWith("Content-Transfer-Encoding: 7bit")) {
                 parseContent(bodyLines[i], i + 2, bodyLines);
+                i += countLinesUntilBoundary(i + 2, bodyLines); // Skip lines of the current content
             } else if (bodyLines[i].startsWith("Content-Disposition: ")) {
-                parseFile(bodyLines[i], i + 4, bodyLines);
+                parseFile(bodyLines[i], i + 3, bodyLines, "./attachments/write/");
+                i += countLinesUntilBoundary(i + 3, bodyLines); // Skip lines of the current file
             }
         }
     }
 
-    private boolean parseContentType(String line) {
-        String contentType = line.substring(14).trim();
-        return contentType.startsWith("text/plain");
+    private int countLinesUntilBoundary(int startIndex, String[] bodyLines) {
+        int count = 0;
+        while (!bodyLines[startIndex + count].startsWith("--")) {
+            count++;
+        }
+        return count;
+    }
+
+    private boolean hasContent(String line) {
+        return line.startsWith("Content-Type: ");
     }
 
     protected void parseContent(String line, int startIndex, String[] bodyLines) {
@@ -101,14 +114,14 @@ public class MessageParser {
         content = encodedContent.toString();
     }
 
-    public void parseFile(String line, int startIndex, String[] bodyLines) {
+    public void parseFile(String line, int startIndex, String[] bodyLines, String saveDirectory) {
         String contentDisposition = line.substring(21).trim();
         if (contentDisposition.startsWith("attachment")) {
             String fileName = contentDisposition.substring(contentDisposition.indexOf("filename=") + 10,
                     contentDisposition.length() - 1);
             String encodedFileContent = joinLinesUntilBoundary(startIndex, bodyLines);
-            String fileContent = new String(Base64.getDecoder().decode(encodedFileContent));
-            saveAttachment(fileName, fileContent);
+            byte[] fileContent = Base64.getDecoder().decode(encodedFileContent);
+            saveAttachment(fileName, fileContent, saveDirectory);
         }
     }
 
@@ -122,9 +135,15 @@ public class MessageParser {
         return joinedLines.toString();
     }
 
-    private void saveAttachment(String fileName, String fileContent) {
+    private void saveAttachment(String fileName, byte[] fileContent, String saveDirectory) {
         try {
-            Files.write(Paths.get("attachments/write/" + fileName), fileContent.getBytes());
+            Path directoryPath = Paths.get(saveDirectory);
+            if (!Files.exists(directoryPath)) {
+                Files.createDirectories(directoryPath);
+            }
+
+            Path filePath = directoryPath.resolve(fileName);
+            Files.write(filePath, fileContent);
             System.out.println(String.format("Saved attachment \"%s\".", fileName));
         } catch (Exception e) {
             System.out.println(String.format(ERROR_CANNOT_WRITE_FILE, e.getMessage()));
