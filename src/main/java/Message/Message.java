@@ -7,6 +7,7 @@ import java.util.UUID;
 import javax.activation.MimetypesFileTypeMap;
 import javax.security.auth.login.CredentialException;
 
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.net.FileNameMap;
@@ -27,14 +28,16 @@ public class Message {
     private static final String CONTENT_DISPOSITION = "Content-Disposition: attachment; filename=\"%s\"";
     private static final String CONTENT_TRANSFER_ENCODING_BASE64 = "Content-Transfer-Encoding: base64";
 
-    public String header;
-    public String body;
+    public String header = "";
+    public String body = "";
 
     private String sender;
     private String[] recipientsTo;
     private String[] recipientsCc;
     private String[] recipientsBcc;
     private String subject;
+    private String content;
+    private String[] attachmentDirectories;
 
     public Message(String sender, String[] recipientsTo, String[] recipientsCC, String[] recipientsBCC,
             String subject, String content, String... attachments) {
@@ -43,6 +46,8 @@ public class Message {
         this.recipientsTo = recipientsTo;
         this.recipientsCc = recipientsCC;
         this.recipientsBcc = recipientsBCC;
+        this.content = content.trim();
+        this.attachmentDirectories = attachments;
 
         validateRecipients();
 
@@ -52,24 +57,6 @@ public class Message {
 
         if (attachments != null)
             processAttachments(attachments, boundary);
-    }
-
-    public String getSender() {
-        return sender;
-    }
-
-    public String[] getRecipients() {
-        String recipients[] = new String[recipientsTo.length + recipientsCc.length + recipientsBcc.length];
-        System.arraycopy(recipientsTo, 0, recipients, 0, recipientsTo.length);
-        System.arraycopy(recipientsCc, 0, recipients, recipientsTo.length, recipientsCc.length);
-        System.arraycopy(recipientsBcc, 0, recipients, recipientsTo.length + recipientsCc.length,
-                recipientsBcc.length);
-
-        return recipients;
-    }
-
-    public String getSubject() {
-        return subject;
     }
 
     private String buildRecipientString(String[] recipients) {
@@ -166,6 +153,32 @@ public class Message {
      * return !isInvalidEmail;
      * }
      */
+
+    public String getSender() {
+        return sender;
+    }
+
+    public String[] getRecipients() {
+        String recipients[] = new String[recipientsTo.length + recipientsCc.length + recipientsBcc.length];
+        System.arraycopy(recipientsTo, 0, recipients, 0, recipientsTo.length);
+        System.arraycopy(recipientsCc, 0, recipients, recipientsTo.length, recipientsCc.length);
+        System.arraycopy(recipientsBcc, 0, recipients, recipientsTo.length + recipientsCc.length,
+                recipientsBcc.length);
+
+        return recipients;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public String[] getAttachments() {
+        return attachmentDirectories;
+    }
 
     public String toString() {
         return header + body;

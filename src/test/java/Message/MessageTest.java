@@ -47,7 +47,7 @@ class MessageTest {
         String[] recipientsBcc = { "recipientBcc1@localhost", "recipientBcc2@localhost" };
         String subject = "Test Email";
         String content = "This is a test email";
-        String[] attachments = { "attachments/test.cpp", "attachments/test.txt" };
+        String[] attachments = { "src/test/java/attachments/test.cpp", "src/test/java/attachments/test.txt" };
 
         Message message = new Message(sender, recipientsTo, recipientsCc, recipientsBcc, subject, content, attachments);
 

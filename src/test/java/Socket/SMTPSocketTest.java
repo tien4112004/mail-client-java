@@ -40,8 +40,8 @@ public class SMTPSocketTest {
     public void testSendEmail() throws UnknownHostException, IOException {
         String sender = "example@localhost";
         String[] recipientsTo = new String[] { "lttin@fit.hcmus.edu.vn" };
-        String[] recipientsCc = new String[] { };
-        String[] recipientsBcc = new String[] { };
+        String[] recipientsCc = new String[] {};
+        String[] recipientsBcc = new String[] {};
         String subject = "Test Email";
         String content = "This is a test email";
         Message message = new Message(sender, recipientsTo, recipientsCc,
@@ -58,9 +58,26 @@ public class SMTPSocketTest {
         String[] recipientsTo = new String[] { "pttien@fit.hcmus.edu.vn" };
         String[] recipientsCc = new String[] { "example@localhost" };
         String[] recipientsBcc = new String[] { "example@fit.hcmus.edu.vn" };
-        String subject = "Test Email";
-        String content = "This is a test email";
-        String[] attachments = { "attachments/test.cpp", "attachments/test.txt" };
+        String subject = "Test Email w/ attachments";
+        String content = "This is a test email with long content...This is a test email with long content...This is a test email with long content...This is a test email with long content...This is a test email with long content...This is a test email with long content...This is a test email with long content...This is a test email with long content...";
+        String[] attachments = { "src/test/java/attachmentsTest/test.cpp", "src/test/java/attachmentsTest/test.txt" };
+        Message message = new Message(sender, recipientsTo, recipientsCc,
+                recipientsBcc, subject, content, attachments);
+        Envelope envelope = new Envelope(message, "localhost");
+        assertArrayEquals(new String[] { "pttien@fit.hcmus.edu.vn", "example@localhost", "example@fit.hcmus.edu.vn" },
+                envelope.recipients);
+        assertDoesNotThrow(() -> SMTPSocket.sendEmail(envelope));
+    }
+
+    @Test
+    public void testSendEmailWithPdf() throws UnknownHostException, IOException {
+        String sender = "example@localhost";
+        String[] recipientsTo = new String[] { "pttien@fit.hcmus.edu.vn" };
+        String[] recipientsCc = new String[] { "example@localhost" };
+        String[] recipientsBcc = new String[] { "example@fit.hcmus.edu.vn" };
+        String subject = "pdf test";
+        String content = "Pdf test";
+        String[] attachments = { "src/test/java/attachmentsTest/test.pdf" };
         Message message = new Message(sender, recipientsTo, recipientsCc,
                 recipientsBcc, subject, content, attachments);
         Envelope envelope = new Envelope(message, "localhost");

@@ -26,6 +26,7 @@ public class Envelope {
     public Envelope(Message message, String localServer) throws UnknownHostException {
         sender = message.getSender();
         recipients = message.getRecipients();
+        subject = message.getSubject();
 
         this.message = escapeMessge(message);
 
