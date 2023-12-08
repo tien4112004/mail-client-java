@@ -1,8 +1,8 @@
 [
   {
     "Filter": {
-      "Work": [ 
-        "report", 
+      "Work": [
+        "report",
         "meeting",
         "virus",
         "hack",
@@ -15,11 +15,14 @@
         "crack"
       ],
       "Recipients": [
-        "ltttin@fit.hcmus",
-        "example@gmail.com",
-        "pttien@fit.hcmus.edu.vn"
+        "recipientTo1@localhost",
+        "recipientTo2@localhost",
+        "recipientCc1@localhost",
+        "recipientCc2@localhost",
+        "recipientBcc1@localhost",
+        "recipientBcc2@localhost"
       ],
-      "Subject": "ASAP",
+      "Subject": "Test Email",
       "Spam": [
         "virus",
         "hack",
@@ -35,7 +38,7 @@
     "General": {
       "POP3port": 1225,
       "SMTPport": 2225,
-      "Username": "lttin@hmcus.edu.vn",
+      "Username": "example@localhost",
       "Password": "123456",
       "AutoReload": 10
     }
