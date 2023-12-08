@@ -5,7 +5,6 @@ package Message;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.IOError;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;

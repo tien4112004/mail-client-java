@@ -18,7 +18,6 @@ import com.google.gson.JsonElement;
 
 import UI.UI;
 import Message.Message;
-import Envelope.Envelope;
 
 public class Config {
     private Map<String, Object> filterMap = new HashMap<String, Object>();
