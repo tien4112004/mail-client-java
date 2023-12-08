@@ -8,10 +8,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
-import Envelope.Envelope;
 import Message.Message;
-// import SMTPClient.SMTPClient;
-import Socket.SMTPSocket;
 
 public class SMTPSocketTest {
     private SMTPSocket SMTPSocket;
@@ -46,10 +43,9 @@ public class SMTPSocketTest {
         String content = "This is a test email";
         Message message = new Message(sender, recipientsTo, recipientsCc,
                 recipientsBcc, subject, content, new String[] {});
-        Envelope envelope = new Envelope(message, "localhost");
         assertArrayEquals(new String[] { "lttin@fit.hcmus.edu.vn" },
-                envelope.recipients);
-        assertDoesNotThrow(() -> SMTPSocket.sendEmail(envelope));
+                message.getRecipients());
+        assertDoesNotThrow(() -> SMTPSocket.sendEmail(message));
     }
 
     @Test
@@ -63,10 +59,9 @@ public class SMTPSocketTest {
         String[] attachments = { "src/test/java/attachmentsTest/test.cpp", "src/test/java/attachmentsTest/test.txt" };
         Message message = new Message(sender, recipientsTo, recipientsCc,
                 recipientsBcc, subject, content, attachments);
-        Envelope envelope = new Envelope(message, "localhost");
         assertArrayEquals(new String[] { "pttien@fit.hcmus.edu.vn", "example@localhost", "example@fit.hcmus.edu.vn" },
-                envelope.recipients);
-        assertDoesNotThrow(() -> SMTPSocket.sendEmail(envelope));
+                message.getRecipients());
+        assertDoesNotThrow(() -> SMTPSocket.sendEmail(message));
     }
 
     @Test
@@ -80,9 +75,8 @@ public class SMTPSocketTest {
         String[] attachments = { "src/test/java/attachmentsTest/test.pdf" };
         Message message = new Message(sender, recipientsTo, recipientsCc,
                 recipientsBcc, subject, content, attachments);
-        Envelope envelope = new Envelope(message, "localhost");
         assertArrayEquals(new String[] { "pttien@fit.hcmus.edu.vn", "example@localhost", "example@fit.hcmus.edu.vn" },
-                envelope.recipients);
-        assertDoesNotThrow(() -> SMTPSocket.sendEmail(envelope));
+                message.getRecipients());
+        assertDoesNotThrow(() -> SMTPSocket.sendEmail(message));
     }
 }
