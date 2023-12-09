@@ -1,7 +1,7 @@
 package Socket;
 
 import java.io.IOException;
-import Envelope.Envelope;
+import Message.Message;
 
 public class SMTPSocket extends MailSocket {
     private final String CONNECTED = "220";
@@ -47,15 +47,16 @@ public class SMTPSocket extends MailSocket {
     // return response.substring(0, RESPONSE_CODE_LENGTH);
     // }
 
-    public void sendEmail(Envelope envelope) throws IOException {
+    public void sendEmail(Message email) throws IOException {
         connect();
         doCommand("HELO " + server, OK);
-        doCommand("MAIL FROM: " + envelope.sender, String.valueOf(OK));
-        for (String recipient : envelope.recipients) {
+        doCommand("MAIL FROM: " + email.getSender(), String.valueOf(OK));
+        String[] recipients = email.getRecipients();
+        for (String recipient : recipients) {
             doCommand("RCPT TO: " + recipient, String.valueOf(OK));
         }
         doCommand("DATA", String.valueOf(DATA));
-        doCommand(envelope.message.toString() + CRLF + ".", String.valueOf(OK));
+        doCommand(email.toString() + CRLF + ".", String.valueOf(OK));
         closeConnection();
     }
 }

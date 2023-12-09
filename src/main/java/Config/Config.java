@@ -16,8 +16,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 
-import Envelope.Envelope;
 import UI.UI;
+import Message.Message;
 
 public class Config {
     private Map<String, Object> filterMap = new HashMap<String, Object>();
@@ -55,10 +55,10 @@ public class Config {
         return data.split(", ");
     }
 
-    private JSONObject createFilter(Envelope envelope) throws IOException {
+    private JSONObject createFilter(Message message) throws IOException {
         String[] workKeywords = workKeywordsHandler();
         String[] spamKeywords = spamKeywordsHandler();
-        String[] recipients = envelope.recipients;
+        String[] recipients = message.getRecipients();
 
         ArrayList<String> from = new ArrayList<String>();
 
@@ -67,7 +67,7 @@ public class Config {
         }
         filterMap.put("Recipients", from);
 
-        String subject = envelope.subject;
+        String subject = message.getSubject();
         filterMap.put("Subject", subject);
 
         ArrayList<String> work = new ArrayList<String>();
@@ -102,8 +102,8 @@ public class Config {
         return general;
     }
 
-    public void writeConfig(UI UI, Envelope envelope) throws IOException {
-        JSONObject filter = createFilter(envelope);
+    public void writeConfig(UI UI, Message message) throws IOException {
+        JSONObject filter = createFilter(message);
         JSONObject general = createGeneral(UI);
 
         JSONObject namedFilter = new JSONObject();
@@ -116,7 +116,7 @@ public class Config {
         jsonArray.add(je);
         String prettyJson = gson.toJson(jsonArray);
 
-        try (FileWriter file = new FileWriter("src/main/java/config/Config.json")) {
+        try (FileWriter file = new FileWriter("src/main/java/Config/Config.json")) {
             file.write(prettyJson);
             file.flush();
         } catch (IOException e) {

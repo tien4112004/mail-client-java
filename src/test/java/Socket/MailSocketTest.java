@@ -3,8 +3,6 @@ package Socket;
 import org.junit.Before;
 import org.junit.Test;
 
-import Socket.MailSocket;
-
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 

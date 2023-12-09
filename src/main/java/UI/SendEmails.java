@@ -3,7 +3,6 @@ package UI;
 import java.io.IOException;
 import java.util.Scanner;
 
-import Envelope.Envelope;
 import Message.Message;
 import Socket.SMTPSocket;
 
@@ -57,12 +56,11 @@ public class SendEmails extends UI {
         compose();
         Message message = new Message(username, recipientsTo, recipientsCc, recipientsBcc, subject, content,
                 attachments);
-        Envelope envelope = new Envelope(message, "localhost");
         SMTPSocket smtpSocket = new SMTPSocket("localhost", 2225);
 
         try {
             smtpSocket.connect();
-            smtpSocket.sendEmail(envelope);
+            smtpSocket.sendEmail(message);
         } catch (Exception e) {
             // e.printStackTrace();
             System.out.println("Error: " + e.getMessage());
