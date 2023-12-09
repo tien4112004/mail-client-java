@@ -108,14 +108,22 @@ public class POP3Socket extends MailSocket {
     }
 
     // Multiple Lines Response
-    public String[] getMessagesID() throws IOException {
-        sendCommand("UIDL");
-        return getMultipleLinesResponse().split(CRLF);
-    }
-
     public String[] getHeaders() throws IOException {
         sendCommand("LIST");
         return getMultipleLinesResponse().split(CRLF);
+    }
+
+    public String[] getMessagesID() throws IOException {
+        sendCommand("UIDL");
+        String[] rawID = getMultipleLinesResponse().split(CRLF);
+
+        String[] messagesID = new String[rawID.length];
+        for (int i = 0; i < rawID.length; i++) {
+            if (rawID[i].length() > 2)
+                messagesID[i] = rawID[i].substring(2, 19);
+        }
+
+        return messagesID;
     }
 
     public String getMessage(String messageOrder) throws IOException {
