@@ -1,24 +1,23 @@
 package Config;
 
 import java.io.File;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.HashMap;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.io.FileNotFoundException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
 
 import org.json.simple.JSONObject;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 
-import UI.UI;
-import Editor.Editor;
 import Envelope.Envelope;
+import UI.UI;
 
 public class Config {
     private Map<String, Object> filterMap = new HashMap<String, Object>();
@@ -125,3 +124,4 @@ public class Config {
         }
     }
 }
+

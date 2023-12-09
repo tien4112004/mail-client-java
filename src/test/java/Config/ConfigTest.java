@@ -11,12 +11,11 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.nio.file.Files;
 
-import UI.UI;
 import Config.Config;
-// import Editor.Editor;
+import Editor.Editor;
 import Envelope.Envelope;
 
-public class ConfigTest {
+public class configTest {
   // @Test
   // public void testWorkKeywordsHandler() {
   // Config config = new Config();
@@ -46,10 +45,8 @@ public class ConfigTest {
     envelope.recipients = new String[] { "ltttin@fit.hcmus", "example@gmail.com", "pttien@fit.hcmus.edu.vn" };
     envelope.subject = "ASAP";
 
-    UI UI = new UI();
-    UI.username = "example@localhost";
-    UI.password = "123456";
-    config.writeConfig(UI, envelope);
+    Editor editor = new Editor();
+    config.writeConfig(editor, envelope);
     // check if the file is created
     boolean actual = Files.exists(Paths.get("src/main/java/Config/Config.json"));
     assertTrue(actual);
