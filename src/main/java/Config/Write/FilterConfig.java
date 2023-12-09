@@ -18,7 +18,7 @@ import com.google.gson.JsonElement;
 
 import UI.UI;
 import Editor.Editor;
-import Envelope.Envelope;
+import Message.Message;
 
 public class FilterConfig {
     private Map<String, Object> filterMap = new HashMap<String, Object>();
@@ -39,10 +39,10 @@ public class FilterConfig {
         return data.split(", ");
     }
 
-    private JSONObject createFilter(Envelope envelope) throws IOException {
+    private JSONObject createFilter(Message message) throws IOException {
         String[] workKeywords = keywordsHandler("src/main/java/Config/Work_Keywords.txt");
         String[] spamKeywords = keywordsHandler("src/main/java/Config/Spam_Keywords.txt");
-        String[] recipients = envelope.recipients;
+        String[] recipients = message.getRecipients();
 
         ArrayList<String> from = new ArrayList<String>();
 
@@ -51,7 +51,7 @@ public class FilterConfig {
         }
         filterMap.put("Recipients", from);
 
-        String subject = envelope.subject;
+        String subject = message.getSubject();
         filterMap.put("Subject", subject);
 
         ArrayList<String> work = new ArrayList<String>();
@@ -86,8 +86,8 @@ public class FilterConfig {
         return general;
     }
 
-    public void writeFilter(UI UI, Envelope envelope) throws IOException {
-        JSONObject filter = createFilter(envelope);
+    public void writeFilter(UI UI, Message message) throws IOException {
+        JSONObject filter = createFilter(message);
         JSONObject general = createGeneral(UI);
 
         JSONObject namedFilter = new JSONObject();

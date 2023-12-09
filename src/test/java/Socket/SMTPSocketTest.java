@@ -43,7 +43,7 @@ public class SMTPSocketTest {
         String content = "This is a test email";
         Message message = new Message(sender, recipientsTo, recipientsCc,
                 recipientsBcc, subject, content, new String[] {});
-        assertArrayEquals(new String[] { "lttin@fit.hcmus.edu.vn" },
+        assertArrayEquals(new String[] { "pttien@fit.hcmus.edu.vn", "example@localhost", "example@fit.hcmus.edu.vn" },
                 message.getRecipients());
         assertDoesNotThrow(() -> SMTPSocket.sendEmail(message));
     }

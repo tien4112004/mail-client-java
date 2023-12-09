@@ -5,14 +5,14 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import Config.Config;
+import scala.collection.mutable.StringBuilder;
 
 public class POP3Socket extends MailSocket {
     // STAT: Get number of messages and total size
     // LIST: Get size of message
+    // UIDL: Get the unique id of message
     // RETR: Get message
     // DELE: Delete message
-    // NOOP: No operation
-    // RSET: Reset
     // QUIT: Close connection
     private final String OK = "+OK";
     private final String ERR = "-ERR";
@@ -26,20 +26,25 @@ public class POP3Socket extends MailSocket {
     }
 
     // public POP3Socket() {
-    //     super("localhost", 2225);
-    //     // TODO:
-    //     username = Config.get("username");
-    //     password = Config.get("password");
+    // super("localhost", 2225);
+    // // TODO:
+    // username = Config.get("username");
+    // password = Config.get("password");
     // }
+
+    @Override
+    public String getResponse() throws IOException {
+        String response = fromServer.readLine();
+        return response;
+    }
 
     @Override
     protected boolean isConnected() throws IOException {
         String response = getResponse();
         return response.startsWith(OK);
     }
-    
-    @Override
-    public String getResponse() throws IOException{
+
+    public String getMultipleLinesResponse() throws IOException {
         ArrayList<String> lines = new ArrayList<String>();
         while (true) {
             String line = fromServer.readLine();
@@ -48,22 +53,19 @@ public class POP3Socket extends MailSocket {
                 throw new IOException("Server closed the connection");
             }
 
-            if (line.equals('.')) {
+            if (line.equals(".")) {
                 break;
             }
 
-            if (line.length() > 0 && line.charAt(0) == '.') {
+            if (line.length() > 0 && line.charAt(0) == '+') {
                 line = line.substring(1);
             }
 
             lines.add(line);
         }
 
-        String[] response = new String[lines.size()];
-        lines.toArray(response);
-        return response.toString();
+        return String.join(CRLF, lines);
     }
-
 
     @Override
     public boolean validateResponse(String response) throws IOException {
@@ -85,33 +87,40 @@ public class POP3Socket extends MailSocket {
         }
     }
 
+    // Single Line Response
     public void login() throws IOException {
-        doCommand("USER" + username, OK);
-        doCommand("PASS" + password, OK);
+        doCommand("USER " + username, OK);
+        doCommand("PASS " + password, OK);
     }
 
-    public int getMessageCount() throws IOException{
-        doCommand("STAT", OK);
+    public int getMessageCount() throws IOException {
+        sendCommand("STAT");
         String response = getResponse();
 
         int messageCount = Integer.parseInt(response.split(" ")[1]);
-        
+
         return messageCount;
     }
 
-    public String[] getHeaders() throws IOException {
-        doCommand("LIST", OK);
-        return getResponse().split(CRLF);
-    }
-
     public String getHeader(String messageOrder) throws IOException {
-        doCommand("LIST " + messageOrder, OK);
+        sendCommand("LIST " + messageOrder);
         return getResponse();
     }
 
-    public String getMessage(String messageOrder) throws IOException{
-        doCommand("RETR " + messageOrder, OK);
-        String[] messageLines = getResponse().split(CRLF);
+    // Multiple Lines Response
+    public String[] getMessagesID() throws IOException {
+        sendCommand("UIDL");
+        return getMultipleLinesResponse().split(CRLF);
+    }
+
+    public String[] getHeaders() throws IOException {
+        sendCommand("LIST");
+        return getMultipleLinesResponse().split(CRLF);
+    }
+
+    public String getMessage(String messageOrder) throws IOException {
+        sendCommand("RETR " + messageOrder);
+        String[] messageLines = getMultipleLinesResponse().split(CRLF);
         StringBuffer message = new StringBuffer();
         for (int i = 0; i < messageLines.length; i++) {
             message.append(messageLines[i]);
@@ -121,24 +130,16 @@ public class POP3Socket extends MailSocket {
         return new String(message);
     }
 
-    public void deleteMessage(String messageOrder) throws IOException{
-        doCommand("DEL" + messageOrder, OK);
-    } 
-
-    public String[] getMessageHead(String messageOrder) throws IOException{
-        doCommand("TOP " + messageOrder + " 1", OK);
-        return getResponse().split(CRLF);
+    public void deleteMessage(String messageOrder) throws IOException {
+        sendCommand("DEL" + messageOrder);
     }
 
-    public String getMessageID(String messageOrder) throws IOException{
-        doCommand("UIDL " + messageOrder, OK);
-        String response = getResponse();
-
-        return response;
+    public String[] getMessageHead(String messageOrder) throws IOException {
+        sendCommand("TOP " + messageOrder + " 1");
+        return getMultipleLinesResponse().split(CRLF);
     }
 
-
-    public void quit() throws IOException{
+    public void quit() throws IOException {
         doCommand("QUIT", OK);
     }
 }
