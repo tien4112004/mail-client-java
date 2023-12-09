@@ -12,10 +12,10 @@ import java.nio.file.Paths;
 import java.nio.file.Files;
 
 import Config.Config;
-// import Editor.Editor;
+import UI.UI;
 import Message.Message;
 
-public class configTest {
+public class ConfigTest {
   // @Test
   // public void testWorkKeywordsHandler() {
   // Config config = new Config();
@@ -49,7 +49,6 @@ public class configTest {
     String[] attachments = {};
 
     Message message = new Message(sender, recipientsTo, recipientsCc, recipientsBcc, subject, content, attachments);
-
 
     UI UI = new UI();
     UI.username = "example@localhost";

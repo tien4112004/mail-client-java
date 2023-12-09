@@ -2,17 +2,8 @@
   {
     "Filter": {
       "Work": [
-        "report",
-        "meeting",
-        "virus",
-        "hack",
-        "crack",
-        "virus",
-        "hack",
-        "crack",
-        "virus",
-        "hack",
-        "crack"
+        "",
+        ""
       ],
       "Recipients": [
         "recipientTo1@localhost",
@@ -24,15 +15,7 @@
       ],
       "Subject": "Test Email",
       "Spam": [
-        "virus",
-        "hack",
-        "crack",
-        "virus",
-        "hack",
-        "crack",
-        "virus",
-        "hack",
-        "crack"
+        ""
       ]
     },
     "General": {
