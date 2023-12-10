@@ -3,6 +3,7 @@ package Filter;
 import Message.Message;
 import Message.MessageParser;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -71,5 +72,23 @@ public class Mailbox {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static void moveMailToFolder(String from, String to) {
+        File fromFile = new File(from);
+        if (!fromFile.exists()) {
+            System.out.println("[LOG][moveMailToFolder] File does not exist.");
+            return;
+        }
+        File toFile = new File(to);
+        if (!toFile.exists()) {
+            toFile.mkdirs();
+        }
+        fromFile.renameTo(new File(to + "/" + fromFile.getName()));
+        fromFile.delete();
+    }
+
+    public static void moveMailToFolder(Mailbox from, Mailbox to) {
+        moveMailToFolder(from.directory.toString(), to.directory.toString());
     }
 }
