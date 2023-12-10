@@ -46,8 +46,10 @@ public class POP3Socket extends MailSocket {
 
     public String getMultipleLinesResponse() throws IOException {
         ArrayList<String> lines = new ArrayList<String>();
+        String line = fromServer.readLine();
+
         while (true) {
-            String line = fromServer.readLine();
+            line = fromServer.readLine();
 
             if (line == null) {
                 throw new IOException("Server closed the connection");
@@ -115,13 +117,6 @@ public class POP3Socket extends MailSocket {
 
     public String[] getMessagesID() throws IOException {
         sendCommand("UIDL");
-
-        try { 
-            Thread.sleep(1000);  // Wait for 1 second
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         String[] rawID = getMultipleLinesResponse().split(CRLF);
 
         String[] messagesID = new String[rawID.length];
@@ -137,12 +132,11 @@ public class POP3Socket extends MailSocket {
         sendCommand("RETR " + messageOrder);
         String[] messageLines = getMultipleLinesResponse().split(CRLF);
         StringBuffer message = new StringBuffer();
-        for (int i = 1; i < messageLines.length; i++) {
+        for (int i = 0; i < messageLines.length; i++) {
             message.append(messageLines[i]);
             message.append(CRLF);
         }
-
-        return new String(message);
+        return message.toString();
     }
 
     public void deleteMessage(String messageOrder) throws IOException {
