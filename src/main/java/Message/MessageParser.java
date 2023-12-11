@@ -19,6 +19,7 @@ public class MessageParser {
     private static final String CONTENT_TRANSFER_ENCODING = "Content-Transfer-Encoding: 7bit";
     private static final String CONTENT_DISPOSITION = "Content-Disposition: attachment; filename=\"%s\"";
     private static final String CONTENT_TRANSFER_ENCODING_BASE64 = "Content-Transfer-Encoding: base64";
+    private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
     private String sender;
     private String[] recipientsTo;
@@ -87,7 +88,7 @@ public class MessageParser {
             if (!isContent)
                 continue;
 
-            if (bodyLines[i].startsWith("Content-Transfer-Encoding: 7bit")) {
+            if (bodyLines[i].startsWith(CONTENT_TRANSFER_ENCODING)) {
                 parseContent(bodyLines[i], i + 2, bodyLines);
                 i += countLinesUntilBoundary(i + 2, bodyLines); // Skip lines of the current content
             } else if (bodyLines[i].startsWith("Content-Disposition: ")) {
@@ -172,5 +173,10 @@ public class MessageParser {
 
     public String getContent() {
         return content;
+    }
+
+    public Message createMessage() {
+        Message message = new Message(sender, recipientsTo, recipientsCc, EMPTY_STRING_ARRAY, subject, content);
+        return message;
     }
 }
