@@ -40,7 +40,7 @@ public abstract class MailSocket {
 
     protected abstract boolean isConnected() throws IOException;
 
-    protected abstract void doCommand(String command, String expectedReturnCode) throws IOException;
+    protected abstract String doCommand(String command, String expectedReturnCode) throws IOException;
 
     public void sendCommand(String command) throws IOException {
         System.out.println("[CLIENT] " + command);
