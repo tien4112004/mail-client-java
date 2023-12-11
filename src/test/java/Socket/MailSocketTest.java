@@ -58,11 +58,11 @@ public class MailSocketTest {
         }
 
         @Override
-        protected void doCommand(String command, String expectedReturnCode) throws IOException {
+        protected String doCommand(String command, String expectedReturnCode) throws IOException {
             if (!expectedReturnCode.equals(expectedReturnCode)) {
                 throw new IOException("Command failed");
             }
-            return;
+            return "";
         }
     }
 }
