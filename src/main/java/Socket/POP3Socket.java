@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-import Config.Config;
+// import Config.Config;
 import scala.collection.mutable.StringBuilder;
 
 public class POP3Socket extends MailSocket {
