@@ -3,6 +3,8 @@ package Config;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestTemplate;
 
+import JSON.Config;
+
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -12,7 +14,6 @@ import java.nio.file.Paths;
 import java.nio.file.Files;
 
 import UI.UI;
-import Config.Config;
 // import Editor.Editor;
 import Message.Message;
 
@@ -50,7 +51,6 @@ public class ConfigTest {
     String[] attachments = {};
 
     Message message = new Message(sender, recipientsTo, recipientsCc, recipientsBcc, subject, content, attachments);
-
 
     UI UI = new UI();
     UI.username = "example@localhost";

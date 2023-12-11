@@ -1,4 +1,4 @@
-package Config;
+package JSON;
 
 import java.io.File;
 import java.util.Map;
