@@ -18,9 +18,9 @@ public class MessageStatus {
 
     private String[] messagesID;
     private int numbersOfMessage;
+    private POP3Socket pop3Socket = new POP3Socket("localhost", 3335, "example@localhost", "123");
 
     public MessageStatus() throws IOException {
-        POP3Socket pop3Socket = new POP3Socket("localhost", 3335, "example@localhost", "123");
         pop3Socket.connect();
         pop3Socket.login();
         numbersOfMessage = pop3Socket.getMessageCount();
@@ -36,7 +36,7 @@ public class MessageStatus {
         return obj;
     }
 
-    public void writeJSON() {
+    public void writeJSON() throws IOException {
         JSONObject status = new JSONObject();
         status.put("Status", createJSONObject());
 
@@ -46,11 +46,13 @@ public class MessageStatus {
         jsonArray.add(je);
         String prettyJson = gson.toJson(jsonArray);
 
-        try (FileWriter file = new FileWriter("src/main/java/Config/MessageStatus.json")) {
+        try (FileWriter file = new FileWriter("src/main/java/JSON/MessageStatus.json")) {
             file.write(prettyJson);
             file.flush();
         } catch (IOException e) {
             System.out.println(e);
         }
+
+        pop3Socket.quit();
     }
 }

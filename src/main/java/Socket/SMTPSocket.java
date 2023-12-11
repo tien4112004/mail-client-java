@@ -24,13 +24,14 @@ public class SMTPSocket extends MailSocket {
     }
 
     @Override
-    public void doCommand(String command, String expectedReturnCode) throws IOException {
+    public String doCommand(String command, String expectedReturnCode) throws IOException {
         sendCommand(command);
         String response = getResponse();
         if (!parseReplyCode(response).equals(expectedReturnCode)) {
             System.out.println("[ERROR][SMTPSocket] Unexpected return code: " + parseReplyCode(response));
             throw new IOException("Unexpected return code: " + parseReplyCode(response));
         }
+        return response;
     }
 
     @Override

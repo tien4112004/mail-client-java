@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-import JSON.Config;
+// import Config.Config;
 import scala.collection.mutable.StringBuilder;
 
 public class POP3Socket extends MailSocket {
@@ -44,17 +44,39 @@ public class POP3Socket extends MailSocket {
         return response.startsWith(OK);
     }
 
+    // public String getMultipleLinesResponse() throws IOException {
+    // ArrayList<String> lines = new ArrayList<String>();
+    // String line = fromServer.readLine();
+
+    // while (true && line.equals(".")) {
+    // line = fromServer.readLine();
+    // System.out.println(line);
+    // if (line == null) {
+    // throw new IOException("Server closed the connection");
+    // }
+
+    // // if (line.equals(".")) {
+    // // break;
+    // // }
+
+    // if (line.length() > 0 && line.charAt(0) == '+') {
+    // line = line.substring(1);
+    // }
+
+    // lines.add(line);
+    // }
+
+    // return String.join(CRLF, lines);
+    // }
+
     public String getMultipleLinesResponse() throws IOException {
         ArrayList<String> lines = new ArrayList<String>();
-        while (true) {
-            String line = fromServer.readLine();
+        String line = fromServer.readLine();
 
+        while (!line.equals(".")) {
+            System.out.println(line);
             if (line == null) {
                 throw new IOException("Server closed the connection");
-            }
-
-            if (line.equals(".")) {
-                break;
             }
 
             if (line.length() > 0 && line.charAt(0) == '+') {
@@ -62,6 +84,8 @@ public class POP3Socket extends MailSocket {
             }
 
             lines.add(line);
+
+            line = fromServer.readLine();
         }
 
         return String.join(CRLF, lines);
@@ -78,16 +102,20 @@ public class POP3Socket extends MailSocket {
     }
 
     @Override
-    public void doCommand(String command, String expectedReturnCode) throws IOException {
+    public String doCommand(String command, String expectedReturnCode) throws IOException {
         sendCommand(command);
         String response = getResponse();
+        if (!response.startsWith(ERR) && (command.startsWith("LIST") || command.startsWith("RETR"))) {
+            response = getMultipleLinesResponse();
+        }
+
         if (response.startsWith(ERR)) {
             System.out.println("[ERROR][POP3Socket] Unexpected return code: " + response);
             throw new IOException("Unexpected return code: " + response);
         }
+        return response;
     }
 
-    // Single Line Response
     public void login() throws IOException {
         doCommand("USER " + username, OK);
         doCommand("PASS " + password, OK);
@@ -96,8 +124,7 @@ public class POP3Socket extends MailSocket {
     public int getMessageCount() throws IOException {
         sendCommand("STAT");
         String response = getResponse();
-        // messOrder + " " + ID + ".msg"
-        // take ID
+
         int messageCount = Integer.parseInt(response.split(" ")[1]);
 
         return messageCount;
@@ -108,36 +135,39 @@ public class POP3Socket extends MailSocket {
         return getResponse();
     }
 
-    // Multiple Lines Response
-    public String[] getMessagesID() throws IOException {
-        sendCommand("UIDL");
-        return getMultipleLinesResponse().split(CRLF);
-    }
-
     public String[] getHeaders() throws IOException {
         sendCommand("LIST");
         return getMultipleLinesResponse().split(CRLF);
     }
 
-    public String getMessage(String messageOrder) throws IOException {
-        sendCommand("RETR " + messageOrder);
-        String[] messageLines = getMultipleLinesResponse().split(CRLF);
-        StringBuffer message = new StringBuffer();
-        for (int i = 0; i < messageLines.length; i++) {
-            message.append(messageLines[i]);
-            message.append(CRLF);
+    public String[] getMessagesID() throws IOException {
+        doCommand("UIDL", OK);
+        String[] rawID = getMultipleLinesResponse().split(CRLF);
+
+        String[] messagesID = new String[rawID.length];
+        for (int i = 0; i < rawID.length; i++) {
+            if (rawID[i].length() > 2) {
+                int beginIndex = rawID[i].indexOf(" ") + 1;
+                int endIndex = rawID[i].length() - 4;
+                messagesID[i] = rawID[i].substring(beginIndex, endIndex);
+            }
         }
 
-        return new String(message);
+        return messagesID;
+    }
+
+    public String retrieveMessage(String messageOrder) throws IOException {
+        String message = doCommand("RETR " + messageOrder, OK);
+        return message.toString();
     }
 
     public void deleteMessage(String messageOrder) throws IOException {
-        sendCommand("DEL" + messageOrder);
+        doCommand("DEL" + messageOrder, OK);
     }
 
     public String[] getMessageHead(String messageOrder) throws IOException {
-        sendCommand("TOP " + messageOrder + " 1");
-        return getMultipleLinesResponse().split(CRLF);
+        String header = doCommand("TOP " + messageOrder + " 1", OK);
+        return header.split(CRLF);
     }
 
     public void quit() throws IOException {

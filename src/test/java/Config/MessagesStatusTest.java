@@ -16,7 +16,7 @@ public class MessagesStatusTest {
         MessageStatus msg = new MessageStatus();
         msg.writeJSON();
 
-        Path filePath = Paths.get("src/main/java/Config/MessageStatus.json");
+        Path filePath = Paths.get("src/main/java/JSON/MessageStatus.json");
         boolean actual = Files.exists(filePath);
         assertTrue(actual);
     }

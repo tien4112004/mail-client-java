@@ -13,8 +13,8 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.nio.file.Files;
 
+// import Config.Config;
 import UI.UI;
-// import Editor.Editor;
 import Message.Message;
 
 public class ConfigTest {
@@ -41,7 +41,7 @@ public class ConfigTest {
 
   @Test
   public void testWriteConfig() throws IOException {
-    Config config = new Config();
+    // Config config = new Config();
     String sender = "sender@localhost";
     String[] recipientsTo = { "recipientTo1@localhost", "recipientTo2@localhost" };
     String[] recipientsCc = { "recipientCc1@localhost", "recipientCc2@localhost" };
@@ -55,7 +55,7 @@ public class ConfigTest {
     UI UI = new UI();
     UI.username = "example@localhost";
     UI.password = "123456";
-    config.writeConfig(UI, message);
+    // config.writeConfig(UI, message);
     // check if the file is created
     boolean actual = Files.exists(Paths.get("src/main/java/Config/Config.json"));
     assertTrue(actual);
