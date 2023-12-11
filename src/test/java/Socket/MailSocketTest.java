@@ -3,8 +3,6 @@ package Socket;
 import org.junit.Before;
 import org.junit.Test;
 
-import Socket.MailSocket;
-
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
@@ -60,11 +58,11 @@ public class MailSocketTest {
         }
 
         @Override
-        protected void doCommand(String command, String expectedReturnCode) throws IOException {
+        protected String doCommand(String command, String expectedReturnCode) throws IOException {
             if (!expectedReturnCode.equals(expectedReturnCode)) {
                 throw new IOException("Command failed");
             }
-            return;
+            return "";
         }
     }
 }
