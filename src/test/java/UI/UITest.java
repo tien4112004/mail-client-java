@@ -4,7 +4,7 @@
 
 // public class UITest {
 //     @Test
-//     public void test() throws Exception {
+//     public void test(String[] args) throws Exception {
 //         UI UI = new UI();
 //         UI.start();
 //     }
