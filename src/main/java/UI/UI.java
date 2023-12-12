@@ -13,9 +13,8 @@ import java.util.Scanner;
 // import UI.SendFunction;
 
 public class UI {
-    // private static Message message;
-    public String username; // TODO: get this from JSON
-    public String password;
+    public String username = new GetUserLoginInfomation().getUsername(); // TODO: get this from JSON
+    public String password = new GetUserLoginInfomation().getPassword();
 
     protected Scanner readConsole;
 
@@ -26,20 +25,6 @@ public class UI {
     protected void clearConsole() {
         System.out.print("\033[H\033[2J");
     }
-
-    // private void login() {
-    // System.out.println("Welcome to our email client!");
-    // System.out.println("Please input your username and password to login");
-    // System.out.print("Username: ");
-    // username = readConsole.nextLine();
-    // System.out.print("Password: ");
-    // password = readConsole.nextLine();
-    // // Check if username and password have already in JSON file, if not then
-    // write
-    // // to JSON file, else check if matche with JSON file
-    // // clear console
-    // clearConsole();
-    // }
 
     protected void showOption() throws IOException {
         System.out.println("Menu: ");
@@ -56,15 +41,19 @@ public class UI {
             case 2:
                 // new ListEmails().list();
                 break;
+            case 3:
+                System.exit(0);
+                break;
             default:
+                System.out.println("Invalid option! Aborting...");
                 System.exit(0);
         }
     }
 
     // This start the UI in console
     public void start() throws IOException {
-        // login();
-        showOption();
+        while (true)
+            showOption();
     }
 
     // public static void main(String[] args) throws IOException {
