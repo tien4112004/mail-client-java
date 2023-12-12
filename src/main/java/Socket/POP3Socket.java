@@ -191,7 +191,7 @@ public class POP3Socket extends MailSocket {
         {      
             message = doCommand("RETR " + messageOrder, OK);
         }
-        return message.toString();
+        return message;
     }
 
     public void deleteMessage(String messageOrder) throws IOException {
