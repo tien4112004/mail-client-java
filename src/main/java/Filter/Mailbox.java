@@ -91,4 +91,12 @@ public class Mailbox {
     public static void moveMail(Mailbox from, Mailbox to) {
         moveMailToFolder(from.directory.toString(), to.directory.toString());
     }
+
+    public Path getMailboxDirectory() {
+        return this.directory;
+    }
+
+    public String getMailboxName() {
+        return this.name;
+    }
 }

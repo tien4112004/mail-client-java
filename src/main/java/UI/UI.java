@@ -39,7 +39,7 @@ public class UI {
                 new SendEmails().send();
                 break;
             case 2:
-                new ListEmails().list();
+                // new ListEmails().list();
                 break;
             case 3:
                 System.exit(0);
