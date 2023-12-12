@@ -3,6 +3,7 @@ package UI;
 import Filter.Mailbox;
 import Filter.Mailbox.*;
 import Message.MessageParser;
+import UI.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,14 +16,18 @@ import java.util.stream.Stream;
 import java.io.IOException;
 
 public class ListEmails extends UI {
+    private final int PAGE_SIZE = 10; // Number of emails per page
+    private final String FROM = formatString("From", 20);
+    private final String SUBJECT = formatString("Subject", 30);
+    private final String DATE = formatString("Date", 10);
+    private final String ATTACHMENT = formatString("Attachment", 10);
+    private final String SHORT_DATE_DISPLAY_FORMAT = "dd/MM/yyyy";
+    private final String PART_SPLITER = "========================================================================================\n";
+    private final String CLEAR_CONSOLE = "\033[H\033[2J";
+    private final String ANSI_RED = "\u001B[31m";
+    private final String ANSI_RESET = "\u001B[0m";
+
     protected void list(Mailbox mailbox) throws IOException {
-        final int PAGE_SIZE = 10; // Number of emails per page
-        final String FROM = formatString("From", 20);
-        final String SUBJECT = formatString("Subject", 30);
-        final String DATE = formatString("Date", 10);
-        final String ATTACHMENT = formatString("Attachment", 10);
-        final String SHORT_DATE_DISPLAY_FORMAT = "dd/MM/yyyy";
-        final String PART_SPLITER = "========================================================================================\n";
 
         // keys constant
         final String LEFT_ARROW = "<";
@@ -39,7 +44,7 @@ public class ListEmails extends UI {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
-            System.out.print("\033[H\033[2J");
+            System.out.print(CLEAR_CONSOLE);
             System.out.printf("List of emails from %s: Page %d/%d\n", mailbox.getMailboxName(), currentPage + 1,
                     result.size() / PAGE_SIZE + 1);
             System.out.print(PART_SPLITER);
@@ -51,7 +56,7 @@ public class ListEmails extends UI {
             for (int i = start; i < end; i++) {
                 String rawMessage = new String(Files.readAllBytes(Paths.get(result.get(i))));
                 MessageParser parser = new MessageParser();
-                parser.parse(rawMessage);
+                parser.quickParse(rawMessage);
                 String readStatus = "*";
                 String sender = parser.getSender();
                 sender = formatString(sender, 20);
@@ -66,6 +71,8 @@ public class ListEmails extends UI {
 
             System.out.println(
                     "\n[<] Previous page \t [>] Next page \t [#] Read #-th email \t [Q] Quit");
+            System.out.println(
+                    "\n[D] Delete mail \t [M] Move to other mailbox");
             String input = scanner.nextLine();
 
             // left arrow to go to previous page amd right arrow to go to next page
@@ -79,18 +86,45 @@ public class ListEmails extends UI {
                 if (currentPage < result.size() / PAGE_SIZE) {
                     currentPage++;
                 }
+            } else if (input.equals("D")) {
+                deleteEmailHandler(scanner, result, currentPage);
+            } else if (input.equals("M")) {
+                System.out.print("Email to move: ");
+                String userInput = scanner.nextLine();
+                String emailDirectory = result.get(currentPage * PAGE_SIZE + Integer.parseInt(userInput));
+                System.out.print("Destination mailbox:");
+                String destination = scanner.nextLine();
+                Mailbox.moveMailToFolder(emailDirectory, destination);
+                result.remove(currentPage * PAGE_SIZE + Integer.parseInt(userInput));
             } else {
+                ShowEmail.showEmail(result.get(currentPage * PAGE_SIZE + Integer.parseInt(input)));
+                String userInput = scanner.nextLine();
+                ShowEmail.handleUserInput(userInput);
             }
         }
+        scanner.close();
     }
 
-    String formatString(String original, int length) {
+    private String formatString(String original, int length) {
         if (original == null)
             return formatString("null", length);
         if (original.length() > length) {
             return original.substring(0, length - 3) + "...";
         }
         return original.format("%-" + length + "." + length + "s", original);
+    }
+
+    private void deleteEmailHandler(Scanner scanner, List<String> result, int currentPage) {
+        System.out.println("Delete which email?");
+        String userInput = scanner.nextLine();
+        Path emailPath = Paths.get(result.get(currentPage * PAGE_SIZE + Integer.parseInt(userInput)));
+        try {
+            Files.delete(emailPath);
+        } catch (IOException e) {
+            System.out.println(ANSI_RED + "[ERROR] Error in deleting email." + ANSI_RESET);
+            e.printStackTrace();
+        }
+        result.remove(currentPage * PAGE_SIZE + Integer.parseInt(userInput));
     }
 
     public static void main(String[] args) throws IOException {
