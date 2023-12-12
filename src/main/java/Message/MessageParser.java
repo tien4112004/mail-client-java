@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MessageParser {
     private static final String CRLF = "\r\n";
@@ -19,6 +21,8 @@ public class MessageParser {
     private static final String CONTENT_DISPOSITION = "Content-Disposition: attachment; filename=\"%s\"";
     private static final String CONTENT_TRANSFER_ENCODING_BASE64 = "Content-Transfer-Encoding: base64";
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
+    private static final String ANSI_GREEN = "\u001B[32m";
+    private static final String ANSI_RESET = "\u001B[0m";
 
     private String sender;
     private String date;
@@ -29,6 +33,7 @@ public class MessageParser {
     private String content;
     private String body;
     private String header;
+    List<String> attachmentDirectories = new ArrayList<String>();
 
     public MessageParser() {
         // do nothing
@@ -84,7 +89,7 @@ public class MessageParser {
         }
     }
 
-    private void parseMultipartBody() {
+    private void parseMultipartBody(String saveDirectory) {
         String[] bodyLines = body.split(CRLF);
         boolean isContent = false;
         for (int i = 0; i < bodyLines.length; i++) {
@@ -103,10 +108,14 @@ public class MessageParser {
                 parseContent(bodyLines[i], i + 2, bodyLines);
                 i += countLinesUntilBoundary(i + 2, bodyLines); // Skip lines of the current content
             } else if (bodyLines[i].startsWith("Content-Disposition: ")) {
-                parseFile(bodyLines[i], i + 3, bodyLines, "./attachments/write/");
+                parseFile(bodyLines[i], i + 3, bodyLines, saveDirectory);
                 i += countLinesUntilBoundary(i + 3, bodyLines); // Skip lines of the current file
             }
         }
+    }
+
+    private void parseMultipartBody() {
+        parseMultipartBody("./write/attachments/");
     }
 
     private int countLinesUntilBoundary(int startIndex, String[] bodyLines) {
@@ -134,6 +143,7 @@ public class MessageParser {
             String encodedFileContent = joinLinesUntilBoundary(startIndex, bodyLines);
             byte[] fileContent = Base64.getDecoder().decode(encodedFileContent);
             saveAttachment(fileName, fileContent, saveDirectory);
+            attachmentDirectories.add(saveDirectory + fileName);
         }
     }
 
@@ -156,7 +166,7 @@ public class MessageParser {
 
             Path filePath = directoryPath.resolve(fileName);
             Files.write(filePath, fileContent);
-            System.out.println(String.format("Saved attachment \"%s\".", fileName));
+            System.out.println(String.format("%sSaved attachment \"%s\".%s", ANSI_GREEN, fileName, ANSI_RESET));
         } catch (Exception e) {
             System.out.println(String.format(ERROR_CANNOT_WRITE_FILE, e.getMessage()));
         }
@@ -184,6 +194,10 @@ public class MessageParser {
 
     public String getContent() {
         return content;
+    }
+
+    public String[] getAttachmentDirectories() {
+        return attachmentDirectories.toArray(new String[attachmentDirectories.size()]);
     }
 
     public Message createMessage() {

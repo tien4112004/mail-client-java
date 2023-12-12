@@ -88,6 +88,10 @@ public class Mailbox {
         fromFile.delete();
     }
 
+    public static void moveMailToMailbox(String from, Mailbox to) {
+        moveMailToFolder(from, to.directory.toString());
+    }
+
     public static void moveMail(Mailbox from, Mailbox to) {
         moveMailToFolder(from.directory.toString(), to.directory.toString());
     }
