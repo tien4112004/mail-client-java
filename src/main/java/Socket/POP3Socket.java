@@ -168,11 +168,11 @@ public class POP3Socket extends MailSocket {
         return messagesID;
     }
 
-    public boolean exist(String messsageOrder)  throws IOException{
-        String messageID = getMessagesID()[Integer.parseInt(messsageOrder)-1];
+    public boolean exist(int messsageOrder)  throws IOException{
+        String messageID = getMessagesID()[messsageOrder];
         boolean isExist = false;        
         try {
-            JSONArray messageList = (JSONArray) parser.parse(new FileReader("src/main/java/JSON/MessageStatus"));
+            JSONArray messageList = (JSONArray) parser.parse(new FileReader("src/main/java/JSON/MessageStatus.json"));
             isExist = messageList.contains(messageID);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -185,7 +185,7 @@ public class POP3Socket extends MailSocket {
     }
 
     public String retrieveMessage(String messageOrder) throws IOException {
-        boolean isExist = exist(messageOrder);  
+        boolean isExist = exist(Integer.parseInt(messageOrder)-1);  
         String message = "retrieved";
         if (isExist)
         {      

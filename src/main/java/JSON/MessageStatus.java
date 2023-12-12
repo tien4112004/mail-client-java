@@ -32,7 +32,7 @@ public class MessageStatus {
         boolean status = false;
 
         for (int i = 0; i < numbersOfMessage; i++)
-            if (!pop3Socket.exist(Integer.toString(i)))
+            if (!pop3Socket.exist(i))
                 obj.put(messagesID[i], status);
         return obj;
     }
