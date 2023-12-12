@@ -2,19 +2,18 @@ package Message;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Date;
+import java.text.ParseException;
 
 public class MessageParser {
     private static final String CRLF = "\r\n";
-    private static final String DEFAULT_CHARSET = "UTF-8";
-    private static final String ERROR_RECIPIENT_EMPTY = "[ERROR][Message] Recipients cannot be empty.";
     private static final String ERROR_FILE_NOT_FOUND = "[ERROR][Message] File \"%s\" not found.";
     private static final String ERROR_CANNOT_WRITE_FILE = "[ERROR][Message] Cannot write file \"%s\".";
-    private static final String MIME_VERSION = "MIME-Version: 1.0";
-    private static final String USER_AGENT = "User-Agent: "; // Add User-Agent's name here
-    private static final String CONTENT_LANGUAGE = "Content-Language: en-US";
+    private static final String DEFAULT_DATE_FORMAT = "EEE, d MMM yyyy HH:mm:ss Z";
     private static final String CONTENT_TYPE_TEXT = "Content-Type: text/plain; charset=UTF-8; format=flowed";
     private static final String CONTENT_TRANSFER_ENCODING = "Content-Transfer-Encoding: 7bit";
     private static final String CONTENT_DISPOSITION = "Content-Disposition: attachment; filename=\"%s\"";
@@ -22,6 +21,7 @@ public class MessageParser {
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
     private String sender;
+    private String date;
     private String[] recipientsTo;
     private String[] recipientsCc;
     private String subject;
@@ -44,6 +44,15 @@ public class MessageParser {
         } else {
             content = body;
         }
+    }
+
+    public void quickParse(String rawMessage) {
+        String[] lines = rawMessage.split(CRLF);
+        parseHeader(lines);
+    }
+
+    public boolean hasAttachment() {
+        return contentType != null && contentType.startsWith("multipart/mixed");
     }
 
     protected int parseHeader(String[] lines) {
@@ -70,6 +79,8 @@ public class MessageParser {
             subject = line.substring(9).trim();
         } else if (line.startsWith("Content-Type: ")) {
             contentType = line.substring(14).trim();
+        } else if (line.startsWith("Date: ")) {
+            date = line.substring(6).trim();
         }
     }
 
@@ -178,5 +189,21 @@ public class MessageParser {
     public Message createMessage() {
         Message message = new Message(sender, recipientsTo, recipientsCc, EMPTY_STRING_ARRAY, subject, content);
         return message;
+    }
+
+    public String getDate(String format) {
+        return formatDate(this.date, DEFAULT_DATE_FORMAT, format);
+    }
+
+    public String formatDate(String originalDate, String originalFormat, String targetFormat) {
+        SimpleDateFormat originalDateFormat = new SimpleDateFormat(originalFormat);
+        SimpleDateFormat targetDateFormat = new SimpleDateFormat(targetFormat);
+        try {
+            Date date = originalDateFormat.parse(originalDate);
+            return targetDateFormat.format(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
