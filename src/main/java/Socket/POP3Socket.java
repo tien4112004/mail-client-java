@@ -1,10 +1,19 @@
 package Socket;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.io.FileReader;
+import java.lang.reflect.Array;
+import java.io.FileNotFoundException;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;  
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 
 // import Config.Config;
+import JSON.MessageStatus;
 import scala.collection.mutable.StringBuilder;
 
 public class POP3Socket extends MailSocket {
@@ -18,6 +27,9 @@ public class POP3Socket extends MailSocket {
     private final String ERR = "-ERR";
     private final String username;
     private final String password;
+
+    private MessageStatus msgStatus;
+    private JSONParser parser = new JSONParser();
 
     public POP3Socket(String server, int port, String username, String password) {
         super(server, port);
@@ -156,8 +168,29 @@ public class POP3Socket extends MailSocket {
         return messagesID;
     }
 
+    public boolean exist(String messsageOrder)  throws IOException{
+        String messageID = getMessagesID()[Integer.parseInt(messsageOrder)-1];
+        boolean isExist = false;        
+        try {
+            JSONArray messageList = (JSONArray) parser.parse(new FileReader("src/main/java/JSON/MessageStatus"));
+            isExist = messageList.contains(messageID);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return isExist;
+    }
+
     public String retrieveMessage(String messageOrder) throws IOException {
-        String message = doCommand("RETR " + messageOrder, OK);
+        boolean isExist = exist(messageOrder);  
+        String message = "retrieved";
+        if (isExist)
+        {      
+            message = doCommand("RETR " + messageOrder, OK);
+        }
         return message.toString();
     }
 

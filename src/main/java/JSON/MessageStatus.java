@@ -27,12 +27,13 @@ public class MessageStatus {
         messagesID = pop3Socket.getMessagesID();
     }
 
-    private JSONObject createJSONObject() {
+    private JSONObject createJSONObject() throws IOException{
         JSONObject obj = new JSONObject();
         boolean status = false;
 
         for (int i = 0; i < numbersOfMessage; i++)
-            obj.put(messagesID[i], status);
+            if (!pop3Socket.exist(Integer.toString(i)))
+                obj.put(messagesID[i], status);
         return obj;
     }
 

@@ -54,7 +54,7 @@ public class UI {
                 new SendEmails().send();
                 break;
             case 2:
-                new ListEmails().list();
+                // new ListEmails().list();
                 break;
             default:
                 System.exit(0);
@@ -68,8 +68,8 @@ public class UI {
     }
 
     // public static void main(String[] args) throws IOException {
-    //     UI ui = new UI();
-    //     ui.start();
+    // UI ui = new UI();
+    // ui.start();
     // }
 
     // private boolean verifyEmail(String email) {
