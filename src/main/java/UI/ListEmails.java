@@ -1,9 +1,7 @@
 package UI;
 
 import Filter.Mailbox;
-import Filter.Mailbox.*;
 import Message.MessageParser;
-import UI.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,7 +10,6 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.io.IOException;
 
 public class ListEmails extends UI {
@@ -23,13 +20,8 @@ public class ListEmails extends UI {
     private final String ATTACHMENT = formatString("Attachment", 10);
     private final String SHORT_DATE_DISPLAY_FORMAT = "dd/MM/yyyy";
     private final String PART_SPLITER = "========================================================================================\n";
-    private final String CLEAR_CONSOLE = "\033[H\033[2J";
-    private final String ANSI_RED = "\u001B[31m";
-    private final String ANSI_RESET = "\u001B[0m";
 
     protected void list(Mailbox mailbox) throws IOException {
-
-        // keys constant
         final String LEFT_ARROW = "<";
         final String RIGHT_ARROW = ">";
         final String QUIT = "Q";
@@ -44,7 +36,7 @@ public class ListEmails extends UI {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
-            System.out.print(CLEAR_CONSOLE);
+            clearConsole();
             System.out.printf("List of emails from %s: Page %d/%d\n", mailbox.getMailboxName(), currentPage + 1,
                     result.size() / PAGE_SIZE + 1);
             System.out.print(PART_SPLITER);
@@ -97,14 +89,18 @@ public class ListEmails extends UI {
                 System.out.print("Email to move: ");
                 String userInput = scanner.nextLine();
                 String emailDirectory = result.get(currentPage * PAGE_SIZE + Integer.parseInt(userInput));
-                System.out.print("Destination mailbox:");
+                System.out.print("Destination mailbox: ");
                 String destination = scanner.nextLine();
                 Mailbox.moveMailToFolder(emailDirectory, destination);
-                result.remove(currentPage * PAGE_SIZE + Integer.parseInt(userInput));
+                int mailOrder = currentPage * PAGE_SIZE + Integer.parseInt(userInput);
+                result.remove(mailOrder);
             } else {
-                ShowEmail.showEmail(result.get(currentPage * PAGE_SIZE + Integer.parseInt(input)));
+                int mailOrder = currentPage * PAGE_SIZE + Integer.parseInt(input);
+                ViewEmail emailViewer = new ViewEmail(result.get(currentPage * PAGE_SIZE + Integer.parseInt(input)),
+                        result, mailOrder);
+                emailViewer.showEmail();
                 String userInput = scanner.nextLine();
-                ShowEmail.handleUserInput(userInput);
+                emailViewer.handleUserInput(userInput);
             }
         }
     }
@@ -125,7 +121,7 @@ public class ListEmails extends UI {
         try {
             Files.delete(emailPath);
         } catch (IOException e) {
-            System.out.println(ANSI_RED + "[ERROR] Error in deleting email." + ANSI_RESET);
+            System.out.println(ANSI_TEXT_RED + "[ERROR] Error in deleting email." + ANSI_RESET);
             e.printStackTrace();
         }
         result.remove(currentPage * PAGE_SIZE + Integer.parseInt(userInput));

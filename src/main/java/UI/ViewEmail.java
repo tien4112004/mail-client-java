@@ -2,17 +2,29 @@ package UI;
 
 import Message.MessageParser;
 
+import java.util.List;
 import java.util.Scanner;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.io.IOException;
 
-public class ShowEmail {
-    private static final String LONG_DAY_DISPLAY_FORMAT = "EEE, d MMM yyyy HH:mm:ss";
-    private static final String CLEAR_CONSOLE = "\033[H\033[2J";
+public class ViewEmail extends UI {
+    private final String LONG_DAY_DISPLAY_FORMAT = "EEE, d MMM yyyy HH:mm:ss";
 
-    public static void showEmail(String emailDirectory) throws IOException {
-        System.out.print(CLEAR_CONSOLE);
+    private String emailDirectory;
+    private List<String> mailList;
+
+    private int mailOrder;
+
+    public ViewEmail(String emailDirectory, List<String> mailList, int mailOrder) {
+        this.emailDirectory = emailDirectory;
+        this.mailList = mailList;
+        this.mailOrder = mailOrder;
+    }
+
+    public void showEmail() throws IOException {
+        clearConsole();
         Path emailPath = Paths.get(emailDirectory);
         String rawMessage = new String(java.nio.file.Files.readAllBytes(emailPath));
         MessageParser parser = new MessageParser();
@@ -29,11 +41,18 @@ public class ShowEmail {
         for (int i = 0; i < attachmentDirectories.length; i++) {
             System.out.printf("[%d] %s\n", i + 1, attachmentDirectories[i]);
         }
-        System.out.println(
-                "[.] Back to list \t [#] Download #-th attachment \t [A] Download all attachments \t [D] Delete email");
+
+        String[][] options = {
+                { ".", "Back to list" },
+                { "#", "Download attachment #" },
+                { "A", "Dowmload all attachments" },
+                { "D", "Delete email" },
+                { "M", "Move to mailbox" }
+        };
+        showOptions(options);
     }
 
-    private static void printList(String prompt, String[] list) {
+    private void printList(String prompt, String[] list) {
         if (list == null) {
             return;
         }
@@ -45,19 +64,22 @@ public class ShowEmail {
         System.out.println();
     }
 
-    public static void handleUserInput(String userInput) {
-        if (userInput.equals(".")) {
+    public void handleUserInput(String userInput) {
+        if (userInput.equals("Q")) {
             // return to email list - nothing here
         } else if (userInput.equals("A")) {
 
         } else if (userInput.equals("D")) {
-            // delete email
+            Path emailPath = Paths.get(emailDirectory);
+            try {
+                Files.delete(emailPath);
+            } catch (IOException e) {
+                System.out.println(ANSI_TEXT_RED + "[ERROR] Error in deleting email." + ANSI_RESET);
+                e.printStackTrace();
+            }
+            mailList.remove(mailOrder);
         } else {
             // download i-th attachment
         }
-    }
-
-    public static void printOption(String option, int index) {
-        System.out.println("[" + index + "] " + option);
     }
 }
