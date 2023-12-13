@@ -1,16 +1,19 @@
 package UI;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
+
+import Filter.Mailbox;
+import Message.Message;
 
 // import javax.imageio.stream.ImageOutputStreamImpl;
 // import javax.sound.sampled.SourceDataLine;
 
 // import Config.Config;
-// import Message.Message;
 // import Socket.SMTPSocket;
-// import Envelope.Envelope;
-// import UI.SendFunction;
 
 public class UI {
     protected final String ANSI_TEXT_BLACK = "\u001B[30m";
@@ -31,15 +34,25 @@ public class UI {
     protected final String ANSI_BACKGROUND_CYAN = "\u001B[46m";
     protected final String ANSI_BACKGROUND_WHITE = "\u001B[47m";
 
+    protected final String EMPTY_PROMPT = "";
+
     // public String username = new GetUserLoginInfomation().getUsername(); // TODO:
     // JSON
     public String username;
     public String password; // = new GetUserLoginInfomation().getPassword();
+    List<Mailbox> mailboxes;
+    ListMailboxes listMailboxesUI;
+    Mailbox currentMailbox;
+    ListEmails listEmailsUI;
+    String currentEmailDirectory;
 
-    protected Scanner readConsole;
+    protected InputHandler inputHandler;
 
     public UI() {
-        this.readConsole = new Scanner(System.in);
+        this.inputHandler = new InputHandler();
+        // this.username = inputHandler.getUsername();
+        // this.password = inputHandler.getPassword();
+        // get mailboxes from JSON
     }
 
     protected void clearConsole() {
@@ -47,22 +60,23 @@ public class UI {
     }
 
     protected void showOption() throws IOException {
+        clearConsole();
         System.out.printf("Welcome back, %s%s%s!\n", ANSI_TEXT_BLUE, username, ANSI_RESET);
         String[][] options = {
-                { "1", "Send new email" },
-                { "2", "Open mailboxes" },
-                { "3", "Quit" }
+                { "1", "Send new email\n" },
+                { "2", "Open mailboxes\n" },
+                { "3", "Quit\n" }
         };
         showOptions(options);
-        System.out.print("Please choose your option: ");
-        int option = readConsole.nextInt();
+        int option = inputHandler.getMenuOption();
         clearConsole();
         switch (option) {
             case 1:
                 new SendEmails().send();
                 break;
             case 2:
-                // new ListEmails().list();
+                listMailboxesUI = new ListMailboxes(username);
+                listMailboxesUI.list();
                 break;
             case 3:
                 System.exit(0);
@@ -73,7 +87,6 @@ public class UI {
         }
     }
 
-    // This start the UI in console
     public void start() throws IOException {
         while (true)
             showOption();
@@ -101,10 +114,42 @@ public class UI {
         System.out.println();
     }
 
-    // public static void main(String[] args) throws IOException {
-    // UI ui = new UI();
-    // ui.start();
+    // protected void mailboxInputHandler() {
+    // String choice = inputHandler.dialog(EMPTY_PROMPT);
+    // switch (choice) {
+    // case "Q":
+    // return;
+    // case "C":
+    // String newMailboxName = inputHandler.dialog("Name for new mailbox:");
+    // Mailbox newMailbox = new Mailbox(newMailboxName);
+    // mailboxes.add(newMailbox);
+    // System.out.println("Mailbox " + newMailboxName + " created.");
+    // // show the mailbox list again
+    // break;
+    // case ">":
+    // // currentPage = Math.min(currentPage + 1, pageCount);
+    // // list();
+    // break;
+    // case "<":
+    // // currentPage = Math.max(currentPage - 1, 1);
+    // // list();
+    // break;
+    // default:
+    // // int mailboxIndex = Integer.parseInt(choice) - 1;
+    // // Mailbox selectedMailbox = mailboxes.get(mailboxIndex);
+    // // System.out.println("Selected mailbox: " +
+    // // selectedMailbox.getMailboxName());
+    // // ListEmails listEmails = new ListEmails();
+    // // listEmails.list(selectedMailbox);
+    // // list();
+    // break;
     // }
+    // }
+
+    public static void main(String[] args) throws IOException {
+        UI ui = new UI();
+        ui.start();
+    }
 
     // private boolean verifyEmail(String email) {
     // return email.matches("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$");

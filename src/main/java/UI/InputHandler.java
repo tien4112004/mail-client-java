@@ -16,12 +16,6 @@ public class InputHandler {
         return option;
     }
 
-    public String getMailboxName() {
-        String prompt = "Mailbox name: ";
-        String mailboxName = dialog(prompt);
-        return mailboxName;
-    }
-
     protected String dialog(String prompt) {
         System.out.print(prompt);
         String response = scanner.nextLine();

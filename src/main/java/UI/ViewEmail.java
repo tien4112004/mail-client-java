@@ -4,6 +4,9 @@ import Message.MessageParser;
 
 import java.util.List;
 import java.util.Scanner;
+
+import Filter.Mailbox;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -37,6 +40,7 @@ public class ViewEmail extends UI {
         System.out.println("Content: " + parser.getContent());
 
         String[] attachmentDirectories = parser.getAttachmentDirectories();
+        attachmentDirectories = resolveAttachmentDirectories(attachmentDirectories);
         System.out.println("Attachments: ");
         for (int i = 0; i < attachmentDirectories.length; i++) {
             System.out.printf("[%d] %s\n", i + 1, attachmentDirectories[i]);
@@ -64,6 +68,15 @@ public class ViewEmail extends UI {
         System.out.println();
     }
 
+    private String[] resolveAttachmentDirectories(String[] attachmentDirectories) {
+        String[] resolvedAttachmentDirectories = new String[attachmentDirectories.length];
+        for (int i = 0; i < attachmentDirectories.length; i++) {
+            Path attachmentPath = Paths.get(attachmentDirectories[i]);
+            resolvedAttachmentDirectories[i] = attachmentPath.toAbsolutePath().toString();
+        }
+        return resolvedAttachmentDirectories;
+    }
+
     public void handleUserInput(String userInput) {
         if (userInput.equals("Q")) {
             // return to email list - nothing here
@@ -78,6 +91,8 @@ public class ViewEmail extends UI {
                 e.printStackTrace();
             }
             mailList.remove(mailOrder);
+        } else if (userInput == "M") {
+
         } else {
             // download i-th attachment
         }

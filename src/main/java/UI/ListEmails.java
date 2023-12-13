@@ -21,7 +21,14 @@ public class ListEmails extends UI {
     private final String SHORT_DATE_DISPLAY_FORMAT = "dd/MM/yyyy";
     private final String PART_SPLITER = "========================================================================================\n";
 
-    protected void list(Mailbox mailbox) throws IOException {
+    private Mailbox mailbox;
+
+    public ListEmails(Mailbox mailbox) {
+        this.mailbox = mailbox;
+        this.inputHandler = super.inputHandler;
+    }
+
+    protected void list() throws IOException {
         final String LEFT_ARROW = "<";
         final String RIGHT_ARROW = ">";
         final String QUIT = "Q";
@@ -70,7 +77,7 @@ public class ListEmails extends UI {
                     { "Q", "Quit" }
             };
             showOptions(options);
-            String input = scanner.nextLine();
+            String input = inputHandler.dialog(EMPTY_PROMPT);
 
             if (input.equals(QUIT)) {
                 // scanner.close();
@@ -84,13 +91,11 @@ public class ListEmails extends UI {
                     currentPage++;
                 }
             } else if (input.equals("D")) {
-                deleteEmailHandler(scanner, result, currentPage);
+                deleteEmailHandler(result, currentPage);
             } else if (input.equals("M")) {
-                System.out.print("Email to move: ");
-                String userInput = scanner.nextLine();
+                String userInput = inputHandler.dialog("Email to move: ");
                 String emailDirectory = result.get(currentPage * PAGE_SIZE + Integer.parseInt(userInput));
-                System.out.print("Destination mailbox: ");
-                String destination = scanner.nextLine();
+                String destination = inputHandler.dialog("Destination mailbox: ");
                 Mailbox.moveMailToFolder(emailDirectory, destination);
                 int mailOrder = currentPage * PAGE_SIZE + Integer.parseInt(userInput);
                 result.remove(mailOrder);
@@ -99,7 +104,7 @@ public class ListEmails extends UI {
                 ViewEmail emailViewer = new ViewEmail(result.get(currentPage * PAGE_SIZE + Integer.parseInt(input)),
                         result, mailOrder);
                 emailViewer.showEmail();
-                String userInput = scanner.nextLine();
+                String userInput = inputHandler.dialog(EMPTY_PROMPT);
                 emailViewer.handleUserInput(userInput);
             }
         }
@@ -114,24 +119,22 @@ public class ListEmails extends UI {
         return original.format("%-" + length + "." + length + "s", original);
     }
 
-    private void deleteEmailHandler(Scanner scanner, List<String> result, int currentPage) {
-        System.out.println("Delete which email?");
-        String userInput = scanner.nextLine();
-        Path emailPath = Paths.get(result.get(currentPage * PAGE_SIZE + Integer.parseInt(userInput)));
+    private void deleteEmailHandler(List<String> emailList, int currentPage) {
+        String userInput = inputHandler.dialog("Mail to delete: ");
+        Path emailPath = Paths.get(emailList.get(currentPage * PAGE_SIZE + Integer.parseInt(userInput)));
         try {
             Files.delete(emailPath);
         } catch (IOException e) {
             System.out.println(ANSI_TEXT_RED + "[ERROR] Error in deleting email." + ANSI_RESET);
             e.printStackTrace();
         }
-        result.remove(currentPage * PAGE_SIZE + Integer.parseInt(userInput));
+        emailList.remove(currentPage * PAGE_SIZE + Integer.parseInt(userInput));
     }
 
     public static void main(String[] args) throws IOException {
-        ListEmails listEmails = new ListEmails();
         Mailbox mailbox = new Mailbox("Test Mailbox",
                 "/media/Windows_Data/OneDrive-HCMUS/Documents/CSC10008 - Computer Networking/Socket_Project-Mail_Client/example@fit.hcmus.edu.vn/");
-        listEmails.list(mailbox);
-
+        ListEmails listEmails = new ListEmails(mailbox);
+        listEmails.list();
     }
 }

@@ -68,8 +68,14 @@ public class Message {
 
     private void validateRecipients() {
         boolean hasRecipientsTo = recipientsTo != null && recipientsTo.length > 0 && recipientsTo[0].length() > 0;
+        if (!hasRecipientsTo)
+            recipientsTo = new String[0];
         boolean hasRecipientsCc = recipientsCc != null && recipientsCc.length > 0 && recipientsCc[0].length() > 0;
+        if (!hasRecipientsCc)
+            recipientsCc = new String[0];
         boolean hasRecipientsBcc = recipientsBcc != null && recipientsBcc.length > 0 && recipientsBcc[0].length() > 0;
+        if (!hasRecipientsBcc)
+            recipientsBcc = new String[0];
 
         if (!hasRecipientsTo && !hasRecipientsCc && !hasRecipientsBcc) {
             throw new IllegalArgumentException(ERROR_RECIPIENT_EMPTY);
@@ -118,7 +124,7 @@ public class Message {
     }
 
     private void processAttachments(String[] attachments, String boundary) {
-        if (attachments == null || attachments.length == 0) {
+        if (attachments == null || attachments.length == 0 || attachments[0].length() == 0) {
             return;
         }
         for (String attachment : attachments) {
