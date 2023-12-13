@@ -129,7 +129,7 @@ public class POP3Socket extends MailSocket {
         doCommand("UIDL", OK);
         String[] rawID = getMultipleLinesResponse().split(CRLF);
 
-        String[] messagesID = new String[rawID.length];
+        messagesID = new String[rawID.length];
         for (int i = 0; i < rawID.length; i++) {
             if (rawID[i].length() > 2) {
                 int beginIndex = rawID[i].indexOf(" ") + 1;
@@ -137,7 +137,6 @@ public class POP3Socket extends MailSocket {
                 messagesID[i] = rawID[i].substring(beginIndex, endIndex);
             }
         }
-        this.messagesID = messagesID;
         return messagesID;
     }
 
@@ -157,7 +156,10 @@ public class POP3Socket extends MailSocket {
     private boolean exist(int messageOrder) {
         boolean isExist = false;
         try {
-            isExist = (messageList != null) ? messageList.contains(messagesID[messageOrder]) : false;
+            if (messageList != null) {
+                JSONObject message = (JSONObject) messageList.get(messageOrder);
+                isExist = messageList.contains(message);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -166,9 +168,10 @@ public class POP3Socket extends MailSocket {
 
     public String retrieveMessage(String messageOrder) throws IOException {
         messageList = readJsonArray();
+        messagesID = getMessagesID();
         boolean isExist = exist(Integer.parseInt(messageOrder) - 1);
         String message = "retrieved";
-        if (isExist) {
+        if (!isExist) {
             message = doCommand("RETR " + messageOrder, OK);
         }
         return message;
