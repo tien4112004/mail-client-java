@@ -53,7 +53,7 @@ public class ConfigTest {
     UI.password = "123456";
     // config.writeConfig(UI, message);
     // check if the file is created
-    boolean actual = Files.exists(Paths.get("src/main/java/Config/Config.json"));
+    boolean actual = Files.exists(Paths.get("src/main/java/JSON/Config.json"));
     assertTrue(actual);
   }
 }

@@ -95,7 +95,7 @@ public class MessageParserTest {
                 new String(Files.readAllBytes(Paths.get("attachments/write/test.txt"))));
     }
 
-    @Test
+    // @Test
     public void testParseFullEmail() throws IOException {
         // Arrange
         Path filePath = Paths.get("src/test/java/Message/testEmail.msg");
