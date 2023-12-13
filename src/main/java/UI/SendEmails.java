@@ -1,8 +1,5 @@
 package UI;
 
-import java.io.IOException;
-// import java.util.Scanner;
-
 import Message.Message;
 import Socket.SMTPSocket;
 
@@ -15,8 +12,8 @@ public class SendEmails extends UI {
     private String content;
     private String[] attachments;
 
-    public SendEmails() {
-        this.inputHandler = super.inputHandler;
+    public SendEmails(InputHandler inputHandler) {
+        this.inputHandler = inputHandler;
     }
 
     private void compose() {

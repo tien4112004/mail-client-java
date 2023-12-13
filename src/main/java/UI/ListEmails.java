@@ -8,7 +8,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.io.IOException;
 
@@ -22,25 +21,30 @@ public class ListEmails extends UI {
     private final String PART_SPLITER = "========================================================================================\n";
 
     private Mailbox mailbox;
+    private int currentPage = 1;
 
-    public ListEmails(Mailbox mailbox) {
+    public ListEmails(Mailbox mailbox, InputHandler inputHandler) {
         this.mailbox = mailbox;
-        this.inputHandler = super.inputHandler;
+        this.inputHandler = inputHandler;
     }
 
-    protected void list() throws IOException {
+    protected void list() {
         final String LEFT_ARROW = "<";
         final String RIGHT_ARROW = ">";
         final String QUIT = "Q";
 
         Path path = mailbox.getMailboxDirectory();
-        List<String> result = Files.walk(path)
-                .filter(Files::isRegularFile)
-                .map(Path::toString)
-                .collect(Collectors.toList());
-
-        int currentPage = 0;
-        Scanner scanner = new Scanner(System.in);
+        List<String> result;
+        try {
+            result = Files.walk(path)
+                    .filter(Files::isRegularFile)
+                    .map(Path::toString)
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            System.out.println(ANSI_TEXT_RED + "[ERROR] Error in listing emails." + ANSI_RESET);
+            e.printStackTrace();
+            return;
+        }
 
         while (true) {
             clearConsole();
@@ -53,7 +57,12 @@ public class ListEmails extends UI {
             int start = currentPage * PAGE_SIZE;
             int end = Math.min(start + PAGE_SIZE, result.size());
             for (int i = start; i < end; i++) {
-                String rawMessage = new String(Files.readAllBytes(Paths.get(result.get(i))));
+                String rawMessage = "";
+                try {
+                    rawMessage = new String(Files.readAllBytes(Paths.get(result.get(i))));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 MessageParser parser = new MessageParser();
                 parser.quickParse(rawMessage);
                 String readStatus = "*";
@@ -80,18 +89,20 @@ public class ListEmails extends UI {
             String input = inputHandler.dialog(EMPTY_PROMPT);
 
             if (input.equals(QUIT)) {
-                // scanner.close();
                 return;
             } else if (input.equals(LEFT_ARROW)) {
                 if (currentPage > 0) {
                     currentPage--;
                 }
+                list();
             } else if (input.equals(RIGHT_ARROW)) {
                 if (currentPage < result.size() / PAGE_SIZE) {
                     currentPage++;
                 }
+                list();
             } else if (input.equals("D")) {
                 deleteEmailHandler(result, currentPage);
+                list();
             } else if (input.equals("M")) {
                 String userInput = inputHandler.dialog("Email to move: ");
                 String emailDirectory = result.get(currentPage * PAGE_SIZE + Integer.parseInt(userInput));
@@ -99,13 +110,12 @@ public class ListEmails extends UI {
                 Mailbox.moveMailToFolder(emailDirectory, destination);
                 int mailOrder = currentPage * PAGE_SIZE + Integer.parseInt(userInput);
                 result.remove(mailOrder);
+                list();
             } else {
                 int mailOrder = currentPage * PAGE_SIZE + Integer.parseInt(input);
                 ViewEmail emailViewer = new ViewEmail(result.get(currentPage * PAGE_SIZE + Integer.parseInt(input)),
-                        result, mailOrder);
+                        result, mailOrder, mailboxes, inputHandler);
                 emailViewer.showEmail();
-                String userInput = inputHandler.dialog(EMPTY_PROMPT);
-                emailViewer.handleUserInput(userInput);
             }
         }
     }
@@ -134,7 +144,7 @@ public class ListEmails extends UI {
     public static void main(String[] args) throws IOException {
         Mailbox mailbox = new Mailbox("Test Mailbox",
                 "/media/Windows_Data/OneDrive-HCMUS/Documents/CSC10008 - Computer Networking/Socket_Project-Mail_Client/example@fit.hcmus.edu.vn/");
-        ListEmails listEmails = new ListEmails(mailbox);
+        ListEmails listEmails = new ListEmails(mailbox, new InputHandler());
         listEmails.list();
     }
 }

@@ -63,19 +63,19 @@ public class UI {
         clearConsole();
         System.out.printf("Welcome back, %s%s%s!\n", ANSI_TEXT_BLUE, username, ANSI_RESET);
         String[][] options = {
-                { "1", "Send new email\n" },
-                { "2", "Open mailboxes\n" },
-                { "3", "Quit\n" }
+                { "1", "Send new email" },
+                { "2", "Open mailboxes" },
+                { "3", "Quit" }
         };
         showOptions(options);
         int option = inputHandler.getMenuOption();
         clearConsole();
         switch (option) {
             case 1:
-                new SendEmails().send();
+                new SendEmails(inputHandler).send();
                 break;
             case 2:
-                listMailboxesUI = new ListMailboxes(username);
+                listMailboxesUI = new ListMailboxes(username, inputHandler);
                 listMailboxesUI.list();
                 break;
             case 3:

@@ -2,6 +2,9 @@ package UI;
 
 import java.io.IOException;
 import java.util.List;
+
+import javax.imageio.spi.IIOServiceProvider;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -17,11 +20,12 @@ public class ListMailboxes extends UI {
 
     public int currentPage = 1;
 
-    public ListMailboxes(String username) {
+    public ListMailboxes(String username, InputHandler inputHandler) {
         this.username = username;
+        this.inputHandler = super.inputHandler;
     }
 
-    public void list() throws IOException {
+    public void list() {
         clearConsole();
 
         int start = (currentPage - 1) * MAILBOXES_PER_PAGE;
@@ -44,33 +48,44 @@ public class ListMailboxes extends UI {
                 { "Q", "Quit" }
         };
         showOptions(options);
-    }
-
-    public Mailbox handleMailboxInput(String input, List<Mailbox> mailboxes, int currentPage) {
-        switch (input) {
+        String userInput = inputHandler.dialog(EMPTY_PROMPT);
+        switch (userInput) {
             case ">":
                 currentPage = Math.min(currentPage + 1, mailboxes.size() / MAILBOXES_PER_PAGE + 1);
+                list();
                 break;
             case "<":
                 currentPage = Math.max(currentPage - 1, 1);
+                list();
+                break;
+            case "N":
+                String newMailboxName = inputHandler.dialog("New mailbox name: ");
+                mailboxes.add(new Mailbox(newMailboxName));
+                System.out.println(ANSI_TEXT_GREEN + "New mailbox created!" + ANSI_RESET);
+                try {
+                    Thread.sleep(1500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                list();
                 break;
             case "Q":
-                System.exit(0);
-                break;
+                return;
             default:
-                int order = Integer.parseInt(input);
-                int mailboxOrder = (currentPage - 1) * 10 + Integer.parseInt(input);
+                int order = Integer.parseInt(userInput);
+                int mailboxOrder = (currentPage - 1) * 10 + Integer.parseInt(userInput);
+                Mailbox mailbox = mailboxes.get(mailboxOrder - 1);
+                ListEmails listEmails = new ListEmails(mailbox, inputHandler);
+                listEmails.list();
                 if (mailboxOrder > mailboxes.size() || order > 9 || order < 0) {
                     System.out.println("Invalid mailbox number! Aborting...");
                     System.exit(0);
                 }
-                return mailboxes.get(mailboxOrder - 1);
         }
-        return null;
     }
 
     public static void main(String[] args) throws IOException {
-        ListMailboxes listMailboxes = new ListMailboxes("example@fit.hcmus.edu.vn");
+        ListMailboxes listMailboxes = new ListMailboxes("example@fit.hcmus.edu.vn", new InputHandler());
         listMailboxes.list();
     }
 }

@@ -17,19 +17,30 @@ public class ViewEmail extends UI {
 
     private String emailDirectory;
     private List<String> mailList;
+    private List<Mailbox> mailboxes;
 
     private int mailOrder;
 
-    public ViewEmail(String emailDirectory, List<String> mailList, int mailOrder) {
+    public ViewEmail(String emailDirectory, List<String> mailList, int mailOrder, List<Mailbox> mailboxes,
+            InputHandler inputHandler) {
         this.emailDirectory = emailDirectory;
         this.mailList = mailList;
         this.mailOrder = mailOrder;
+        this.mailboxes = mailboxes;
+        this.inputHandler = inputHandler;
     }
 
-    public void showEmail() throws IOException {
+    public void showEmail() {
         clearConsole();
         Path emailPath = Paths.get(emailDirectory);
-        String rawMessage = new String(java.nio.file.Files.readAllBytes(emailPath));
+        String rawMessage;
+        try {
+            rawMessage = new String(java.nio.file.Files.readAllBytes(emailPath));
+        } catch (IOException e) {
+            System.out.println(ANSI_TEXT_RED + "[ERROR] Error in reading email." + ANSI_RESET);
+            e.printStackTrace();
+            return;
+        }
         MessageParser parser = new MessageParser();
         parser.parse(rawMessage);
         System.out.println("Date: " + parser.getDate(LONG_DAY_DISPLAY_FORMAT));
@@ -54,6 +65,8 @@ public class ViewEmail extends UI {
                 { "M", "Move to mailbox" }
         };
         showOptions(options);
+        String userInput = inputHandler.dialog(EMPTY_PROMPT);
+        handleUserInput(userInput);
     }
 
     private void printList(String prompt, String[] list) {
@@ -79,7 +92,7 @@ public class ViewEmail extends UI {
 
     public void handleUserInput(String userInput) {
         if (userInput.equals("Q")) {
-            // return to email list - nothing here
+            return;
         } else if (userInput.equals("A")) {
 
         } else if (userInput.equals("D")) {
@@ -92,7 +105,9 @@ public class ViewEmail extends UI {
             }
             mailList.remove(mailOrder);
         } else if (userInput == "M") {
-
+            String destination = inputHandler.dialog("Destination mailbox: ");
+            Mailbox.moveMailToFolder(emailDirectory, destination);
+            mailList.remove(mailOrder);
         } else {
             // download i-th attachment
         }
