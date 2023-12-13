@@ -69,15 +69,20 @@ public class ListEmails extends UI {
                         attachment);
             }
 
-            System.out.println(
-                    "\n[<] Previous page \t [>] Next page \t [#] Read #-th email \t [Q] Quit");
-            System.out.println(
-                    "\n[D] Delete mail \t [M] Move to other mailbox");
+            String[][] options = {
+                    { "<", "Previous page" },
+                    { ">", "Next page" },
+                    { "#", "Read email #" },
+                    { "D", "Delete mail" },
+                    { "M", "Move email " },
+                    { "Q", "Quit" }
+            };
+            showOptions(options);
             String input = scanner.nextLine();
 
-            // left arrow to go to previous page amd right arrow to go to next page
             if (input.equals(QUIT)) {
-                break;
+                // scanner.close();
+                return;
             } else if (input.equals(LEFT_ARROW)) {
                 if (currentPage > 0) {
                     currentPage--;
@@ -102,7 +107,6 @@ public class ListEmails extends UI {
                 ShowEmail.handleUserInput(userInput);
             }
         }
-        scanner.close();
     }
 
     private String formatString(String original, int length) {

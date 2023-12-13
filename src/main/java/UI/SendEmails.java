@@ -30,17 +30,11 @@ public class SendEmails extends UI {
     private void compose() {
         System.out.println("Compose new email:");
         // Recipients
-        System.out.print("To: ");
-        String recipientsTo = readConsole.nextLine();
-        this.recipientsTo = recipientsTo.split(", ");
-        System.out.print("Cc: ");
-        String recipientsCc = readConsole.hasNextLine() ? readConsole.nextLine() : "";
-        this.recipientsCc = recipientsCc.split(", ");
-        System.out.print("Bcc: ");
-        String recipientsBcc = readConsole.hasNextLine() ? readConsole.nextLine() : "";
-        this.recipientsBcc = recipientsBcc.split(", ");
 
-        // Subject and content
+        recipientsTo = getInputList("To: ");
+        recipientsCc = getInputList("Cc: ");
+        recipientsBcc = getInputList("Bcc: ");
+
         System.out.print("Subject: ");
         subject = readConsole.hasNextLine() ? readConsole.nextLine() : "";
         System.out.print("Content: ");
@@ -48,6 +42,13 @@ public class SendEmails extends UI {
         attachmentsHandler();
         // clear console
         clearConsole();
+    }
+
+    private String[] getInputList(String prompt) {
+        System.out.print(prompt);
+        String input = readConsole.nextLine();
+        input.trim();
+        return input.split(",");
     }
 
     public void send() throws IOException {
