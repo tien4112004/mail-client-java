@@ -3,6 +3,7 @@ package Config;
 import java.io.IOException;
 
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 
@@ -14,9 +15,12 @@ import java.nio.file.Files;
 public class MessagesStatusTest {
     @Test
     public void writeJSONTest() throws Exception {
-        WriteMessageStatus msg =  new WriteMessageStatus("localhost", 3335, "example@localhost", "123");
+        WriteMessageStatus msg =  new WriteMessageStatus();
 
-        JSONArray messageList = msg.createJSONArray();
+        JSONArray messageList = new JSONArray();
+        JSONObject msgObject = new JSONObject();
+        msgObject.put("1", false);
+        messageList.add(msgObject);
         msg.writeJSON(messageList);
 
         Path filePath = Paths.get("src/main/java/JSON/MessageStatus.json");

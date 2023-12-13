@@ -3,11 +3,12 @@ package UI;
 import Filter.Mailbox;
 import Filter.Mailbox.*;
 import Message.MessageParser;
-import JSON.ReadMessageStatus;
+// import JSON.ReadMessageStatus;
 import JSON.WriteMessageStatus;
 import Socket.POP3Socket;
 import UI.*;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,6 +20,7 @@ import java.util.stream.Stream;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.io.IOException;
 
@@ -34,7 +36,8 @@ public class ListEmails extends UI {
     private final String ANSI_RED = "\u001B[31m";
     private final String ANSI_RESET = "\u001B[0m";
 
-    ReadMessageStatus readMessageStatus = null;    
+    // ReadMessageStatus readMessageStatus = null; 
+    JSONParser parser = new JSONParser();   
     WriteMessageStatus writeMessageStatus = null;
     JSONArray messageList = null;
     JSONObject messageObject = null;
@@ -65,10 +68,8 @@ public class ListEmails extends UI {
 
             int start = currentPage * PAGE_SIZE;
             int end = Math.min(start + PAGE_SIZE, result.size());
-
-            readMessageStatus = new ReadMessageStatus("localhost", 3335, "example@localhost", "123");
             
-            messageList = readMessageStatus.getMessageList();
+            messageList = (JSONArray) parser.parse(new FileReader("src/main/java/JSON/MessageStatus.json"));
 
             for (int i = start; i < end; i++) {
                 messageObject = (JSONObject) messageList.get(i);

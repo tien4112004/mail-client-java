@@ -24,7 +24,6 @@ public class MessageStatus {
         this.parser = new JSONParser();
         this.file = new File("src/main/java/JSON/MessageStatus.json");
         
-
         this.pop3Socket.connect();
         this.pop3Socket.login();
         this.messagesID = pop3Socket.getMessagesID();

@@ -11,6 +11,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import JSON.WriteMessageStatus;
 // import Config.Config;
 import scala.collection.mutable.StringBuilder;
 
@@ -28,11 +29,18 @@ public class POP3Socket extends MailSocket {
     private String[] messagesID = null;
     private JSONParser parser = new JSONParser();
     private JSONArray messageList = null;
+    private WriteMessageStatus writeMessageStatus = null;
 
     public POP3Socket(String server, int port, String username, String password) {
         super(server, port);
         this.username = username;
         this.password = password;
+        try {
+            writeMessageStatus = new WriteMessageStatus();
+            messageList = (JSONArray) parser.parse(new FileReader("src/main/java/JSON/MessageStatus.json"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     // public POP3Socket() {
@@ -144,36 +152,32 @@ public class POP3Socket extends MailSocket {
         return messagesID[messageOrder]; // UIDL + number
     }
 
-    private JSONArray readJsonArray() throws IOException {
-        try {
-            messageList = (JSONArray) parser.parse(new FileReader("src/main/java/JSON/MessageStatus.json"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return messageList;
-    }
+    // private JSONArray readJsonArray() throws IOException {
+    //     try {
+    //         messageList = (JSONArray) parser.parse(new FileReader("src/main/java/JSON/MessageStatus.json"));
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //     }
+    //     return messageList;
+    // }
 
-    private boolean exist(int messageOrder) {
-        boolean isExist = false;
-        try {
-            if (messageList != null) {
-                JSONObject message = (JSONObject) messageList.get(messageOrder);
-                isExist = messageList.contains(message);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return isExist;
+    private boolean exist(JSONObject messageObject) {
+        return (messageList == null)?false:messageList.contains(messageObject);
     }
 
     public String retrieveMessage(String messageOrder) throws IOException {
-        messageList = readJsonArray();
+        // messageList = readJsonArray();
         messagesID = getMessagesID();
-        boolean isExist = exist(Integer.parseInt(messageOrder) - 1);
+        JSONObject messageObject = new JSONObject();
+        messageObject.put(messagesID[Integer.parseInt(messageOrder) - 1], false);
         String message = "retrieved";
-        if (!isExist) {
+        if (exist(messageObject)) {
+            message = doCommand("RETR " + messageOrder, OK);
+        } else {
+            messageList.add(messageObject);
             message = doCommand("RETR " + messageOrder, OK);
         }
+        writeMessageStatus.writeJSON(messageList);
         return message;
     }
 
