@@ -1,59 +1,48 @@
 package JSON;
 
-import java.io.FileWriter;
+import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
+import java.io.File;
 
-import org.json.simple.JSONObject;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
+import org.omg.CORBA.ExceptionList;
 
 import Socket.POP3Socket;
+import scala.concurrent.impl.FutureConvertersImpl.P;
 
 public class MessageStatus {
+    private POP3Socket pop3Socket;
+    private JSONParser parser;
+    private File file;
 
-    private String[] messagesID;
-    private int numbersOfMessage;
-    private POP3Socket pop3Socket = new POP3Socket("localhost", 3335, "example@localhost", "123");
+    protected String[] messagesID = null;
+    protected JSONArray messageList = null;
 
-    public MessageStatus() throws IOException {
-        pop3Socket.connect();
-        pop3Socket.login();
-        numbersOfMessage = pop3Socket.getMessageCount();
-        messagesID = pop3Socket.getMessagesID();
-    }
+    public MessageStatus(String server, int port, String username, String password) throws Exception{
+        this.pop3Socket = new POP3Socket(server, port, username, password);
+        this.parser = new JSONParser();
+        this.file = new File("src/main/java/JSON/MessageStatus.json");
+        
 
-    private JSONObject createJSONObject() throws IOException{
-        JSONObject obj = new JSONObject();
-        boolean status = false;
+        this.pop3Socket.connect();
+        this.pop3Socket.login();
+        this.messagesID = pop3Socket.getMessagesID();
 
-        for (int i = 0; i < numbersOfMessage; i++)
-            if (!pop3Socket.exist(i))
-                obj.put(messagesID[i], status);
-        return obj;
-    }
-
-    public void writeJSON() throws IOException {
-        JSONObject status = new JSONObject();
-        status.put("Status", createJSONObject());
-
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        JsonElement je = gson.toJsonTree(status);
-        JsonArray jsonArray = new JsonArray();
-        jsonArray.add(je);
-        String prettyJson = gson.toJson(jsonArray);
-
-        try (FileWriter file = new FileWriter("src/main/java/JSON/MessageStatus.json")) {
-            file.write(prettyJson);
-            file.flush();
-        } catch (IOException e) {
-            System.out.println(e);
+        if (this.file.exists()){
+            this.messageList = (JSONArray) parser.parse(new FileReader("src/main/java/JSON/MessageStatus.json"));
+        } else {
+            this.messageList = new JSONArray();
         }
+    }
 
+    protected boolean exist(int messageOrder) throws IOException {
+        String messageID = messagesID[messageOrder];
+        boolean isExist = (messageList != null) ? messageList.contains(messageID) : false;
+        return isExist;
+    }
+
+    protected void quit() throws IOException {  
         pop3Socket.quit();
     }
 }

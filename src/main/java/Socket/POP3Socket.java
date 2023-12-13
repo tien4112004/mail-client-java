@@ -7,13 +7,11 @@ import java.lang.reflect.Array;
 import java.io.FileNotFoundException;
 
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;  
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-
 // import Config.Config;
-import JSON.MessageStatus;
 import scala.collection.mutable.StringBuilder;
 
 public class POP3Socket extends MailSocket {
@@ -27,9 +25,9 @@ public class POP3Socket extends MailSocket {
     private final String ERR = "-ERR";
     private final String username;
     private final String password;
-
-    private MessageStatus msgStatus;
+    private String[] messagesID = null;
     private JSONParser parser = new JSONParser();
+    private JSONArray messageList = null;
 
     public POP3Socket(String server, int port, String username, String password) {
         super(server, port);
@@ -56,37 +54,12 @@ public class POP3Socket extends MailSocket {
         return response.startsWith(OK);
     }
 
-    // public String getMultipleLinesResponse() throws IOException {
-    // ArrayList<String> lines = new ArrayList<String>();
-    // String line = fromServer.readLine();
-
-    // while (true && line.equals(".")) {
-    // line = fromServer.readLine();
-    // System.out.println(line);
-    // if (line == null) {
-    // throw new IOException("Server closed the connection");
-    // }
-
-    // // if (line.equals(".")) {
-    // // break;
-    // // }
-
-    // if (line.length() > 0 && line.charAt(0) == '+') {
-    // line = line.substring(1);
-    // }
-
-    // lines.add(line);
-    // }
-
-    // return String.join(CRLF, lines);
-    // }
-
     public String getMultipleLinesResponse() throws IOException {
         ArrayList<String> lines = new ArrayList<String>();
         String line = fromServer.readLine();
 
         while (!line.equals(".")) {
-            System.out.println(line);
+            // System.out.println(line);
             if (line == null) {
                 throw new IOException("Server closed the connection");
             }
@@ -122,7 +95,7 @@ public class POP3Socket extends MailSocket {
         }
 
         if (response.startsWith(ERR)) {
-            System.out.println("[ERROR][POP3Socket] Unexpected return code: " + response);
+            // System.out.println("[ERROR][POP3Socket] Unexpected return code: " + response);
             throw new IOException("Unexpected return code: " + response);
         }
         return response;
@@ -164,31 +137,38 @@ public class POP3Socket extends MailSocket {
                 messagesID[i] = rawID[i].substring(beginIndex, endIndex);
             }
         }
-
+        this.messagesID = messagesID;
         return messagesID;
     }
 
-    public boolean exist(int messsageOrder)  throws IOException{
-        String messageID = getMessagesID()[messsageOrder];
-        boolean isExist = false;        
+    public String getMessageID(int messageOrder) throws IOException {
+        return messagesID[messageOrder]; // UIDL + number
+    }
+
+    private JSONArray readJsonArray() throws IOException {
         try {
-            JSONArray messageList = (JSONArray) parser.parse(new FileReader("src/main/java/JSON/MessageStatus.json"));
-            isExist = messageList.contains(messageID);
-        } catch (FileNotFoundException e) {
+            messageList = (JSONArray) parser.parse(new FileReader("src/main/java/JSON/MessageStatus.json"));
+        } catch (Exception e) {
             e.printStackTrace();
-        } catch(IOException e) {
-            e.printStackTrace();
-        }catch (ParseException e) {
+        }
+        return messageList;
+    }
+
+    private boolean exist(int messageOrder) {
+        boolean isExist = false;
+        try {
+            isExist = (messageList != null) ? messageList.contains(messagesID[messageOrder]) : false;
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return isExist;
     }
 
     public String retrieveMessage(String messageOrder) throws IOException {
-        boolean isExist = exist(Integer.parseInt(messageOrder)-1);  
+        messageList = readJsonArray();
+        boolean isExist = exist(Integer.parseInt(messageOrder) - 1);
         String message = "retrieved";
-        if (isExist)
-        {      
+        if (isExist) {
             message = doCommand("RETR " + messageOrder, OK);
         }
         return message;

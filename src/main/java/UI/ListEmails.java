@@ -3,6 +3,9 @@ package UI;
 import Filter.Mailbox;
 import Filter.Mailbox.*;
 import Message.MessageParser;
+import JSON.ReadMessageStatus;
+import JSON.WriteMessageStatus;
+import Socket.POP3Socket;
 import UI.*;
 
 import java.io.IOException;
@@ -13,6 +16,10 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import java.io.IOException;
 
 public class ListEmails extends UI {
@@ -27,7 +34,12 @@ public class ListEmails extends UI {
     private final String ANSI_RED = "\u001B[31m";
     private final String ANSI_RESET = "\u001B[0m";
 
-    protected void list(Mailbox mailbox) throws IOException {
+    ReadMessageStatus readMessageStatus = null;    
+    WriteMessageStatus writeMessageStatus = null;
+    JSONArray messageList = null;
+    JSONObject messageObject = null;
+
+    protected void list(Mailbox mailbox) throws Exception {
 
         // keys constant
         final String LEFT_ARROW = "<";
@@ -53,11 +65,18 @@ public class ListEmails extends UI {
 
             int start = currentPage * PAGE_SIZE;
             int end = Math.min(start + PAGE_SIZE, result.size());
+
+            readMessageStatus = new ReadMessageStatus("localhost", 3335, "example@localhost", "123");
+            
+            messageList = readMessageStatus.getMessageList();
+
             for (int i = start; i < end; i++) {
+                messageObject = (JSONObject) messageList.get(i);
                 String rawMessage = new String(Files.readAllBytes(Paths.get(result.get(i))));
                 MessageParser parser = new MessageParser();
                 parser.quickParse(rawMessage);
-                String readStatus = "*";
+                // TODO: add condition dependent MessageStatus.json
+                String readStatus = (messageObject.containsValue(false)) ? "*" : "";
                 String sender = parser.getSender();
                 sender = formatString(sender, 20);
                 String subject = parser.getSubject();
@@ -73,22 +92,22 @@ public class ListEmails extends UI {
                     "\n[<] Previous page \t [>] Next page \t [#] Read #-th email \t [Q] Quit");
             System.out.println(
                     "\n[D] Delete mail \t [M] Move to other mailbox");
-            String input = scanner.nextLine();
+            String keyPressed = scanner.nextLine();
 
             // left arrow to go to previous page amd right arrow to go to next page
-            if (input.equals(QUIT)) {
+            if (keyPressed.equals(QUIT)) {
                 break;
-            } else if (input.equals(LEFT_ARROW)) {
+            } else if (keyPressed.equals(LEFT_ARROW)) {
                 if (currentPage > 0) {
                     currentPage--;
                 }
-            } else if (input.equals(RIGHT_ARROW)) {
+            } else if (keyPressed.equals(RIGHT_ARROW)) {
                 if (currentPage < result.size() / PAGE_SIZE) {
                     currentPage++;
                 }
-            } else if (input.equals("D")) {
+            } else if (keyPressed.equals("D")) {
                 deleteEmailHandler(scanner, result, currentPage);
-            } else if (input.equals("M")) {
+            } else if (keyPressed.equals("M")) {
                 System.out.print("Email to move: ");
                 String userInput = scanner.nextLine();
                 String emailDirectory = result.get(currentPage * PAGE_SIZE + Integer.parseInt(userInput));
@@ -96,10 +115,18 @@ public class ListEmails extends UI {
                 String destination = scanner.nextLine();
                 Mailbox.moveMailToFolder(emailDirectory, destination);
                 result.remove(currentPage * PAGE_SIZE + Integer.parseInt(userInput));
-            } else {
-                ShowEmail.showEmail(result.get(currentPage * PAGE_SIZE + Integer.parseInt(input)));
-                String userInput = scanner.nextLine();
-                ShowEmail.handleUserInput(userInput);
+            } else { // Show content of email
+                ShowEmail.showEmail(result.get(currentPage * PAGE_SIZE + Integer.parseInt(keyPressed)));
+                String messageOrder = scanner.nextLine();
+                
+                // TODO: replace value of messageID in MessageStatus.json
+                int index = currentPage * PAGE_SIZE + Integer.parseInt(messageOrder);
+                messageObject = (JSONObject) messageList.get(index);
+                messageList.remove(index);
+                messageObject.replace(result.get(index), true);
+                messageList.add(index, messageObject);
+
+                ShowEmail.handleUserInput(messageOrder);
             }
         }
         scanner.close();
@@ -126,12 +153,12 @@ public class ListEmails extends UI {
         }
         result.remove(currentPage * PAGE_SIZE + Integer.parseInt(userInput));
     }
-
-    public static void main(String[] args) throws IOException {
+    
+    public static void main(String[] args) throws Exception {
         ListEmails listEmails = new ListEmails();
         Mailbox mailbox = new Mailbox("Test Mailbox",
-                "/media/Windows_Data/OneDrive-HCMUS/Documents/CSC10008 - Computer Networking/Socket_Project-Mail_Client/example@fit.hcmus.edu.vn/");
+                "/media/US/Study/US/Computer Network/mail-client-java/.test/.test-mail-server/example@localhost/");
         listEmails.list(mailbox);
-
+        listEmails.writeMessageStatus.writeJSON(listEmails.messageList);
     }
 }

@@ -21,7 +21,7 @@ class ListEmailsTest {
     // }
 
     // @Test
-    void testList() throws IOException {
+    void testList() throws Exception {
         ListEmails listEmails = new ListEmails();
         Mailbox mailbox = new Mailbox("Test Mailbox",
                 "/media/Windows_Data/OneDrive-HCMUS/Documents/CSC10008 - Computer Networking/Socket_Project-Mail_Client/example@fit.hcmus.edu.vn/");
