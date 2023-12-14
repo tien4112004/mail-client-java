@@ -1,4 +1,4 @@
-package Config;
+package JSON;
 
 import org.junit.jupiter.api.Test;
 

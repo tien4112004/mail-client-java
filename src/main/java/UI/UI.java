@@ -56,10 +56,10 @@ public class UI {
             showOption();
     }
 
-    // public static void main(String[] args) throws IOException {
-    // UI ui = new UI();
-    // ui.start();
-    // }
+    public static void main(String[] args) throws Exception {
+        UI ui = new UI();
+        ui.start();
+    }
 
     // private boolean verifyEmail(String email) {
     // return email.matches("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$");
