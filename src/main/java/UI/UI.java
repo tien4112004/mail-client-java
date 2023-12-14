@@ -39,10 +39,11 @@ public class UI {
     protected final int TIME_3_SECONDS = 3000;
     protected final int TIME_2_SECONDS = 2000;
 
-    // public String username = new GetUserLoginInfomation().getUsername(); // TODO:
-    // JSON
+    protected final String DEFAULT_WORKING_DIRECTORY = System.getProperty("./");
+
+    private UserInformation userInfo;
     public String username;
-    public String password; // = new GetUserLoginInfomation().getPassword();
+    public String password;
     List<Mailbox> mailboxes;
     ListMailboxes listMailboxesUI;
     Mailbox currentMailbox;
@@ -53,9 +54,14 @@ public class UI {
 
     public UI() {
         this.inputHandler = new InputHandler();
+        this.userInfo = new UserInformation();
+        this.username = userInfo.getUsername();
+        this.password = userInfo.getPassword();
         // this.username = inputHandler.getUsername();
         // this.password = inputHandler.getPassword();
         // get mailboxes from JSON
+        WelcomeScreen.Welcome();
+        sleep(TIME_3_SECONDS);
     }
 
     protected void clearConsole() {

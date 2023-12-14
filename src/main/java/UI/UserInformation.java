@@ -9,12 +9,12 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-public class GetUserLoginInfomation {
+public class UserInformation {
     JSONParser parser = new JSONParser();
-    String Username;
-    String Password;
+    private String Username;
+    private String Password;
 
-    public GetUserLoginInfomation() {
+    public UserInformation(String configDirectory) {
         try {
             JSONArray configEleArray = (JSONArray) parser.parse(new FileReader("src/main/java/JSON/Config.json"));
             JSONObject configEle = (JSONObject) configEleArray.get(0);
@@ -23,7 +23,11 @@ public class GetUserLoginInfomation {
             Password = (String) config.get("Password");
         } catch (Exception e) {
             e.printStackTrace();
-        } 
+        }
+    }
+
+    public UserInformation() {
+        this("src/main/java/JSON/Config.json");
     }
 
     public String getUsername() {

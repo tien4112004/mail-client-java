@@ -91,8 +91,7 @@ public class ListEmails extends UI {
     }
 
     private void displayOptions() {
-        String[][] options = {
-                { "<", "Previous page" },
+        String[][] options = { { "<", "Previous page" },
                 { ">", "Next page" },
                 { "#", "Read email #" },
                 { "D", "Delete mail" },
