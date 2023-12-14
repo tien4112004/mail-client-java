@@ -1,12 +1,10 @@
 package UI;
 
-import java.io.IOException;
-// import java.util.Scanner;
-
 import Message.Message;
 import Socket.SMTPSocket;
 
 public class SendEmails extends UI {
+    private String sender = "example@localhost";
     private String[] recipientsTo;
     private String[] recipientsCc;
     private String[] recipientsBcc;
@@ -14,54 +12,68 @@ public class SendEmails extends UI {
     private String content;
     private String[] attachments;
 
-    private void attachmentsHandler() {
-        System.out.print("Send attachments? (Y/N) ");
-        String answer;
-        do {
-            answer = readConsole.nextLine();
-            if (answer.equalsIgnoreCase("Y")) {
-                System.out.println("Please enter the path of attachments, separated by comma:");
-                String attachments = readConsole.hasNextLine() ? readConsole.nextLine() : "";
-                this.attachments = attachments.split(", ");
-            }
-        } while (answer.equalsIgnoreCase("N"));
+    public SendEmails(InputHandler inputHandler) {
+        this.inputHandler = inputHandler;
     }
 
     private void compose() {
-        System.out.println("Compose new email:");
-        // Recipients
-        System.out.print("To: ");
-        String recipientsTo = readConsole.nextLine();
-        this.recipientsTo = recipientsTo.split(", ");
-        System.out.print("Cc: ");
-        String recipientsCc = readConsole.hasNextLine() ? readConsole.nextLine() : "";
-        this.recipientsCc = recipientsCc.split(", ");
-        System.out.print("Bcc: ");
-        String recipientsBcc = readConsole.hasNextLine() ? readConsole.nextLine() : "";
-        this.recipientsBcc = recipientsBcc.split(", ");
+        System.out.printf("%sPlease input the following informations, left blank to skip.%s\n", ANSI_TEXT_YELLOW,
+                ANSI_RESET);
+        System.out.println("Sender: " + sender);
 
-        // Subject and content
+        System.out.printf("Recipients: %s[Input the email address, seperated by commas]%s\n", ANSI_TEXT_YELLOW,
+                ANSI_RESET);
+        recipientsTo = getInputList("To: ");
+        recipientsCc = getInputList("Cc: ");
+        recipientsBcc = getInputList("Bcc: ");
+
         System.out.print("Subject: ");
-        subject = readConsole.hasNextLine() ? readConsole.nextLine() : "";
-        System.out.print("Content: ");
-        content = readConsole.hasNextLine() ? readConsole.nextLine() : "";
-        attachmentsHandler();
-        // clear console
-        clearConsole();
+        subject = System.console().readLine();
+
+        attachments = getInputList("Attachments: " + ANSI_TEXT_YELLOW
+                + "[Input the directory of attachment, seperated by commas]" + ANSI_RESET + "\n");
+
+        // Read content from user
+        System.out.printf("Content: %s[End with a single dot on a line '.']%s\n", ANSI_TEXT_YELLOW, ANSI_RESET);
+        String line;
+        content = "";
+        while ((line = System.console().readLine()) != null) {
+            if (line.equals("."))
+                break;
+            content += line + "\n";
+        }
     }
 
-    public void send() throws IOException {
+    private String[] getInputList(String prompt) {
+        String input = inputHandler.dialog(prompt).trim();
+        String[] result = input.split(",");
+        for (int i = 0; i < result.length; i++) {
+            result[i] = result[i].trim();
+        }
+        return result;
+    }
+
+    public void send() {
         compose();
-        Message message = new Message(username, recipientsTo, recipientsCc, recipientsBcc, subject, content,
+        Message message = new Message(sender, recipientsTo, recipientsCc, recipientsBcc, subject, content,
                 attachments);
         SMTPSocket smtpSocket = new SMTPSocket("localhost", 2225);
+
+        System.out.println(ANSI_TEXT_YELLOW + "Sending email..." + ANSI_RESET);
 
         try {
             smtpSocket.connect();
             smtpSocket.sendEmail(message);
         } catch (Exception e) {
-            // e.printStackTrace();
-            System.out.println("Error: " + e.getMessage());
+            System.out.printf("%s[ERROR]%s " + e.getMessage() + "\n", ANSI_TEXT_RED, ANSI_RESET);
+            sleep(TIME_3_SECONDS);
+            e.printStackTrace();
+            return;
         }
+
+        System.out.println(ANSI_TEXT_GREEN + "Email sent." + ANSI_RESET);
+        sleep(TIME_3_SECONDS);
+
+        clearConsole();
     }
 }
