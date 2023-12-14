@@ -36,6 +36,9 @@ public class UI {
 
     protected final String EMPTY_PROMPT = "";
 
+    protected final int TIME_3_SECONDS = 3000;
+    protected final int TIME_2_SECONDS = 2000;
+
     // public String username = new GetUserLoginInfomation().getUsername(); // TODO:
     // JSON
     public String username;

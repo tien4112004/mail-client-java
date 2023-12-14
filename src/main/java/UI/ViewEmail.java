@@ -3,7 +3,6 @@ package UI;
 import Message.MessageParser;
 
 import java.util.List;
-import java.util.Scanner;
 
 import Filter.Mailbox;
 
@@ -41,6 +40,7 @@ public class ViewEmail extends UI {
             e.printStackTrace();
             return;
         }
+
         MessageParser parser = new MessageParser();
         parser.parse(rawMessage);
         System.out.println("Date: " + parser.getDate(LONG_DAY_DISPLAY_FORMAT));
@@ -96,16 +96,7 @@ public class ViewEmail extends UI {
         } else if (userInput.equals("A")) {
 
         } else if (userInput.equals("D")) {
-            Path emailPath = Paths.get(emailDirectory);
-            try {
-                Files.delete(emailPath);
-            } catch (IOException e) {
-                System.out.println(ANSI_TEXT_RED + "[ERROR] Error in deleting email." + ANSI_RESET);
-                e.printStackTrace();
-            }
-            mailList.remove(mailOrder);
-            System.out.printf("%s%s%s\n", ANSI_TEXT_GREEN, "Email removed.", ANSI_RESET);
-            sleep(2000);
+            deleteEmailHandler();
         } else if (userInput == "M") {
             for (int i = 0; i < mailboxes.size(); i++) {
                 System.out.printf("[%d] %s\n", i + 1, mailboxes.get(i).getMailboxName());
@@ -143,5 +134,19 @@ public class ViewEmail extends UI {
         } else {
             // download i-th attachment
         }
+    }
+
+    private void deleteEmailHandler() {
+        Path emailPath = Paths.get(emailDirectory);
+        try {
+            Files.delete(emailPath);
+        } catch (IOException e) {
+            System.out.println(ANSI_TEXT_RED + "[ERROR] Error in deleting email." + ANSI_RESET);
+            sleep(1500);
+            e.printStackTrace();
+        }
+        mailList.remove(mailOrder);
+        System.out.printf("%s%s%s\n", ANSI_TEXT_GREEN, "Email removed.", ANSI_RESET);
+        sleep(2000);
     }
 }

@@ -92,25 +92,16 @@ public class ListEmails extends UI {
             if (input.equals(QUIT)) {
                 return;
             } else if (input.equals(LEFT_ARROW)) {
-                if (currentPage > 0) {
-                    currentPage--;
-                }
+                currentPage = Math.max(currentPage - 1, 0);
                 list();
             } else if (input.equals(RIGHT_ARROW)) {
-                if (currentPage < result.size() / PAGE_SIZE) {
-                    currentPage++;
-                }
+                currentPage = Math.min(currentPage + 1, result.size() / PAGE_SIZE);
                 list();
             } else if (input.equals("D")) {
                 deleteEmailHandler(result, currentPage);
                 list();
             } else if (input.equals("M")) {
-                String userInput = inputHandler.dialog("Email to move: ");
-                String emailDirectory = result.get(currentPage * PAGE_SIZE + Integer.parseInt(userInput));
-                String destination = inputHandler.dialog("Destination mailbox: ");
-                Mailbox.moveMailToFolder(emailDirectory, destination);
-                int mailOrder = currentPage * PAGE_SIZE + Integer.parseInt(userInput);
-                result.remove(mailOrder);
+                moveEmailHandler(result, currentPage);
                 list();
             } else {
                 int mailOrder = currentPage * PAGE_SIZE + Integer.parseInt(input);
@@ -142,6 +133,15 @@ public class ListEmails extends UI {
         emailList.remove(currentPage * PAGE_SIZE + Integer.parseInt(userInput));
         System.out.printf("%s%s%s\n", ANSI_TEXT_GREEN, "Email removed.", ANSI_RESET);
         sleep(2000);
+    }
+
+    private void moveEmailHandler(List<String> mailList, int currentPage) {
+        String userInput = inputHandler.dialog("Email to move: ");
+        String emailDirectory = mailList.get(currentPage * PAGE_SIZE + Integer.parseInt(userInput));
+        String destination = inputHandler.dialog("Destination mailbox: ");
+        Mailbox.moveMailToFolder(emailDirectory, destination);
+        int mailOrder = currentPage * PAGE_SIZE + Integer.parseInt(userInput);
+        mailList.remove(mailOrder);
     }
 
     public static void main(String[] args) throws IOException {

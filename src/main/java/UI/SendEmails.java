@@ -46,7 +46,11 @@ public class SendEmails extends UI {
 
     private String[] getInputList(String prompt) {
         String input = inputHandler.dialog(prompt).trim();
-        return input.split(",");
+        String[] result = input.split(",");
+        for (int i = 0; i < result.length; i++) {
+            result[i] = result[i].trim();
+        }
+        return result;
     }
 
     public void send() {
@@ -62,12 +66,13 @@ public class SendEmails extends UI {
             smtpSocket.sendEmail(message);
         } catch (Exception e) {
             System.out.printf("%s[ERROR]%s " + e.getMessage() + "\n", ANSI_TEXT_RED, ANSI_RESET);
-            sleep(2000);
+            sleep(TIME_3_SECONDS);
             e.printStackTrace();
             return;
         }
 
         System.out.println(ANSI_TEXT_GREEN + "Email sent." + ANSI_RESET);
+        sleep(TIME_3_SECONDS);
 
         clearConsole();
     }

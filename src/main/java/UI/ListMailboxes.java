@@ -51,23 +51,13 @@ public class ListMailboxes extends UI {
         String userInput = inputHandler.dialog(EMPTY_PROMPT);
         switch (userInput) {
             case ">":
-                currentPage = Math.min(currentPage + 1, mailboxes.size() / MAILBOXES_PER_PAGE + 1);
-                list();
+                nextPage();
                 break;
             case "<":
-                currentPage = Math.max(currentPage - 1, 1);
-                list();
+                previousPage();
                 break;
             case "N":
-                String newMailboxName = inputHandler.dialog("New mailbox name: ");
-                mailboxes.add(new Mailbox(newMailboxName));
-                System.out.println(ANSI_TEXT_GREEN + "New mailbox created!" + ANSI_RESET);
-                try {
-                    Thread.sleep(1500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                list();
+                createNewMailbox();
                 break;
             case "Q":
                 return;
@@ -82,6 +72,24 @@ public class ListMailboxes extends UI {
                     System.exit(0);
                 }
         }
+    }
+
+    private void nextPage() {
+        currentPage = Math.min(currentPage + 1, mailboxes.size() / MAILBOXES_PER_PAGE + 1);
+        list();
+    }
+
+    private void previousPage() {
+        currentPage = Math.max(currentPage - 1, 1);
+        list();
+    }
+
+    private void createNewMailbox() {
+        String newMailboxName = inputHandler.dialog("New mailbox name: ");
+        mailboxes.add(new Mailbox(newMailboxName));
+        System.out.println(ANSI_TEXT_GREEN + "New mailbox created!" + ANSI_RESET);
+        sleep(1500);
+        list();
     }
 
     public static void main(String[] args) throws IOException {
