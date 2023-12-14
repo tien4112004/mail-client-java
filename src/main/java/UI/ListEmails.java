@@ -2,13 +2,19 @@ package UI;
 
 import Filter.Mailbox;
 import Message.MessageParser;
+import JSON.WriteMessageStatus;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 public class ListEmails extends UI {
     private final int PAGE_SIZE = 10; // Number of emails per page
@@ -23,6 +29,12 @@ public class ListEmails extends UI {
     private int currentPage = 0;
     List<String> mailList;
     BackToPreviousCallback backToMailboxListCallback;
+
+    // ReadMessageStatus readMessageStatus = null;
+    JSONParser parser = new JSONParser();
+    WriteMessageStatus writeMessageStatus = null;
+    JSONArray messageList = null;
+    JSONObject messageObject = null;
 
     public ListEmails(Mailbox mailbox, InputHandler inputHandler, BackToPreviousCallback backToMailboxListCallback) {
         this.mailbox = mailbox;
@@ -64,6 +76,7 @@ public class ListEmails extends UI {
             }
             MessageParser parser = new MessageParser();
             parser.quickParse(rawMessage);
+            // String readStatus = (messageObject.containsValue(false)) ? "*" : "";
             String readStatus = "*";
             String sender = parser.getSender();
             sender = formatString(sender, 20);
@@ -99,6 +112,12 @@ public class ListEmails extends UI {
             System.out.println(ANSI_TEXT_RED + "[ERROR] Error in listing emails." + ANSI_RESET);
             e.printStackTrace();
         }
+
+        try {
+            messageList = (JSONArray) parser.parse(new FileReader("src/main/java/JSON/MessageStatus.json"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void previousPage() {
@@ -122,6 +141,7 @@ public class ListEmails extends UI {
                 break;
             case "Q":
                 backToMailboxListCallback.backToList();
+                break;
             case "D":
                 deleteEmailHandler(mailList, currentPage);
                 break;
@@ -133,6 +153,10 @@ public class ListEmails extends UI {
                 String emailDirectory = mailList.get(currentPage * PAGE_SIZE + Integer.parseInt(userInput));
                 ViewEmail emailViewer = new ViewEmail(emailDirectory, mailList, emailIndex, mailboxes, inputHandler,
                         this::list);
+                // messageObject = (JSONObject) messageList.get(emailIndex);
+                // messageList.remove(emailIndex);
+                // messageObject.replace(mailList.get(emailIndex), true);
+                // messageList.add(emailIndex, messageObject);
                 emailViewer.showEmail();
                 displayEmails();
                 break;

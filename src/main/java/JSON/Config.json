@@ -1,0 +1,46 @@
+[
+  {
+    "Filter": {
+      "Work": [
+        "report",
+        "meeting",
+        "virus",
+        "hack",
+        "crack",
+        "virus",
+        "hack",
+        "crack",
+        "virus",
+        "hack",
+        "crack"
+      ],
+      "Recipients": [
+        "recipientTo1@localhost",
+        "recipientTo2@localhost",
+        "recipientCc1@localhost",
+        "recipientCc2@localhost",
+        "recipientBcc1@localhost",
+        "recipientBcc2@localhost"
+      ],
+      "Subject": "Test Email",
+      "Spam": [
+        "virus",
+        "hack",
+        "crack",
+        "virus",
+        "hack",
+        "crack",
+        "virus",
+        "hack",
+        "crack"
+      ]
+    },
+    "General": {
+      "POP3port": 1225,
+      "SMTPport": 2225,
+      "Username": "example@localhost",
+      "Password": "123456",
+      "AutoReload": 10
+    }
+  }
+]

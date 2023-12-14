@@ -16,20 +16,16 @@ public class GetUserLoginInfomation {
 
     public GetUserLoginInfomation() {
         try {
-            JSONArray configEleArray = (JSONArray) parser.parse(new FileReader("src/main/java/Config/Config.json"));
+            JSONArray configEleArray = (JSONArray) parser.parse(new FileReader("src/main/java/JSON/Config.json"));
 
             for (Object configEle : configEleArray) {
                 JSONObject config = (JSONObject) configEle;
                 Username = (String) config.get("Username");
                 Password = (String) config.get("Password");
             }
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        } 
     }
 
     public String getUsername() {

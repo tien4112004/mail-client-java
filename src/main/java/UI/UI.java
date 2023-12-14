@@ -117,15 +117,10 @@ public class UI {
         System.out.println();
     }
 
-    // }
     public static void main(String[] args) throws IOException {
         UI ui = new UI();
         ui.start();
     }
-
-    // private boolean verifyEmail(String email) {
-    // return email.matches("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$");
-    // }
 
     protected void sleep(int milisecond) {
         try {
