@@ -8,6 +8,7 @@ import java.util.Scanner;
 
 import Filter.Mailbox;
 import Message.Message;
+import Socket.POP3Socket;
 
 // import javax.imageio.stream.ImageOutputStreamImpl;
 // import javax.sound.sampled.SourceDataLine;
@@ -60,8 +61,6 @@ public class UI {
         // this.username = inputHandler.getUsername();
         // this.password = inputHandler.getPassword();
         // get mailboxes from JSON
-        WelcomeScreen.Welcome();
-        sleep(TIME_3_SECONDS);
     }
 
     protected void clearConsole() {
@@ -125,6 +124,8 @@ public class UI {
 
     public static void main(String[] args) throws IOException {
         UI ui = new UI();
+        // POP3Socket POP3Server = new POP3Socket("localhost", 3335, username,
+        // password);
         ui.start();
     }
 

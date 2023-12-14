@@ -1,5 +1,6 @@
 {
-    "java.configuration.updateBuildConfiguration": "automatic",
-    "java.compile.nullAnalysis.mode": "automatic",
-    "r.lsp.promptToInstall": false,
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.compile.nullAnalysis.mode": "automatic",
+  "r.lsp.promptToInstall": false,
+  "maven.view": "flat"
 }

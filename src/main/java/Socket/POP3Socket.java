@@ -3,7 +3,6 @@ package Socket;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.io.FileReader;
-import java.lang.reflect.Array;
 import java.io.FileNotFoundException;
 
 import org.json.simple.JSONArray;
@@ -103,7 +102,8 @@ public class POP3Socket extends MailSocket {
         }
 
         if (response.startsWith(ERR)) {
-            // System.out.println("[ERROR][POP3Socket] Unexpected return code: " + response);
+            // System.out.println("[ERROR][POP3Socket] Unexpected return code: " +
+            // response);
             throw new IOException("Unexpected return code: " + response);
         }
         return response;
@@ -153,16 +153,17 @@ public class POP3Socket extends MailSocket {
     }
 
     // private JSONArray readJsonArray() throws IOException {
-    //     try {
-    //         messageList = (JSONArray) parser.parse(new FileReader("src/main/java/JSON/MessageStatus.json"));
-    //     } catch (Exception e) {
-    //         e.printStackTrace();
-    //     }
-    //     return messageList;
+    // try {
+    // messageList = (JSONArray) parser.parse(new
+    // FileReader("src/main/java/JSON/MessageStatus.json"));
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // }
+    // return messageList;
     // }
 
     private boolean exist(JSONObject messageObject) {
-        return (messageList == null)?false:messageList.contains(messageObject);
+        return (messageList == null) ? false : messageList.contains(messageObject);
     }
 
     public String retrieveMessage(String messageOrder) throws IOException {
@@ -182,7 +183,7 @@ public class POP3Socket extends MailSocket {
     }
 
     public void deleteMessage(String messageOrder) throws IOException {
-        doCommand("DEL" + messageOrder, OK);
+        doCommand("DELE" + messageOrder, OK);
     }
 
     public String[] getMessageHead(String messageOrder) throws IOException {

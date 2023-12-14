@@ -183,7 +183,8 @@ public class ListEmails extends UI {
         }
         emailList.remove(emailIndex);
         System.out.printf("%s%s%s\n", ANSI_TEXT_GREEN, "Email removed.", ANSI_RESET);
-        sleep(2000);
+        sleep(TIME_2_SECONDS);
+        list();
     }
 
     private void moveEmailHandler(List<String> mailList, int currentPage) {
@@ -192,13 +193,18 @@ public class ListEmails extends UI {
         String emailDirectory = mailList.get(emailIndex);
         String destination = inputHandler.dialog("Destination mailbox: ");
         Mailbox.moveMailToFolder(emailDirectory, destination);
+        System.out.printf("%s%s%s\n", ANSI_TEXT_GREEN, "Email moved to " + destination + ".", ANSI_RESET);
+        sleep(TIME_2_SECONDS);
         mailList.remove(emailIndex);
+        list();
     }
 
-    public static void main(String[] args) throws IOException {
-        Mailbox mailbox = new Mailbox("Test Mailbox",
-                "/media/Windows_Data/OneDrive-HCMUS/Documents/CSC10008 - Computer Networking/Socket_Project-Mail_Client/example@fit.hcmus.edu.vn/");
-        ListEmails listEmails = new ListEmails(mailbox, new InputHandler(), () -> System.out.println("Back to list"));
-        listEmails.list();
-    }
+    // public static void main(String[] args) throws IOException {
+    // Mailbox mailbox = new Mailbox("Test Mailbox",
+    // "/media/Windows_Data/OneDrive-HCMUS/Documents/CSC10008 - Computer
+    // Networking/Socket_Project-Mail_Client/example@fit.hcmus.edu.vn/");
+    // ListEmails listEmails = new ListEmails(mailbox, new InputHandler(), () ->
+    // System.out.println("Back to list"));
+    // listEmails.list();
+    // }
 }
