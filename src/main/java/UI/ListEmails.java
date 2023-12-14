@@ -9,7 +9,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.io.IOException;
 
 public class ListEmails extends UI {
     private final int PAGE_SIZE = 10; // Number of emails per page
@@ -22,93 +21,121 @@ public class ListEmails extends UI {
 
     private Mailbox mailbox;
     private int currentPage = 0;
+    List<String> mailList;
+    BackToPreviousCallback backToMailboxListCallback;
 
-    public ListEmails(Mailbox mailbox, InputHandler inputHandler) {
+    public ListEmails(Mailbox mailbox, InputHandler inputHandler, BackToPreviousCallback backToMailboxListCallback) {
         this.mailbox = mailbox;
         this.inputHandler = inputHandler;
+        this.backToMailboxListCallback = backToMailboxListCallback;
     }
 
     protected void list() {
-        final String LEFT_ARROW = "<";
-        final String RIGHT_ARROW = ">";
-        final String QUIT = "Q";
+        loadEmails();
+        displayEmails();
+        handleUserInput();
+    }
 
+    private void displayEmails() {
+        clearConsole();
+        displayHeader();
+        displayEmailList();
+        displayOptions();
+    }
+
+    private void displayHeader() {
+        System.out.printf("List of emails from %s%s%s: Page %d/%d\n", ANSI_TEXT_CYAN, mailbox.getMailboxName(),
+                ANSI_RESET, currentPage + 1,
+                mailList.size() / PAGE_SIZE + 1);
+        System.out.print(PART_SPLITER);
+        System.out.printf("%s   | %s | %s | %s | %s |\n", "# ", FROM, SUBJECT, DATE, ATTACHMENT);
+        System.out.print(PART_SPLITER);
+    }
+
+    private void displayEmailList() {
+        int start = currentPage * PAGE_SIZE;
+        int end = Math.min(start + PAGE_SIZE, mailList.size());
+        for (int i = start; i < end; i++) {
+            String rawMessage = "";
+            try {
+                rawMessage = new String(Files.readAllBytes(Paths.get(mailList.get(i))));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            MessageParser parser = new MessageParser();
+            parser.quickParse(rawMessage);
+            String readStatus = "*";
+            String sender = parser.getSender();
+            sender = formatString(sender, 20);
+            String subject = parser.getSubject();
+            subject = formatString(subject, 30);
+            String date = parser.getDate(SHORT_DATE_DISPLAY_FORMAT);
+            String attachment = (parser.hasAttachment() ? formatString("*", 10) : formatString("", 10));
+
+            System.out.printf("[%d] %s| %s | %s | %s | %s |\n", i % 10, readStatus, sender, subject, date,
+                    attachment);
+        }
+    }
+
+    private void displayOptions() {
+        String[][] options = {
+                { "<", "Previous page" },
+                { ">", "Next page" },
+                { "#", "Read email #" },
+                { "D", "Delete mail" },
+                { "M", "Move email " },
+                { "Q", "Quit" }
+        };
+        showOptions(options);
+    }
+
+    private void loadEmails() {
         Path path = mailbox.getMailboxDirectory();
-        List<String> result;
         try {
-            result = Files.walk(path)
-                    .filter(Files::isRegularFile)
+            mailList = Files.walk(path).filter(Files::isRegularFile)
                     .map(Path::toString)
                     .collect(Collectors.toList());
         } catch (IOException e) {
             System.out.println(ANSI_TEXT_RED + "[ERROR] Error in listing emails." + ANSI_RESET);
             e.printStackTrace();
-            return;
         }
+    }
 
-        while (true) {
-            clearConsole();
-            System.out.printf("List of emails from %s%s%s: Page %d/%d\n", ANSI_TEXT_CYAN, mailbox.getMailboxName(),
-                    ANSI_RESET, currentPage + 1,
-                    result.size() / PAGE_SIZE + 1);
-            System.out.print(PART_SPLITER);
-            System.out.printf("%s   | %s | %s | %s | %s |\n", "# ", FROM, SUBJECT, DATE, ATTACHMENT);
-            System.out.print(PART_SPLITER);
+    private void previousPage() {
+        currentPage = Math.max(currentPage - 1, 0);
+        list();
+    }
 
-            int start = currentPage * PAGE_SIZE;
-            int end = Math.min(start + PAGE_SIZE, result.size());
-            for (int i = start; i < end; i++) {
-                String rawMessage = "";
-                try {
-                    rawMessage = new String(Files.readAllBytes(Paths.get(result.get(i))));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                MessageParser parser = new MessageParser();
-                parser.quickParse(rawMessage);
-                String readStatus = "*";
-                String sender = parser.getSender();
-                sender = formatString(sender, 20);
-                String subject = parser.getSubject();
-                subject = formatString(subject, 30);
-                String date = parser.getDate(SHORT_DATE_DISPLAY_FORMAT);
-                String attachment = (parser.hasAttachment() ? formatString("*", 10) : formatString("", 10));
+    private void nextPage() {
+        currentPage = Math.min(currentPage + 1, mailList.size() / PAGE_SIZE);
+        list();
+    }
 
-                System.out.printf("[%d] %s| %s | %s | %s | %s |\n", i % 10, readStatus, sender, subject, date,
-                        attachment);
-            }
-
-            String[][] options = {
-                    { "<", "Previous page" },
-                    { ">", "Next page" },
-                    { "#", "Read email #" },
-                    { "D", "Delete mail" },
-                    { "M", "Move email " },
-                    { "Q", "Quit" }
-            };
-            showOptions(options);
-            String input = inputHandler.dialog(EMPTY_PROMPT);
-
-            if (input.equals(QUIT)) {
-                return;
-            } else if (input.equals(LEFT_ARROW)) {
-                currentPage = Math.max(currentPage - 1, 0);
-                list();
-            } else if (input.equals(RIGHT_ARROW)) {
-                currentPage = Math.min(currentPage + 1, result.size() / PAGE_SIZE);
-                list();
-            } else if (input.equals("D")) {
-                deleteEmailHandler(result, currentPage);
-                list();
-            } else if (input.equals("M")) {
-                moveEmailHandler(result, currentPage);
-                list();
-            } else {
-                int mailOrder = currentPage * PAGE_SIZE + Integer.parseInt(input);
-                ViewEmail emailViewer = new ViewEmail(result.get(currentPage * PAGE_SIZE + Integer.parseInt(input)),
-                        result, mailOrder, mailboxes, inputHandler);
+    private void handleUserInput() {
+        String userInput = inputHandler.dialog(EMPTY_PROMPT);
+        switch (userInput) {
+            case "<":
+                previousPage();
+                break;
+            case ">":
+                nextPage();
+                break;
+            case "Q":
+                backToMailboxListCallback.backToList();
+            case "D":
+                deleteEmailHandler(mailList, currentPage);
+                break;
+            case "M":
+                moveEmailHandler(mailList, currentPage);
+                break;
+            default:
+                int emailIndex = currentPage * PAGE_SIZE + Integer.parseInt(userInput);
+                String emailDirectory = mailList.get(currentPage * PAGE_SIZE + Integer.parseInt(userInput));
+                ViewEmail emailViewer = new ViewEmail(emailDirectory, mailList, emailIndex, mailboxes, inputHandler,
+                        this::list);
                 emailViewer.showEmail();
-            }
+                displayEmails();
+                break;
         }
     }
 
@@ -123,31 +150,32 @@ public class ListEmails extends UI {
 
     private void deleteEmailHandler(List<String> emailList, int currentPage) {
         String userInput = inputHandler.dialog("Mail to delete: ");
-        Path emailPath = Paths.get(emailList.get(currentPage * PAGE_SIZE + Integer.parseInt(userInput)));
+        int emailIndex = currentPage * PAGE_SIZE + Integer.parseInt(userInput);
+        Path emailPath = Paths.get(emailList.get(emailIndex));
         try {
             Files.delete(emailPath);
         } catch (IOException e) {
             System.out.println(ANSI_TEXT_RED + "[ERROR] Error in deleting email." + ANSI_RESET);
             e.printStackTrace();
         }
-        emailList.remove(currentPage * PAGE_SIZE + Integer.parseInt(userInput));
+        emailList.remove(emailIndex);
         System.out.printf("%s%s%s\n", ANSI_TEXT_GREEN, "Email removed.", ANSI_RESET);
         sleep(2000);
     }
 
     private void moveEmailHandler(List<String> mailList, int currentPage) {
         String userInput = inputHandler.dialog("Email to move: ");
-        String emailDirectory = mailList.get(currentPage * PAGE_SIZE + Integer.parseInt(userInput));
+        int emailIndex = currentPage * PAGE_SIZE + Integer.parseInt(userInput);
+        String emailDirectory = mailList.get(emailIndex);
         String destination = inputHandler.dialog("Destination mailbox: ");
         Mailbox.moveMailToFolder(emailDirectory, destination);
-        int mailOrder = currentPage * PAGE_SIZE + Integer.parseInt(userInput);
-        mailList.remove(mailOrder);
+        mailList.remove(emailIndex);
     }
 
     public static void main(String[] args) throws IOException {
         Mailbox mailbox = new Mailbox("Test Mailbox",
                 "/media/Windows_Data/OneDrive-HCMUS/Documents/CSC10008 - Computer Networking/Socket_Project-Mail_Client/example@fit.hcmus.edu.vn/");
-        ListEmails listEmails = new ListEmails(mailbox, new InputHandler());
+        ListEmails listEmails = new ListEmails(mailbox, new InputHandler(), () -> System.out.println("Back to list"));
         listEmails.list();
     }
 }

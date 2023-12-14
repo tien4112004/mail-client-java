@@ -18,15 +18,18 @@ public class ViewEmail extends UI {
     private List<String> mailList;
     private List<Mailbox> mailboxes;
 
+    private BackToPreviousCallback backToListCallback;
+
     private int mailOrder;
 
     public ViewEmail(String emailDirectory, List<String> mailList, int mailOrder, List<Mailbox> mailboxes,
-            InputHandler inputHandler) {
+            InputHandler inputHandler, BackToPreviousCallback backToListCallback) {
         this.emailDirectory = emailDirectory;
         this.mailList = mailList;
         this.mailOrder = mailOrder;
         this.mailboxes = mailboxes;
         this.inputHandler = inputHandler;
+        this.backToListCallback = backToListCallback;
     }
 
     public void showEmail() {
@@ -58,7 +61,7 @@ public class ViewEmail extends UI {
         }
 
         String[][] options = {
-                { ".", "Back to list" },
+                { "Q", "Back to list" },
                 { "#", "Download attachment #" },
                 { "A", "Dowmload all attachments" },
                 { "D", "Delete email" },
@@ -92,7 +95,7 @@ public class ViewEmail extends UI {
 
     public void handleUserInput(String userInput) {
         if (userInput.equals("Q")) {
-            return;
+            backToListCallback.backToList();
         } else if (userInput.equals("A")) {
 
         } else if (userInput.equals("D")) {

@@ -62,7 +62,7 @@ public class UI {
         System.out.print("\033[H\033[2J");
     }
 
-    protected void showOption() throws IOException {
+    protected void showOption() {
         clearConsole();
         System.out.printf("Welcome back, %s%s%s!\n", ANSI_TEXT_BLUE, username, ANSI_RESET);
         String[][] options = {
@@ -78,7 +78,7 @@ public class UI {
                 new SendEmails(inputHandler).send();
                 break;
             case 2:
-                listMailboxesUI = new ListMailboxes(username, inputHandler);
+                listMailboxesUI = new ListMailboxes(username, inputHandler, this::showOption);
                 listMailboxesUI.list();
                 break;
             case 3:
@@ -117,38 +117,7 @@ public class UI {
         System.out.println();
     }
 
-    // protected void mailboxInputHandler() {
-    // String choice = inputHandler.dialog(EMPTY_PROMPT);
-    // switch (choice) {
-    // case "Q":
-    // return;
-    // case "C":
-    // String newMailboxName = inputHandler.dialog("Name for new mailbox:");
-    // Mailbox newMailbox = new Mailbox(newMailboxName);
-    // mailboxes.add(newMailbox);
-    // System.out.println("Mailbox " + newMailboxName + " created.");
-    // // show the mailbox list again
-    // break;
-    // case ">":
-    // // currentPage = Math.min(currentPage + 1, pageCount);
-    // // list();
-    // break;
-    // case "<":
-    // // currentPage = Math.max(currentPage - 1, 1);
-    // // list();
-    // break;
-    // default:
-    // // int mailboxIndex = Integer.parseInt(choice) - 1;
-    // // Mailbox selectedMailbox = mailboxes.get(mailboxIndex);
-    // // System.out.println("Selected mailbox: " +
-    // // selectedMailbox.getMailboxName());
-    // // ListEmails listEmails = new ListEmails();
-    // // listEmails.list(selectedMailbox);
-    // // list();
-    // break;
     // }
-    // }
-
     public static void main(String[] args) throws IOException {
         UI ui = new UI();
         ui.start();
