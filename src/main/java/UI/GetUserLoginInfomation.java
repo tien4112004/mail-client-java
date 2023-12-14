@@ -17,12 +17,10 @@ public class GetUserLoginInfomation {
     public GetUserLoginInfomation() {
         try {
             JSONArray configEleArray = (JSONArray) parser.parse(new FileReader("src/main/java/JSON/Config.json"));
-
-            for (Object configEle : configEleArray) {
-                JSONObject config = (JSONObject) configEle;
-                Username = (String) config.get("Username");
-                Password = (String) config.get("Password");
-            }
+            JSONObject configEle = (JSONObject) configEleArray.get(0);
+            JSONObject config = (JSONObject) configEle.get("General");
+            Username = (String) config.get("Username");
+            Password = (String) config.get("Password");
         } catch (Exception e) {
             e.printStackTrace();
         } 

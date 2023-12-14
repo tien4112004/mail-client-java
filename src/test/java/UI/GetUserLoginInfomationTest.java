@@ -11,8 +11,8 @@ public class GetUserLoginInfomationTest {
         String usernameActual = userInfor.getUsername();
         String passwordActual = userInfor.getPassword();
 
-        String usernameExpected = userInfor.getUsername();
-        String passwordExpected = userInfor.getPassword();
+        String usernameExpected = "example@localhost";
+        String passwordExpected = "123456";
 
         assertEquals(usernameActual, usernameExpected);
         assertEquals(passwordActual, passwordExpected);
