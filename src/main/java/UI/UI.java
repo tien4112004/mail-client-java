@@ -122,13 +122,6 @@ public class UI {
         System.out.println();
     }
 
-    public static void main(String[] args) throws IOException {
-        UI ui = new UI();
-        // POP3Socket POP3Server = new POP3Socket("localhost", 3335, username,
-        // password);
-        ui.start();
-    }
-
     protected void sleep(int milisecond) {
         try {
             Thread.sleep(milisecond);

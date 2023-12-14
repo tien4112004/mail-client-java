@@ -3,17 +3,22 @@ package Socket;
 import Message.Message;
 import Socket.SMTPSocket;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import Message.Message;
+import JSON.MessageStatus;
+import Message.MessageParser;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.security.NoSuchProviderException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class POP3SocketTest {
     private POP3Socket POP3Socket;
@@ -38,7 +43,7 @@ public class POP3SocketTest {
 
     @Test
     public void testRetrieveMessage() throws IOException, NoSuchProviderException {
-        String message = POP3Socket.retrieveMessage("1");
+        String message = POP3Socket.RETR("1");
         // int messageCount = POP3Socket.getMessageCount();
 
         // assertEquals(messageCount, 24);
@@ -49,7 +54,7 @@ public class POP3SocketTest {
 
     @Test
     public void testRetrieveInvalidMessage() throws IOException, NoSuchProviderException {
-        assertThrows(Exception.class, () -> POP3Socket.retrieveMessage("0"));
+        assertThrows(Exception.class, () -> POP3Socket.RETR("0"));
     }
 
     @Test
@@ -68,5 +73,17 @@ public class POP3SocketTest {
     @Test
     public void testGetMessageCount() throws IOException {
         int messageCount = POP3Socket.getMessageCount();
+    }
+
+    @Test
+    public void testRetrieveMessageServer() throws IOException {
+        POP3Socket socket = new POP3Socket("localhost", 3335, "pttien@fit.hcmus.edu.vn", "123");
+        socket.retrieveMessage();
+    }
+
+    // @After
+    public void tearDown() throws IOException {
+        Path path = Paths.get("src/main/java/JSON/MessageStatus.json");
+        Files.deleteIfExists(path);
     }
 }

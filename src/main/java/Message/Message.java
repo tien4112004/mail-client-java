@@ -189,4 +189,13 @@ public class Message {
     public String toString() {
         return header + body;
     }
+
+    public void saveMail(String mailId) {
+        String rawMessage = toString();
+        try {
+            Files.write(Paths.get(mailId + ".msg"), rawMessage.getBytes());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
