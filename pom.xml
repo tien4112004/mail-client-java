@@ -4,7 +4,7 @@
 
   <groupId>com.yourcompany</groupId>
   <artifactId>mail-client-java</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>0.1-alpha</version>
   <packaging>jar</packaging>
 
   <name>mail-client-java</name>
@@ -89,5 +89,22 @@
     </plugin>
   </plugins>
 </build> -->
+<!-- Specify main class position -->
+<build>
+  <plugins>
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-jar-plugin</artifactId>
+      <version>3.1.0</version>
+      <configuration>
+        <archive>
+          <manifest>
+            <mainClass>Main</mainClass>
+          </manifest>
+        </archive>
+      </configuration>
+    </plugin>
+  </plugins>
+</build>
 
 </project>
