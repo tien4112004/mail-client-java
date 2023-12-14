@@ -103,4 +103,11 @@ public class Mailbox {
     public String getMailboxName() {
         return this.name;
     }
+
+    public Mailbox search(String name) {
+        if (this.name.equals(name)) {
+            return this;
+        }
+        return null;
+    }
 }
