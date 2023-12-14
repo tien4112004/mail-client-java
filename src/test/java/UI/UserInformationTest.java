@@ -3,16 +3,19 @@ package UI;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
-public class GetUserLoginInfomationTest {
+public class UserInformationTest {
     @Test
     public void test() {
-        GetUserLoginInfomation userInfor = new GetUserLoginInfomation();
+        UserInformation userInfor = new UserInformation();
 
         String usernameActual = userInfor.getUsername();
         String passwordActual = userInfor.getPassword();
 
         String usernameExpected = "example@localhost";
         String passwordExpected = "123456";
+
+        System.out.print(usernameActual);
+        System.out.print(passwordActual);
 
         assertEquals(usernameActual, usernameExpected);
         assertEquals(passwordActual, passwordExpected);

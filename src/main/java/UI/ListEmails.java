@@ -40,6 +40,14 @@ public class ListEmails extends UI {
         this.mailbox = mailbox;
         this.inputHandler = inputHandler;
         this.backToMailboxListCallback = backToMailboxListCallback;
+        try {
+            // Path MessageStatusJSONPath =
+            // Paths.get("src/main/java/JSON/MessageStatus.json");
+            // if (Files.exists(M, null))
+            this.messageList = (JSONArray) parser.parse(new FileReader("src/main/java/JSON/MessageStatus.json"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     protected void list() {
@@ -76,8 +84,9 @@ public class ListEmails extends UI {
             }
             MessageParser parser = new MessageParser();
             parser.quickParse(rawMessage);
-            // String readStatus = (messageObject.containsValue(false)) ? "*" : "";
-            String readStatus = "*";
+            messageObject = (JSONObject) messageList.get(i);
+            String readStatus = (messageObject.containsValue(false)) ? "*" : "";
+            // String readStatus = "*";
             String sender = parser.getSender();
             sender = formatString(sender, 20);
             String subject = parser.getSubject();
@@ -91,8 +100,7 @@ public class ListEmails extends UI {
     }
 
     private void displayOptions() {
-        String[][] options = {
-                { "<", "Previous page" },
+        String[][] options = { { "<", "Previous page" },
                 { ">", "Next page" },
                 { "#", "Read email #" },
                 { "D", "Delete mail" },
@@ -153,10 +161,15 @@ public class ListEmails extends UI {
                 String emailDirectory = mailList.get(currentPage * PAGE_SIZE + Integer.parseInt(userInput));
                 ViewEmail emailViewer = new ViewEmail(emailDirectory, mailList, emailIndex, mailboxes, inputHandler,
                         this::list);
-                // messageObject = (JSONObject) messageList.get(emailIndex);
-                // messageList.remove(emailIndex);
-                // messageObject.replace(mailList.get(emailIndex), true);
-                // messageList.add(emailIndex, messageObject);
+                messageObject = (JSONObject) messageList.get(emailIndex);
+                messageList.remove(emailIndex);
+                messageObject.replace(mailList.get(emailIndex), true);
+                messageList.add(emailIndex, messageObject);
+                try {
+                    writeMessageStatus.writeJSON(messageList);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 emailViewer.showEmail();
                 displayEmails();
                 break;
@@ -184,7 +197,8 @@ public class ListEmails extends UI {
         }
         emailList.remove(emailIndex);
         System.out.printf("%s%s%s\n", ANSI_TEXT_GREEN, "Email removed.", ANSI_RESET);
-        sleep(2000);
+        sleep(TIME_2_SECONDS);
+        list();
     }
 
     private void moveEmailHandler(List<String> mailList, int currentPage) {
@@ -193,13 +207,18 @@ public class ListEmails extends UI {
         String emailDirectory = mailList.get(emailIndex);
         String destination = inputHandler.dialog("Destination mailbox: ");
         Mailbox.moveMailToFolder(emailDirectory, destination);
+        System.out.printf("%s%s%s\n", ANSI_TEXT_GREEN, "Email moved to " + destination + ".", ANSI_RESET);
+        sleep(TIME_2_SECONDS);
         mailList.remove(emailIndex);
+        list();
     }
 
-    public static void main(String[] args) throws IOException {
-        Mailbox mailbox = new Mailbox("Test Mailbox",
-                "/media/Windows_Data/OneDrive-HCMUS/Documents/CSC10008 - Computer Networking/Socket_Project-Mail_Client/example@fit.hcmus.edu.vn/");
-        ListEmails listEmails = new ListEmails(mailbox, new InputHandler(), () -> System.out.println("Back to list"));
-        listEmails.list();
-    }
+    // public static void main(String[] args) throws IOException {
+    // Mailbox mailbox = new Mailbox("Test Mailbox",
+    // "/media/Windows_Data/OneDrive-HCMUS/Documents/CSC10008 - Computer
+    // Networking/Socket_Project-Mail_Client/example@fit.hcmus.edu.vn/");
+    // ListEmails listEmails = new ListEmails(mailbox, new InputHandler(), () ->
+    // System.out.println("Back to list"));
+    // listEmails.list();
+    // }
 }

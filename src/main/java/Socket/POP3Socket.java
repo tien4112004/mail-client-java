@@ -1,10 +1,12 @@
 package Socket;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.io.FileReader;
-import java.lang.reflect.Array;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.file.Paths;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -12,6 +14,8 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import JSON.WriteMessageStatus;
+import Message.Message;
+import Message.MessageParser;
 // import Config.Config;
 import scala.collection.mutable.StringBuilder;
 
@@ -35,9 +39,13 @@ public class POP3Socket extends MailSocket {
         super(server, port);
         this.username = username;
         this.password = password;
+        File file = new File("src/main/java/JSON/MessageStatus.json");
         try {
             writeMessageStatus = new WriteMessageStatus();
-            messageList = (JSONArray) parser.parse(new FileReader("src/main/java/JSON/MessageStatus.json"));
+            if (file.exists())
+                messageList = (JSONArray) parser.parse(new FileReader("src/main/java/JSON/MessageStatus.json"));
+            else
+                messageList = new JSONArray();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -72,7 +80,7 @@ public class POP3Socket extends MailSocket {
                 throw new IOException("Server closed the connection");
             }
 
-            if (line.length() > 0 && line.charAt(0) == '+') {
+            if (line.length() > 0 && line.startsWith(OK)) {
                 line = line.substring(1);
             }
 
@@ -103,7 +111,8 @@ public class POP3Socket extends MailSocket {
         }
 
         if (response.startsWith(ERR)) {
-            // System.out.println("[ERROR][POP3Socket] Unexpected return code: " + response);
+            // System.out.println("[ERROR][POP3Socket] Unexpected return code: " +
+            // response);
             throw new IOException("Unexpected return code: " + response);
         }
         return response;
@@ -153,36 +162,72 @@ public class POP3Socket extends MailSocket {
     }
 
     // private JSONArray readJsonArray() throws IOException {
-    //     try {
-    //         messageList = (JSONArray) parser.parse(new FileReader("src/main/java/JSON/MessageStatus.json"));
-    //     } catch (Exception e) {
-    //         e.printStackTrace();
-    //     }
-    //     return messageList;
+    // try {
+    // messageList = (JSONArray) parser.parse(new
+    // FileReader("src/main/java/JSON/MessageStatus.json"));
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // }
+    // return messageList;
     // }
 
     private boolean exist(JSONObject messageObject) {
-        return (messageList == null)?false:messageList.contains(messageObject);
+        return (messageList == null) ? false : messageList.contains(messageObject);
     }
 
-    public String retrieveMessage(String messageOrder) throws IOException {
-        // messageList = readJsonArray();
+    public String RETR(String messageOrder) throws IOException {
         messagesID = getMessagesID();
         JSONObject messageObject = new JSONObject();
         messageObject.put(messagesID[Integer.parseInt(messageOrder) - 1], false);
-        String message = "retrieved";
-        if (exist(messageObject)) {
-            message = doCommand("RETR " + messageOrder, OK);
-        } else {
+        String message = "";
+        if (!exist(messageObject)) {
             messageList.add(messageObject);
             message = doCommand("RETR " + messageOrder, OK);
         }
         writeMessageStatus.writeJSON(messageList);
+
         return message;
     }
 
+    public void retrieveMessage() throws IOException {
+        // messageList = readJsonArray();
+        messagesID = getMessagesID();
+        for (int i = 0; i < messagesID.length; i++) {
+            JSONObject messageObject = new JSONObject();
+            messageObject.put(messagesID[i], false);
+            if (exist(messageObject)) {
+                break;
+            }
+            String rawMessage = RETR(i + 1 + "");
+            Files.write(Paths.get("./test.msg"), rawMessage.getBytes());
+            MessageParser parser = new MessageParser();
+            parser.parse(rawMessage);
+            Message email = parser.createMessage();
+            email.saveMail(messagesID[i]);
+            // TODO: filter
+            messageList.add(messageObject);
+        }
+        writeMessageStatus.writeJSON(messageList);
+    }
+
+    // public String retrieveMessage(String messageOrder) throws IOException {
+    // // messageList = readJsonArray();
+    // messagesID = getMessagesID();
+    // JSONObject messageObject = new JSONObject();
+    // messageObject.put(messagesID[Integer.parseInt(messageOrder) - 1], false);
+    // String message = "retrieved";
+    // if (exist(messageObject)) {
+    // message = doCommand("RETR " + messageOrder, OK);
+    // } else {
+    // messageList.add(messageObject);
+    // message = doCommand("RETR " + messageOrder, OK);
+    // }
+    // writeMessageStatus.writeJSON(messageList);
+    // return message;
+    // }
+
     public void deleteMessage(String messageOrder) throws IOException {
-        doCommand("DEL" + messageOrder, OK);
+        doCommand("DELE" + messageOrder, OK);
     }
 
     public String[] getMessageHead(String messageOrder) throws IOException {

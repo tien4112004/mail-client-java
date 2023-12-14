@@ -8,6 +8,7 @@ import java.util.Scanner;
 
 import Filter.Mailbox;
 import Message.Message;
+import Socket.POP3Socket;
 
 // import javax.imageio.stream.ImageOutputStreamImpl;
 // import javax.sound.sampled.SourceDataLine;
@@ -39,10 +40,11 @@ public class UI {
     protected final int TIME_3_SECONDS = 3000;
     protected final int TIME_2_SECONDS = 2000;
 
-    // public String username = new GetUserLoginInfomation().getUsername(); // TODO:
-    // JSON
+    protected final String DEFAULT_WORKING_DIRECTORY = System.getProperty("./");
+
+    private UserInformation userInfo;
     public String username;
-    public String password; // = new GetUserLoginInfomation().getPassword();
+    public String password;
     List<Mailbox> mailboxes;
     ListMailboxes listMailboxesUI;
     Mailbox currentMailbox;
@@ -53,6 +55,9 @@ public class UI {
 
     public UI() {
         this.inputHandler = new InputHandler();
+        this.userInfo = new UserInformation();
+        this.username = userInfo.getUsername();
+        this.password = userInfo.getPassword();
         // this.username = inputHandler.getUsername();
         // this.password = inputHandler.getPassword();
         // get mailboxes from JSON
@@ -115,11 +120,6 @@ public class UI {
                 System.out.println();
         }
         System.out.println();
-    }
-
-    public static void main(String[] args) throws IOException {
-        UI ui = new UI();
-        ui.start();
     }
 
     protected void sleep(int milisecond) {

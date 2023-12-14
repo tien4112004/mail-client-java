@@ -105,9 +105,4 @@ public class ListMailboxes extends UI {
         sleep(1500);
         list();
     }
-
-    public static void main(String[] args) throws IOException {
-        ListMailboxes listMailboxes = new ListMailboxes("example@fit.hcmus.edu.vn", new InputHandler(), null);
-        listMailboxes.list();
-    }
 }
