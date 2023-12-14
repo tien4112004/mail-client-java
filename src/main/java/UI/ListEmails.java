@@ -21,7 +21,7 @@ public class ListEmails extends UI {
     private final String PART_SPLITER = "========================================================================================\n";
 
     private Mailbox mailbox;
-    private int currentPage = 1;
+    private int currentPage = 0;
 
     public ListEmails(Mailbox mailbox, InputHandler inputHandler) {
         this.mailbox = mailbox;
@@ -48,7 +48,8 @@ public class ListEmails extends UI {
 
         while (true) {
             clearConsole();
-            System.out.printf("List of emails from %s: Page %d/%d\n", mailbox.getMailboxName(), currentPage + 1,
+            System.out.printf("List of emails from %s%s%s: Page %d/%d\n", ANSI_TEXT_CYAN, mailbox.getMailboxName(),
+                    ANSI_RESET, currentPage + 1,
                     result.size() / PAGE_SIZE + 1);
             System.out.print(PART_SPLITER);
             System.out.printf("%s   | %s | %s | %s | %s |\n", "# ", FROM, SUBJECT, DATE, ATTACHMENT);
@@ -139,6 +140,8 @@ public class ListEmails extends UI {
             e.printStackTrace();
         }
         emailList.remove(currentPage * PAGE_SIZE + Integer.parseInt(userInput));
+        System.out.printf("%s%s%s\n", ANSI_TEXT_GREEN, "Email removed.", ANSI_RESET);
+        sleep(2000);
     }
 
     public static void main(String[] args) throws IOException {

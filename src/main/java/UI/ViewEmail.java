@@ -104,10 +104,42 @@ public class ViewEmail extends UI {
                 e.printStackTrace();
             }
             mailList.remove(mailOrder);
+            System.out.printf("%s%s%s\n", ANSI_TEXT_GREEN, "Email removed.", ANSI_RESET);
+            sleep(2000);
         } else if (userInput == "M") {
-            String destination = inputHandler.dialog("Destination mailbox: ");
-            Mailbox.moveMailToFolder(emailDirectory, destination);
+            for (int i = 0; i < mailboxes.size(); i++) {
+                System.out.printf("[%d] %s\n", i + 1, mailboxes.get(i).getMailboxName());
+            }
+            String[][] options = {
+                    { ".", "Back to list" },
+                    { "#", "Move to mailbox #" },
+                    { "N", "New mailbox" },
+                    { "C", "Cancel" }
+            };
+            showOptions(options);
+            userInput = inputHandler.dialog("Move to: ");
+
+            Mailbox destination;
+            switch (userInput) {
+                case ".":
+                    return;
+                case "C":
+                    return;
+                case "N":
+                    String newMailboxName = inputHandler.dialog("New mailbox name: ");
+                    mailboxes.add(new Mailbox(newMailboxName));
+                    System.out.println(ANSI_TEXT_GREEN + "New mailbox created!" + ANSI_RESET);
+                    sleep(1500);
+                    destination = mailboxes.get(mailboxes.size() - 1);
+                    break;
+                default:
+                    int mailboxOrder = Integer.parseInt(userInput);
+                    destination = mailboxes.get(mailboxOrder);
+            }
+            Mailbox.moveMailToMailbox(emailDirectory, destination);
             mailList.remove(mailOrder);
+            System.out.printf("%s%s%s\n", ANSI_TEXT_GREEN, "Moved to ...", ANSI_RESET);
+            sleep(2000);
         } else {
             // download i-th attachment
         }

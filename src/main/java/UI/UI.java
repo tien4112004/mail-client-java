@@ -154,4 +154,13 @@ public class UI {
     // private boolean verifyEmail(String email) {
     // return email.matches("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$");
     // }
+
+    protected void sleep(int milisecond) {
+        try {
+            Thread.sleep(milisecond);
+        } catch (InterruptedException e) {
+            System.out.printf("%sKeyboard interupted%s", ANSI_TEXT_RED, ANSI_RESET);
+            e.printStackTrace();
+        }
+    }
 }

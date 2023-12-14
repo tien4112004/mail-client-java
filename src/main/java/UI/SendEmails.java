@@ -61,18 +61,13 @@ public class SendEmails extends UI {
             smtpSocket.connect();
             smtpSocket.sendEmail(message);
         } catch (Exception e) {
-            e.printStackTrace();
             System.out.printf("%s[ERROR]%s " + e.getMessage() + "\n", ANSI_TEXT_RED, ANSI_RESET);
+            sleep(2000);
+            e.printStackTrace();
             return;
         }
 
         System.out.println(ANSI_TEXT_GREEN + "Email sent." + ANSI_RESET);
-
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
         clearConsole();
     }
