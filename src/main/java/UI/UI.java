@@ -55,7 +55,7 @@ public class UI {
 
     public UI() {
         this.inputHandler = new InputHandler();
-        this.userInfo = new UserInformation();
+        this.userInfo = new UserInformation(inputHandler);
         this.username = userInfo.getUsername();
         this.password = userInfo.getPassword();
         // this.username = inputHandler.getUsername();

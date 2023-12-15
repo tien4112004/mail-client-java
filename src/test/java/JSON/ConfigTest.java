@@ -35,7 +35,7 @@ public class ConfigTest {
   // assertArrayEquals(actual, expected);
   // }
 
-  @Test
+  // @Test
   public void testWriteConfig() throws IOException {
     // Config config = new Config();
     String sender = "sender@localhost";

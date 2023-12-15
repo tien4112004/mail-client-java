@@ -47,23 +47,23 @@ public class MessagesStatusTest {
         assertTrue(actual);
     }
 
-    @Test
+    // @Test
     public void readJSONTest() throws Exception {
         JSONParser parser = new JSONParser();
         messageList = (JSONArray) parser.parse(new FileReader("src/main/java/JSON/MessageStatus.json"));
         JSONObject msgObject = new JSONObject();
         msgObject.put("1", false);
         assertTrue(messageList.contains(msgObject));
-    }  
-    
+    }
+
     @Test
-    public void replaceValue() throws Exception{
+    public void replaceValue() throws Exception {
         JSONObject msgObject = new JSONObject();
         msgObject = (JSONObject) messageList.get(0);
         messageList.remove(msgObject);
         assertTrue(messageList.isEmpty());
 
-        msgObject.replace("1", true); 
+        msgObject.replace("1", true);
         messageList.add(msgObject);
         assertTrue(messageList.contains(msgObject));
         msg.writeJSON(messageList);

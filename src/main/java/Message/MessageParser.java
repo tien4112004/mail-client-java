@@ -204,7 +204,9 @@ public class MessageParser {
     }
 
     public Message createMessage() {
-        Message message = new Message(sender, recipientsTo, recipientsCc, EMPTY_STRING_ARRAY, subject, content);
+        String[] attachments = getAttachmentDirectories();
+        Message message = new Message(sender, recipientsTo, recipientsCc, EMPTY_STRING_ARRAY, subject, content,
+                attachments);
         return message;
     }
 
