@@ -24,6 +24,8 @@ public class ListEmails extends UI {
     private final String ATTACHMENT = formatString("Attachment", 10);
     private final String SHORT_DATE_DISPLAY_FORMAT = "dd/MM/yyyy";
     private final String PART_SPLITER = "========================================================================================\n";
+    private final String DEFAULT_WORKING_DIRECTORY = "./";
+    String MessageStatusJSONDirectory = DEFAULT_WORKING_DIRECTORY + "MessageStatus.json";
 
     private Mailbox mailbox;
     private int currentPage = 0;
@@ -45,7 +47,8 @@ public class ListEmails extends UI {
             // Path MessageStatusJSONPath =
             // Paths.get("src/main/java/JSON/MessageStatus.json");
             // if (Files.exists(M, null))
-            this.messageList = (JSONArray) parser.parse(new FileReader("src/main/java/JSON/MessageStatus.json"));
+
+            this.messageList = (JSONArray) parser.parse(new FileReader(MessageStatusJSONDirectory));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -123,7 +126,7 @@ public class ListEmails extends UI {
         }
 
         try {
-            messageList = (JSONArray) parser.parse(new FileReader("src/main/java/JSON/MessageStatus.json"));
+            messageList = (JSONArray) parser.parse(new FileReader(MessageStatusJSONDirectory));
         } catch (Exception e) {
             e.printStackTrace();
         }

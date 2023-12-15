@@ -26,12 +26,13 @@ public class POP3Socket extends MailSocket {
     // RETR: Get message
     // DELE: Delete message
     // QUIT: Close connection
-    public String[] messagesID = null;
-
     private final String OK = "+OK";
     private final String ERR = "-ERR";
-    private final String username;
-    private final String password;
+    private final String DEFAULT_WORKING_DIRECTORY = "./";
+
+    public String[] messagesID = null;
+    private String username;
+    private String password;
     private JSONParser parser = new JSONParser();
     private JSONArray messageList = null;
     private WriteMessageStatus writeMessageStatus = null;
@@ -41,10 +42,11 @@ public class POP3Socket extends MailSocket {
         this.username = username;
         this.password = password;
         try {
-            File file = new File("src/main/java/JSON/MessageStatus.json");
+            String MessageStatusJSONDirectory = DEFAULT_WORKING_DIRECTORY + "MessageStatus.json";
+            File file = new File(MessageStatusJSONDirectory);
             writeMessageStatus = new WriteMessageStatus();
             if (file.exists())
-                messageList = (JSONArray) parser.parse(new FileReader("src/main/java/JSON/MessageStatus.json"));
+                messageList = (JSONArray) parser.parse(new FileReader(MessageStatusJSONDirectory));
             else
                 messageList = new JSONArray();
             connect();
@@ -193,7 +195,7 @@ public class POP3Socket extends MailSocket {
                 break;
             }
             String rawMessage = RETR(i + 1 + "");
-            Files.write(Paths.get("./test.msg"), rawMessage.getBytes());
+            // Files.write(Paths.get("./test.msg"), rawMessage.getBytes());
             MessageParser parser = new MessageParser();
             parser.parse(rawMessage);
             Message email = parser.createMessage();

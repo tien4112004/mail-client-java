@@ -24,6 +24,9 @@ public class MessageParser {
     private static final String ANSI_GREEN = "\u001B[32m";
     private static final String ANSI_RESET = "\u001B[0m";
 
+    private final String DEFAULT_WORKING_DIRECTORY = "./";
+    private final String DEFAULT_DOWNLOADS_DIRECTORY = "./attachments/";
+
     private String sender;
     private String date;
     private String[] recipientsTo;
@@ -115,7 +118,7 @@ public class MessageParser {
     }
 
     private void parseMultipartBody() {
-        parseMultipartBody("./write/attachments/");
+        parseMultipartBody(DEFAULT_DOWNLOADS_DIRECTORY);
     }
 
     private int countLinesUntilBoundary(int startIndex, String[] bodyLines) {

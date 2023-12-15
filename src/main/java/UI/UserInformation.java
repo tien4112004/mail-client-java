@@ -10,13 +10,15 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 public class UserInformation {
+    private static final String DEFAULT_WORKING_DIRECTORY = "./";
+    private static final String DEFAULT_CONFIG_DIRECTORY = DEFAULT_WORKING_DIRECTORY + "Config.json";
     JSONParser parser = new JSONParser();
     private String Username;
     private String Password;
 
     public UserInformation(String configDirectory) {
         try {
-            JSONArray configEleArray = (JSONArray) parser.parse(new FileReader("src/main/java/JSON/Config.json"));
+            JSONArray configEleArray = (JSONArray) parser.parse(new FileReader(DEFAULT_CONFIG_DIRECTORY));
             JSONObject configEle = (JSONObject) configEleArray.get(0);
             JSONObject config = (JSONObject) configEle.get("General");
             Username = (String) config.get("Username");
@@ -27,7 +29,7 @@ public class UserInformation {
     }
 
     public UserInformation() {
-        this("src/main/java/JSON/Config.json");
+        this(DEFAULT_CONFIG_DIRECTORY);
     }
 
     public String getUsername() {

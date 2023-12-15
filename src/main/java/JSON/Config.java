@@ -20,6 +20,8 @@ import UI.UI;
 import Message.Message;
 
 public class Config {
+    private final String DEFAULT_WORKING_DIRECTORY = "./";
+
     private Map<String, Object> filterMap = new HashMap<String, Object>();
     private Map<String, Object> generalMap = new HashMap<String, Object>();
 
@@ -28,6 +30,7 @@ public class Config {
     private String[] workKeywordsHandler() {
         String data = "";
         try {
+            // String workFileDirectory = DEFAULT_WORKING_DIRECTORY + "Work_Keywords.txt";
             File workFile = new File("src/main/java/Config/Work_Keywords.txt");
             Scanner myReader = new Scanner(workFile);
             while (myReader.hasNextLine()) {
@@ -116,7 +119,8 @@ public class Config {
         jsonArray.add(je);
         String prettyJson = gson.toJson(jsonArray);
 
-        try (FileWriter file = new FileWriter("src/main/java/Config/Config.json")) {
+        String configDirectory = DEFAULT_WORKING_DIRECTORY + "Config.json";
+        try (FileWriter file = new FileWriter(configDirectory)) {
             file.write(prettyJson);
             file.flush();
         } catch (IOException e) {
