@@ -40,6 +40,7 @@ public class ListEmails extends UI {
         this.mailbox = mailbox;
         this.inputHandler = inputHandler;
         this.backToMailboxListCallback = backToMailboxListCallback;
+        this.writeMessageStatus = new WriteMessageStatus();
         try {
             // Path MessageStatusJSONPath =
             // Paths.get("src/main/java/JSON/MessageStatus.json");
@@ -85,7 +86,7 @@ public class ListEmails extends UI {
             MessageParser parser = new MessageParser();
             parser.quickParse(rawMessage);
             messageObject = (JSONObject) messageList.get(i);
-            String readStatus = (messageObject.containsValue(false)) ? "*" : "";
+            String readStatus = (messageObject.containsValue(false)) ? "*" : " ";
             // String readStatus = "*";
             String sender = parser.getSender();
             sender = formatString(sender, 20);
@@ -162,8 +163,9 @@ public class ListEmails extends UI {
                 ViewEmail emailViewer = new ViewEmail(emailDirectory, mailList, emailIndex, mailboxes, inputHandler,
                         this::list);
                 messageObject = (JSONObject) messageList.get(emailIndex);
-                messageList.remove(emailIndex);
-                messageObject.replace(mailList.get(emailIndex), true);
+                messageList.remove(messageObject);
+                String keyObject = (String) messageObject.keySet().toArray()[0];
+                messageObject.replace(keyObject, true);
                 messageList.add(emailIndex, messageObject);
                 try {
                     writeMessageStatus.writeJSON(messageList);
