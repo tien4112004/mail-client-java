@@ -1,6 +1,5 @@
 package UI;
 
-import java.io.IOException;
 import java.util.Scanner;
 
 public class InputHandler {

@@ -83,7 +83,7 @@ public class UI {
                 new SendEmails(inputHandler).send();
                 break;
             case 2:
-                listMailboxesUI = new ListMailboxes(username, inputHandler, this::showOption);
+                listMailboxesUI = new ListMailboxes(username, inputHandler);
                 listMailboxesUI.list();
                 break;
             case 3:

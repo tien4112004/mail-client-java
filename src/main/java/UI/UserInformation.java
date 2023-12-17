@@ -29,7 +29,7 @@ public class UserInformation {
         } catch (Exception e) {
             System.out.println("Config file not found!");
             handleUserInput();
-            e.printStackTrace();
+            // e.printStackTrace();
         }
     }
 

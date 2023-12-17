@@ -18,18 +18,15 @@ public class ViewEmail extends UI {
     private List<String> mailList;
     private List<Mailbox> mailboxes;
 
-    private BackToPreviousCallback backToListCallback;
-
     private int mailOrder;
 
     public ViewEmail(String emailDirectory, List<String> mailList, int mailOrder, List<Mailbox> mailboxes,
-            InputHandler inputHandler, BackToPreviousCallback backToListCallback) {
+            InputHandler inputHandler) {
         this.emailDirectory = emailDirectory;
         this.mailList = mailList;
         this.mailOrder = mailOrder;
         this.mailboxes = mailboxes;
         this.inputHandler = inputHandler;
-        this.backToListCallback = backToListCallback;
     }
 
     public void showEmail() {
@@ -95,11 +92,12 @@ public class ViewEmail extends UI {
 
     public void handleUserInput(String userInput) {
         if (userInput.equals("Q")) {
-            backToListCallback.backToList();
+            return;
         } else if (userInput.equals("A")) {
 
         } else if (userInput.equals("D")) {
             deleteEmailHandler();
+            return;
         } else if (userInput == "M") {
             for (int i = 0; i < mailboxes.size(); i++) {
                 System.out.printf("[%d] %s\n", i + 1, mailboxes.get(i).getMailboxName());
@@ -134,6 +132,7 @@ public class ViewEmail extends UI {
             mailList.remove(mailOrder);
             System.out.printf("%s%s%s\n", ANSI_TEXT_GREEN, "Moved to ...", ANSI_RESET);
             sleep(2000);
+            return;
         } else {
             // download i-th attachment
         }

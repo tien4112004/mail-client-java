@@ -11,6 +11,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import Filter.*;
+
 public class MessageParser {
     private static final String CRLF = "\r\n";
     private static final String ERROR_FILE_NOT_FOUND = "[ERROR][Message] File \"%s\" not found.";
@@ -52,6 +54,7 @@ public class MessageParser {
         } else {
             content = body;
         }
+
     }
 
     public void quickParse(String rawMessage) {
