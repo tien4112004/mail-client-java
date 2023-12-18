@@ -11,3 +11,9 @@
 
 # target/
 attachments/
+Inbox/
+Sent/
+Spam/
+Config.json
+MessageStatus.json
+Mailbox.json
