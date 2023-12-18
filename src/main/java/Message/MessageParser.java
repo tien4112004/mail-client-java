@@ -44,7 +44,7 @@ public class MessageParser {
         // do nothing
     }
 
-    public void parse(String rawMessage) {
+    public void fullParse(String rawMessage) {
         String[] lines = rawMessage.split(CRLF);
         int headerEndIndex = parseHeader(lines);
         body = String.join(CRLF, Arrays.copyOfRange(lines, headerEndIndex + 1, lines.length));
