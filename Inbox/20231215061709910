@@ -1,0 +1,35 @@
+Content-Type: multipart/mixed; boundary="------------9f8227ffd62a46f38d8dc4c03acc8df7"
+Message-ID: <860cff88-c772-4801-8850-f8c67e72064c>
+Date: Fri, 15 Dec 2023 06:17:09 +0700
+MIME-Version: 1.0
+User-Agent: 
+Content-Language: en-US
+From: example@localhost
+To: pttien@fit.hcmus.edu.vn
+Cc: example@localhost
+Subject: Test Email w/ attachments
+
+This is a multi-part message in MIME format.
+--------------9f8227ffd62a46f38d8dc4c03acc8df7
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+
+This is a test email with long content...This is a test email with long cont
+ent...This is a test email with long content...This is a test email with lon
+g content...This is a test email with long content...This is a test email wi
+th long content...This is a test email with long content...This is a test em
+ail with long content...
+
+--------------9f8227ffd62a46f38d8dc4c03acc8df7
+Content-Type: application/octet-stream; charset=UTF-8; name="test.cpp"
+Content-Disposition: attachment; filename="test.cpp"
+Content-Transfer-Encoding: base64
+
+Y3BwIHRlc3Q=
+--------------9f8227ffd62a46f38d8dc4c03acc8df7
+Content-Type: text/plain; charset=UTF-8; name="test.txt"
+Content-Disposition: attachment; filename="test.txt"
+Content-Transfer-Encoding: base64
+
+SGVsbG8gd29ybGQ=
+--------------9f8227ffd62a46f38d8dc4c03acc8df7--

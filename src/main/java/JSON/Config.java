@@ -16,7 +16,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 
-import UI.UI;
+import UI.MainMenu;
 import Message.Message;
 
 public class Config {
@@ -89,7 +89,7 @@ public class Config {
         return filter;
     }
 
-    private JSONObject createGeneral(UI UI) throws IOException {
+    private JSONObject createGeneral(MainMenu UI) throws IOException {
         String username = UI.username;
         generalMap.put("Username", username);
         String password = UI.password;
@@ -105,7 +105,7 @@ public class Config {
         return general;
     }
 
-    public void writeConfig(UI UI, Message message) throws IOException {
+    public void writeConfig(MainMenu UI, Message message) throws IOException {
         JSONObject filter = createFilter(message);
         JSONObject general = createGeneral(UI);
 

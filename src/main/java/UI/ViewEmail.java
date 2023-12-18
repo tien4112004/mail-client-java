@@ -42,7 +42,7 @@ public class ViewEmail extends MainMenu {
         }
 
         MessageParser parser = new MessageParser();
-        parser.parse(rawMessage);
+        parser.fullParse(rawMessage);
         System.out.println("Date: " + parser.getDate(LONG_DAY_DISPLAY_FORMAT));
         System.out.println("From: " + parser.getSender());
         printList("To: ", parser.getRecipientsTo());

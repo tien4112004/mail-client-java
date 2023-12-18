@@ -13,6 +13,7 @@ import java.nio.file.StandardCopyOption;
 public class Mailbox {
     String name;
     Path directory;
+    Filter[] filters;
 
     public Mailbox(String name, String directory) {
         this.name = name;
@@ -39,7 +40,7 @@ public class Mailbox {
         }
 
         MessageParser parser = new MessageParser();
-        parser.parse(rawMessage);
+        parser.fullParse(rawMessage);
         Message email = parser.createMessage();
 
         if (filter.matches(email)) {
@@ -102,6 +103,10 @@ public class Mailbox {
 
     public String getMailboxName() {
         return this.name;
+    }
+
+    public Filter[] getFilters() {
+        return filters;
     }
 
     public Mailbox search(String name) {
