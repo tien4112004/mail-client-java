@@ -6,6 +6,8 @@ import Socket.SMTPSocket;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 import Message.MessageParser;
 
@@ -45,7 +47,6 @@ public class POP3SocketTest {
         String message = POP3Socket.RETR("1");
 
         System.out.println(message);
-        POP3Socket.quit();
     }
 
     @Test
@@ -75,9 +76,10 @@ public class POP3SocketTest {
         POP3Socket.retrieveMessage();
     }
 
-    // @After
+    @AfterEach
     public void tearDown() throws IOException {
-        Path path = Paths.get("src/main/java/JSON/MessageStatus.json");
+        POP3Socket.quit();
+        Path path = Paths.get("./MessageStatus.json");
         Files.deleteIfExists(path);
     }
 }

@@ -61,13 +61,6 @@ public class POP3Socket extends MailSocket {
         }
     }
 
-    // public POP3Socket() {
-    // super("localhost", 2225);
-    // // TODO:
-    // username = Config.get("username");
-    // password = Config.get("password");
-    // }
-
     @Override
     public String getResponse() throws IOException {
         String response = fromServer.readLine();
@@ -208,7 +201,7 @@ public class POP3Socket extends MailSocket {
             messageList.add(messageObject);
         }
         writeMessageStatus.writeJSON(messageList);
-        quit();
+        // quit();
     }
 
     private void saveEmail(String filename, String rawMessage) {
