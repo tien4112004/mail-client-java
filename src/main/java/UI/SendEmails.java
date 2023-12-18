@@ -3,7 +3,7 @@ package UI;
 import Message.Message;
 import Socket.SMTPSocket;
 
-public class SendEmails extends UI {
+public class SendEmails extends MainMenu {
     private String sender = "example@localhost";
     private String[] recipientsTo;
     private String[] recipientsCc;

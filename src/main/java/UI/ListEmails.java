@@ -16,7 +16,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-public class ListEmails extends UI {
+public class ListEmails extends MainMenu {
     private final int PAGE_SIZE = 10; // Number of emails per page
     private final String FROM = formatString("From", 20);
     private final String SUBJECT = formatString("Subject", 30);

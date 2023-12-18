@@ -10,7 +10,7 @@ import java.util.Arrays;
 
 import Filter.Mailbox;
 
-public class ListMailboxes extends UI {
+public class ListMailboxes extends MainMenu {
     private String username; // TODO: get from JSON
     List<Mailbox> mailboxes = new ArrayList<Mailbox>(
             Arrays.asList(new Mailbox("Inbox"), new Mailbox("Sent"), new Mailbox("Spam")));

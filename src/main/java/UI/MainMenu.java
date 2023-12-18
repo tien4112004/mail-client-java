@@ -16,7 +16,7 @@ import Socket.POP3Socket;
 // import Config.Config;
 // import Socket.SMTPSocket;
 
-public class UI {
+public class MainMenu {
     protected final String ANSI_TEXT_BLACK = "\u001B[30m";
     protected final String ANSI_TEXT_RED = "\u001B[31m";
     protected final String ANSI_TEXT_GREEN = "\u001B[32m";
@@ -53,7 +53,7 @@ public class UI {
 
     protected InputHandler inputHandler;
 
-    public UI() {
+    public MainMenu() {
         this.inputHandler = new InputHandler();
         this.userInfo = new UserInformation(inputHandler);
         this.username = userInfo.getUsername();
