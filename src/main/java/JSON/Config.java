@@ -16,10 +16,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 
-import UI.UI;
+import UI.MainMenu;
 import Message.Message;
 
 public class Config {
+    private final String DEFAULT_WORKING_DIRECTORY = "./";
+
     private Map<String, Object> filterMap = new HashMap<String, Object>();
     private Map<String, Object> generalMap = new HashMap<String, Object>();
 
@@ -28,6 +30,7 @@ public class Config {
     private String[] workKeywordsHandler() {
         String data = "";
         try {
+            // String workFileDirectory = DEFAULT_WORKING_DIRECTORY + "Work_Keywords.txt";
             File workFile = new File("src/main/java/Config/Work_Keywords.txt");
             Scanner myReader = new Scanner(workFile);
             while (myReader.hasNextLine()) {
@@ -86,7 +89,7 @@ public class Config {
         return filter;
     }
 
-    private JSONObject createGeneral(UI UI) throws IOException {
+    private JSONObject createGeneral(MainMenu UI) throws IOException {
         String username = UI.username;
         generalMap.put("Username", username);
         String password = UI.password;
@@ -102,7 +105,7 @@ public class Config {
         return general;
     }
 
-    public void writeConfig(UI UI, Message message) throws IOException {
+    public void writeConfig(MainMenu UI, Message message) throws IOException {
         JSONObject filter = createFilter(message);
         JSONObject general = createGeneral(UI);
 
@@ -116,7 +119,8 @@ public class Config {
         jsonArray.add(je);
         String prettyJson = gson.toJson(jsonArray);
 
-        try (FileWriter file = new FileWriter("src/main/java/Config/Config.json")) {
+        String configDirectory = DEFAULT_WORKING_DIRECTORY + "Config.json";
+        try (FileWriter file = new FileWriter(configDirectory)) {
             file.write(prettyJson);
             file.flush();
         } catch (IOException e) {

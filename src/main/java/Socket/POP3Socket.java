@@ -1,12 +1,15 @@
 package Socket;
 
 import java.io.IOException;
+import java.net.PasswordAuthentication;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 import java.io.FileReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.Paths;
+import java.nio.file.Path;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -26,12 +29,13 @@ public class POP3Socket extends MailSocket {
     // RETR: Get message
     // DELE: Delete message
     // QUIT: Close connection
-    public String[] messagesID = null;
-
     private final String OK = "+OK";
     private final String ERR = "-ERR";
-    private final String username;
-    private final String password;
+    private final String DEFAULT_WORKING_DIRECTORY = "./";
+
+    public String[] messagesID = null;
+    private String username;
+    private String password;
     private JSONParser parser = new JSONParser();
     private JSONArray messageList = null;
     private WriteMessageStatus writeMessageStatus = null;
@@ -41,10 +45,11 @@ public class POP3Socket extends MailSocket {
         this.username = username;
         this.password = password;
         try {
-            File file = new File("src/main/java/JSON/MessageStatus.json");
+            String MessageStatusJSONDirectory = DEFAULT_WORKING_DIRECTORY + "MessageStatus.json";
+            File file = new File(MessageStatusJSONDirectory);
             writeMessageStatus = new WriteMessageStatus();
             if (file.exists())
-                messageList = (JSONArray) parser.parse(new FileReader("src/main/java/JSON/MessageStatus.json"));
+                messageList = (JSONArray) parser.parse(new FileReader(MessageStatusJSONDirectory));
             else
                 messageList = new JSONArray();
             connect();
@@ -55,13 +60,6 @@ public class POP3Socket extends MailSocket {
             e.printStackTrace();
         }
     }
-
-    // public POP3Socket() {
-    // super("localhost", 2225);
-    // // TODO:
-    // username = Config.get("username");
-    // password = Config.get("password");
-    // }
 
     @Override
     public String getResponse() throws IOException {
@@ -193,15 +191,26 @@ public class POP3Socket extends MailSocket {
                 break;
             }
             String rawMessage = RETR(i + 1 + "");
-            Files.write(Paths.get("./test.msg"), rawMessage.getBytes());
+            // Files.write(Paths.get("./test.msg"), rawMessage.getBytes());
             MessageParser parser = new MessageParser();
-            parser.parse(rawMessage);
-            Message email = parser.createMessage();
-            email.saveMail(messagesID[i]);
+            // parser.parse(rawMessage);
+            // Message email = parser.createMessage();
+            // email.saveMail(messagesID[i]);
+            saveEmail("Inbox/" + messagesID[i], rawMessage);
             // TODO: filter
             messageList.add(messageObject);
         }
         writeMessageStatus.writeJSON(messageList);
+        // quit();
+    }
+
+    private void saveEmail(String filename, String rawMessage) {
+        try {
+            Path emailPath = Paths.get(filename);
+            Files.write(emailPath, rawMessage.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void deleteMessage(String messageOrder) throws IOException {

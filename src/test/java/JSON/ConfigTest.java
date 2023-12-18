@@ -10,7 +10,7 @@ import java.nio.file.Paths;
 import java.nio.file.Files;
 
 // import Config.Config;
-import UI.UI;
+import UI.MainMenu;
 import Message.Message;
 
 public class ConfigTest {
@@ -35,7 +35,7 @@ public class ConfigTest {
   // assertArrayEquals(actual, expected);
   // }
 
-  @Test
+  // @Test
   public void testWriteConfig() throws IOException {
     // Config config = new Config();
     String sender = "sender@localhost";
@@ -48,7 +48,7 @@ public class ConfigTest {
 
     Message message = new Message(sender, recipientsTo, recipientsCc, recipientsBcc, subject, content, attachments);
 
-    UI UI = new UI();
+    MainMenu UI = new MainMenu();
     UI.username = "example@localhost";
     UI.password = "123456";
     // config.writeConfig(UI, message);

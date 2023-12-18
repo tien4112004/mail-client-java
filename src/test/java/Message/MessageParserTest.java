@@ -46,7 +46,7 @@ public class MessageParserTest {
         MessageParser parser = new MessageParser();
 
         // Act
-        parser.parse(rawMessage);
+        parser.fullParse(rawMessage);
 
         // Assert
         assertEquals("sender@example.com", parser.getSender());
@@ -103,7 +103,7 @@ public class MessageParserTest {
         MessageParser parser = new MessageParser();
 
         // Act
-        parser.parse(rawEmail);
+        parser.fullParse(rawEmail);
 
         // Assert
         assertEquals("example@localhost", parser.getSender());
@@ -130,7 +130,7 @@ public class MessageParserTest {
         MessageParser parser = new MessageParser();
 
         // Act
-        parser.parse(rawEmail);
+        parser.fullParse(rawEmail);
 
         // Assert
         assertEquals("example@localhost", parser.getSender());

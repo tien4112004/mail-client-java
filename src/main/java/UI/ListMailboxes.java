@@ -10,7 +10,7 @@ import java.util.Arrays;
 
 import Filter.Mailbox;
 
-public class ListMailboxes extends UI {
+public class ListMailboxes extends MainMenu {
     private String username; // TODO: get from JSON
     List<Mailbox> mailboxes = new ArrayList<Mailbox>(
             Arrays.asList(new Mailbox("Inbox"), new Mailbox("Sent"), new Mailbox("Spam")));
@@ -20,30 +20,28 @@ public class ListMailboxes extends UI {
 
     public int currentPage = 1;
 
-    BackToPreviousCallback backToMenuCallback;
-
-    public ListMailboxes(String username, InputHandler inputHandler, BackToPreviousCallback backToMenuCallback) {
+    public ListMailboxes(String username, InputHandler inputHandler) {
         this.username = username;
         this.inputHandler = super.inputHandler;
-        this.backToMenuCallback = backToMenuCallback;
     }
 
     public void list() {
-        clearConsole();
+        boolean keepRunning = true;
+        while (keepRunning) {
+            clearConsole();
 
-        displayMailboxes();
-        displayOptions();
-        handleUserInput();
+            displayMailboxes();
+            displayOptions();
+            keepRunning = handleUserInput();
+        }
     }
 
     private void nextPage() {
         currentPage = Math.min(currentPage + 1, mailboxes.size() / MAILBOXES_PER_PAGE + 1);
-        list();
     }
 
     private void previousPage() {
         currentPage = Math.max(currentPage - 1, 1);
-        list();
     }
 
     private void displayMailboxes() {
@@ -71,30 +69,35 @@ public class ListMailboxes extends UI {
         showOptions(options);
     }
 
-    private void handleUserInput() {
+    private boolean handleUserInput() {
         String userInput = inputHandler.dialog(EMPTY_PROMPT);
         switch (userInput) {
             case ">":
                 nextPage();
-                break;
+                return true;
             case "<":
                 previousPage();
-                break;
+                return true;
             case "N":
                 createNewMailbox();
-                break;
+                return true;
             case "Q":
-                backToMenuCallback.backToList();
+                return false;
             default:
-                int order = Integer.parseInt(userInput);
-                int mailboxOrder = (currentPage - 1) * 10 + Integer.parseInt(userInput);
-                Mailbox mailbox = mailboxes.get(mailboxOrder - 1);
-                ListEmails listEmails = new ListEmails(mailbox, inputHandler, this::list);
-                listEmails.list();
-                if (mailboxOrder > mailboxes.size() || order > 9 || order < 0) {
-                    System.out.println("Invalid mailbox number! Aborting...");
-                    System.exit(0);
-                }
+                handleMailboxSelection(userInput);
+                return true;
+        }
+    }
+
+    private void handleMailboxSelection(String userInput) {
+        int order = Integer.parseInt(userInput);
+        int mailboxIndex = (currentPage - 1) * 10 + order;
+        Mailbox mailbox = mailboxes.get(mailboxIndex - 1);
+        ListEmails listEmails = new ListEmails(mailbox, inputHandler);
+        listEmails.list();
+        if (mailboxIndex > mailboxes.size() || order > 9 || order < 0) {
+            System.out.println("Invalid mailbox number! Aborting...");
+            System.exit(0);
         }
     }
 

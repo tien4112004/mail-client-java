@@ -11,6 +11,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import Filter.*;
+
 public class MessageParser {
     private static final String CRLF = "\r\n";
     private static final String ERROR_FILE_NOT_FOUND = "[ERROR][Message] File \"%s\" not found.";
@@ -23,6 +25,9 @@ public class MessageParser {
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
     private static final String ANSI_GREEN = "\u001B[32m";
     private static final String ANSI_RESET = "\u001B[0m";
+
+    private final String DEFAULT_WORKING_DIRECTORY = "./";
+    private final String DEFAULT_DOWNLOADS_DIRECTORY = "./attachments/";
 
     private String sender;
     private String date;
@@ -39,7 +44,7 @@ public class MessageParser {
         // do nothing
     }
 
-    public void parse(String rawMessage) {
+    public void fullParse(String rawMessage) {
         String[] lines = rawMessage.split(CRLF);
         int headerEndIndex = parseHeader(lines);
         body = String.join(CRLF, Arrays.copyOfRange(lines, headerEndIndex + 1, lines.length));
@@ -49,6 +54,7 @@ public class MessageParser {
         } else {
             content = body;
         }
+
     }
 
     public void quickParse(String rawMessage) {
@@ -115,7 +121,7 @@ public class MessageParser {
     }
 
     private void parseMultipartBody() {
-        parseMultipartBody("./write/attachments/");
+        parseMultipartBody(DEFAULT_DOWNLOADS_DIRECTORY);
     }
 
     private int countLinesUntilBoundary(int startIndex, String[] bodyLines) {
@@ -201,7 +207,9 @@ public class MessageParser {
     }
 
     public Message createMessage() {
-        Message message = new Message(sender, recipientsTo, recipientsCc, EMPTY_STRING_ARRAY, subject, content);
+        String[] attachments = getAttachmentDirectories();
+        Message message = new Message(sender, recipientsTo, recipientsCc, EMPTY_STRING_ARRAY, subject, content,
+                attachments);
         return message;
     }
 

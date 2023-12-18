@@ -15,15 +15,18 @@ import com.google.gson.JsonElement;
 import Filter.Mailbox;
 
 public class WriteMailbox {
+    private final String DEFAULT_WORKING_DIRECTORY = "./";
+
     JSONArray mailBoxList = null;
     JSONParser parser = new JSONParser();
 
     public WriteMailbox() {
-        File file = new File("src/main/java/JSON/MailBox.json");
+        String mailboxJSONDirectory = DEFAULT_WORKING_DIRECTORY + "Mailbox.json";
+        File file = new File(mailboxJSONDirectory);
         try {
             if (file.exists())
-                mailBoxList = (JSONArray) parser.parse(new FileReader("src/main/java/JSON/MailBox.json"));
-            else 
+                mailBoxList = (JSONArray) parser.parse(new FileReader(mailboxJSONDirectory));
+            else
                 mailBoxList = new JSONArray();
         } catch (Exception e) {
             e.printStackTrace();
@@ -41,7 +44,8 @@ public class WriteMailbox {
         JsonElement je = gson.toJsonTree(mailBoxList);
         String prettyJson = gson.toJson(je);
 
-        try (FileWriter file = new FileWriter("src/main/java/JSON/Mailbox.json")) {
+        String mailboxJSONDirectory = DEFAULT_WORKING_DIRECTORY + "Mailbox.json";
+        try (FileWriter file = new FileWriter(mailboxJSONDirectory)) {
             file.write(prettyJson);
             file.flush();
         } catch (Exception e) {

@@ -16,7 +16,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-public class ListEmails extends UI {
+public class ListEmails extends MainMenu {
     private final int PAGE_SIZE = 10; // Number of emails per page
     private final String FROM = formatString("From", 20);
     private final String SUBJECT = formatString("Subject", 30);
@@ -24,11 +24,12 @@ public class ListEmails extends UI {
     private final String ATTACHMENT = formatString("Attachment", 10);
     private final String SHORT_DATE_DISPLAY_FORMAT = "dd/MM/yyyy";
     private final String PART_SPLITER = "========================================================================================\n";
+    private final String DEFAULT_WORKING_DIRECTORY = "./";
+    String MessageStatusJSONDirectory = DEFAULT_WORKING_DIRECTORY + "MessageStatus.json";
 
     private Mailbox mailbox;
     private int currentPage = 0;
     List<String> mailList;
-    BackToPreviousCallback backToMailboxListCallback;
 
     // ReadMessageStatus readMessageStatus = null;
     JSONParser parser = new JSONParser();
@@ -36,25 +37,28 @@ public class ListEmails extends UI {
     JSONArray messageList = null;
     JSONObject messageObject = null;
 
-    public ListEmails(Mailbox mailbox, InputHandler inputHandler, BackToPreviousCallback backToMailboxListCallback) {
+    public ListEmails(Mailbox mailbox, InputHandler inputHandler) {
         this.mailbox = mailbox;
         this.inputHandler = inputHandler;
-        this.backToMailboxListCallback = backToMailboxListCallback;
         this.writeMessageStatus = new WriteMessageStatus();
         try {
             // Path MessageStatusJSONPath =
             // Paths.get("src/main/java/JSON/MessageStatus.json");
             // if (Files.exists(M, null))
-            this.messageList = (JSONArray) parser.parse(new FileReader("src/main/java/JSON/MessageStatus.json"));
+
+            this.messageList = (JSONArray) parser.parse(new FileReader(MessageStatusJSONDirectory));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     protected void list() {
-        loadEmails();
-        displayEmails();
-        handleUserInput();
+        boolean keepRunning = true;
+        while (keepRunning) {
+            loadEmails();
+            displayEmails();
+            keepRunning = handleUserInput();
+        }
     }
 
     private void displayEmails() {
@@ -123,59 +127,59 @@ public class ListEmails extends UI {
         }
 
         try {
-            messageList = (JSONArray) parser.parse(new FileReader("src/main/java/JSON/MessageStatus.json"));
+            messageList = (JSONArray) parser.parse(new FileReader(MessageStatusJSONDirectory));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void previousPage() {
-        currentPage = Math.max(currentPage - 1, 0);
-        list();
-    }
-
-    private void nextPage() {
-        currentPage = Math.min(currentPage + 1, mailList.size() / PAGE_SIZE);
-        list();
-    }
-
-    private void handleUserInput() {
+    private boolean handleUserInput() {
         String userInput = inputHandler.dialog(EMPTY_PROMPT);
         switch (userInput) {
             case "<":
                 previousPage();
-                break;
+                return true;
             case ">":
                 nextPage();
-                break;
+                return true;
             case "Q":
-                backToMailboxListCallback.backToList();
-                break;
+                return false;
             case "D":
                 deleteEmailHandler(mailList, currentPage);
-                break;
+                return true;
             case "M":
                 moveEmailHandler(mailList, currentPage);
-                break;
+                return true;
             default:
-                int emailIndex = currentPage * PAGE_SIZE + Integer.parseInt(userInput);
-                String emailDirectory = mailList.get(currentPage * PAGE_SIZE + Integer.parseInt(userInput));
-                ViewEmail emailViewer = new ViewEmail(emailDirectory, mailList, emailIndex, mailboxes, inputHandler,
-                        this::list);
-                messageObject = (JSONObject) messageList.get(emailIndex);
-                messageList.remove(messageObject);
-                String keyObject = (String) messageObject.keySet().toArray()[0];
-                messageObject.replace(keyObject, true);
-                messageList.add(emailIndex, messageObject);
-                try {
-                    writeMessageStatus.writeJSON(messageList);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                emailViewer.showEmail();
-                displayEmails();
-                break;
+                handleEmailSelection(userInput);
+                return true;
         }
+    }
+
+    private void previousPage() {
+        currentPage = Math.max(currentPage - 1, 0);
+    }
+
+    private void nextPage() {
+        currentPage = Math.min(currentPage + 1, mailList.size() / PAGE_SIZE);
+    }
+
+    private void handleEmailSelection(String userInput) {
+        int emailIndex = currentPage * PAGE_SIZE + Integer.parseInt(userInput);
+        String emailDirectory = mailList.get(currentPage * PAGE_SIZE + Integer.parseInt(userInput));
+        ViewEmail emailViewer = new ViewEmail(emailDirectory, mailList, emailIndex, mailboxes, inputHandler);
+        messageObject = (JSONObject) messageList.get(emailIndex);
+        messageList.remove(messageObject);
+        String keyObject = (String) messageObject.keySet().toArray()[0];
+        messageObject.replace(keyObject, true);
+        messageList.add(emailIndex, messageObject);
+        try {
+            writeMessageStatus.writeJSON(messageList);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        emailViewer.showEmail();
+        displayEmails();
     }
 
     private String formatString(String original, int length) {

@@ -193,7 +193,7 @@ public class Message {
     public void saveMail(String mailId) {
         String rawMessage = toString();
         try {
-            Files.write(Paths.get(mailId + ".msg"), rawMessage.getBytes());
+            Files.write(Paths.get("Inbox/" + mailId + ".msg"), rawMessage.getBytes());
         } catch (Exception e) {
             e.printStackTrace();
         }
