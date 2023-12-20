@@ -54,13 +54,25 @@ public class MessageParser {
         } else {
             content = body;
         }
+    }
 
+    public void parseHeaderAndContent(String rawMessage) {
+        String[] lines = rawMessage.split(CRLF);
+        int headerEndIndex = parseHeader(lines);
+
+        for (int i = 0; i < lines.length; i++) {
+            if (lines[i].equals(CONTENT_TRANSFER_ENCODING)) {
+                parseContent(lines, i + 2);
+            }
+        }
     }
 
     public void quickParse(String rawMessage) {
         String[] lines = rawMessage.split(CRLF);
         parseHeader(lines);
     }
+
+    // private methods
 
     public boolean hasAttachment() {
         return contentType != null && contentType.startsWith("multipart/mixed");
@@ -111,7 +123,7 @@ public class MessageParser {
                 continue;
 
             if (bodyLines[i].startsWith(CONTENT_TRANSFER_ENCODING)) {
-                parseContent(bodyLines[i], i + 2, bodyLines);
+                parseContent(bodyLines, i + 2);
                 i += countLinesUntilBoundary(i + 2, bodyLines); // Skip lines of the current content
             } else if (bodyLines[i].startsWith("Content-Disposition: ")) {
                 parseFile(bodyLines[i], i + 3, bodyLines, saveDirectory);
@@ -136,7 +148,7 @@ public class MessageParser {
         return line.startsWith("Content-Type: ");
     }
 
-    protected void parseContent(String line, int startIndex, String[] bodyLines) {
+    protected void parseContent(String[] bodyLines, int startIndex) {
         String encodedContent = joinLinesUntilBoundary(startIndex, bodyLines);
         content = encodedContent.toString();
     }

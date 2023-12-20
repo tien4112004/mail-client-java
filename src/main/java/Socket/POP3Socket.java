@@ -197,8 +197,10 @@ public class POP3Socket extends MailSocket {
             // Message email = parser.createMessage();
             // email.saveMail(messagesID[i]);
             saveEmail("Inbox/" + messagesID[i], rawMessage);
-            // TODO: filter
             messageList.add(messageObject);
+
+            // Filter - temporary
+
         }
         writeMessageStatus.writeJSON(messageList);
         // quit();
