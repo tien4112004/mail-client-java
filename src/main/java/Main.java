@@ -15,6 +15,7 @@ public class Main {
         MainMenu ui = new MainMenu();
         List<Mailbox> mailboxes = new ArrayList<Mailbox>(
                 Arrays.asList(new Mailbox("Inbox"), new Mailbox("Sent"), new Mailbox("Spam"))); // load from config
+
         POP3Socket pop3Socket = new POP3Socket("localhost", 3335, ui.username, ui.password);
         try {
             System.out.println(ANSI_TEXT_YELLOW + "Retrieving message..." + ANSI_RESET);
