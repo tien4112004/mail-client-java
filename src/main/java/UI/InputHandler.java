@@ -10,7 +10,7 @@ public class InputHandler {
     }
 
     public int getMenuOption() {
-        String prompt = "Please choose your option: ";
+        String prompt = "\nPlease choose your option: ";
         int option = Integer.parseInt(dialog(prompt));
         return option;
     }
@@ -19,5 +19,15 @@ public class InputHandler {
         System.out.print(prompt);
         String response = scanner.nextLine();
         return response;
+    }
+
+    protected String[] dialogList(String prompt) {
+        System.out.print(prompt);
+        String rawResponse = scanner.nextLine();
+        String[] responseList = rawResponse.split(", ");
+        for (String response : responseList) {
+            response = response.trim().toLowerCase();
+        }
+        return responseList;
     }
 }
