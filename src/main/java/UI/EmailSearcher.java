@@ -36,7 +36,7 @@ public class EmailSearcher extends UI {
         System.out.print("Filter by: ");
         showOptions(filterOptions);
         String option = inputHandler.dialog(EMPTY_PROMPT);
-        String keywords = inputHandler.dialog("Keywords [separated by commas]: \n");
+        String[] keywords = inputHandler.dialogList("Keywords [separated by commas]: \n");
 
         switch (option) {
             case "1":
@@ -81,6 +81,6 @@ public class EmailSearcher extends UI {
             return;
         }
         ListEmails listSearchResult = new ListEmails(searchResult, inputHandler);
-        listSearchResult.list("Search result: ");
+        listSearchResult.list("Search result");
     }
 }

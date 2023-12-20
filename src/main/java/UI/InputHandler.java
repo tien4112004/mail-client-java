@@ -20,4 +20,14 @@ public class InputHandler {
         String response = scanner.nextLine();
         return response;
     }
+
+    protected String[] dialogList(String prompt) {
+        System.out.print(prompt);
+        String rawResponse = scanner.nextLine();
+        String[] responseList = rawResponse.split(", ");
+        for (String response : responseList) {
+            response = response.trim().toLowerCase();
+        }
+        return responseList;
+    }
 }

@@ -221,7 +221,6 @@ public class ListEmails extends MainMenu {
             e.printStackTrace();
         }
         emailViewer.showEmail();
-        displayEmails();
     }
 
     private String formatString(String original, int length) {
