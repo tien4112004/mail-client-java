@@ -54,7 +54,6 @@ public class POP3Socket extends MailSocket {
                 messageList = new JSONArray();
             connect();
             login();
-            UIDL();
             retrieveMessage();
         } catch (Exception e) {
             e.printStackTrace();
@@ -184,6 +183,7 @@ public class POP3Socket extends MailSocket {
     }
 
     public void retrieveMessage() throws IOException {
+        UIDL();
         for (int i = 0; i < messagesID.length; i++) {
             JSONObject messageObject = new JSONObject();
             messageObject.put(messagesID[i], false);
