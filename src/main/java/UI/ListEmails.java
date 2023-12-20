@@ -52,11 +52,31 @@ public class ListEmails extends MainMenu {
         }
     }
 
+    public ListEmails(List<String> mailList, InputHandler inputHandler) {
+        this.mailList = mailList;
+        this.inputHandler = inputHandler;
+        this.writeMessageStatus = new WriteMessageStatus();
+        try {
+            this.messageList = (JSONArray) parser.parse(new FileReader(MessageStatusJSONDirectory));
+        } catch (Exception e) {
+            System.out.printf("%s%s%s\n", ANSI_TEXT_RED, "[ERROR] Error in reading email status.", ANSI_RESET);
+            return;
+        }
+    }
+
     protected void list() {
         boolean keepRunning = true;
         while (keepRunning) {
             loadEmails();
             displayEmails();
+            keepRunning = handleUserInput();
+        }
+    }
+
+    protected void list(String customPrompt) {
+        boolean keepRunning = true;
+        while (keepRunning) {
+            displayEmails(customPrompt);
             keepRunning = handleUserInput();
         }
     }
@@ -68,8 +88,24 @@ public class ListEmails extends MainMenu {
         displayOptions();
     }
 
+    private void displayEmails(String customPrompt) {
+        clearConsole();
+        displayHeader(customPrompt);
+        displayEmailList();
+        displayOptions();
+    }
+
     private void displayHeader() {
         System.out.printf("List of emails from %s%s%s: Page %d/%d\n", ANSI_TEXT_CYAN, mailbox.getMailboxName(),
+                ANSI_RESET, currentPage + 1,
+                mailList.size() / PAGE_SIZE + 1);
+        System.out.print(PART_SPLITER);
+        System.out.printf("%s   | %s | %s | %s | %s |\n", "# ", FROM, SUBJECT, DATE, ATTACHMENT);
+        System.out.print(PART_SPLITER);
+    }
+
+    private void displayHeader(String customPrompt) {
+        System.out.printf("%s%s%s: Page %d/%d\n", ANSI_TEXT_CYAN, customPrompt,
                 ANSI_RESET, currentPage + 1,
                 mailList.size() / PAGE_SIZE + 1);
         System.out.print(PART_SPLITER);
@@ -108,6 +144,8 @@ public class ListEmails extends MainMenu {
         String[][] options = { { "<", "Previous page" },
                 { ">", "Next page" },
                 { "#", "Read email #" },
+                { "S", "Search email" },
+                // { "F", "Add new filter" },
                 { "D", "Delete mail" },
                 { "M", "Move email " },
                 { "Q", "Quit" }
@@ -149,6 +187,10 @@ public class ListEmails extends MainMenu {
                 return true;
             case "M":
                 moveEmailHandler(mailList, currentPage);
+                return true;
+            case "S":
+                EmailSearcher emailSearcher = new EmailSearcher(mailList, inputHandler);
+                emailSearcher.search();
                 return true;
             default:
                 handleEmailSelection(userInput);
@@ -218,13 +260,4 @@ public class ListEmails extends MainMenu {
         mailList.remove(emailIndex);
         list();
     }
-
-    // public static void main(String[] args) throws IOException {
-    // Mailbox mailbox = new Mailbox("Test Mailbox",
-    // "/media/Windows_Data/OneDrive-HCMUS/Documents/CSC10008 - Computer
-    // Networking/Socket_Project-Mail_Client/example@fit.hcmus.edu.vn/");
-    // ListEmails listEmails = new ListEmails(mailbox, new InputHandler(), () ->
-    // System.out.println("Back to list"));
-    // listEmails.list();
-    // }
 }

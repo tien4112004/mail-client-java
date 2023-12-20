@@ -10,7 +10,7 @@ public class InputHandler {
     }
 
     public int getMenuOption() {
-        String prompt = "Please choose your option: ";
+        String prompt = "\nPlease choose your option: ";
         int option = Integer.parseInt(dialog(prompt));
         return option;
     }
