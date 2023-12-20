@@ -33,7 +33,7 @@ public class EmailSearcher extends UI {
 
     public void getFilter() {
         String[][] filterOptions = { { "1", "Sender" }, { "2", "Subject" }, { "3", "Content" } };
-        System.out.print("Filter by: ");
+        System.out.print("Search by: ");
         showOptions(filterOptions);
         String option = inputHandler.dialog(EMPTY_PROMPT);
         String[] keywords = inputHandler.dialogList("Keywords [separated by commas]: \n");
