@@ -16,6 +16,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 
+import Filter.*;
 import UI.MainMenu;
 import Message.Message;
 
@@ -58,6 +59,7 @@ public class Config {
         return data.split(", ");
     }
 
+    
     private JSONObject createFilter(Message message) throws IOException {
         String[] workKeywords = workKeywordsHandler();
         String[] spamKeywords = spamKeywordsHandler();
@@ -94,8 +96,12 @@ public class Config {
         generalMap.put("Username", username);
         String password = UI.password;
         generalMap.put("Password", password);
+        String SMPTServer = "127.0.0.1";
+        generalMap.put("SMPTServer", SMPTServer);
         int SMPTport = 2225;
         generalMap.put("SMTPport", SMPTport);
+        String POP3Server = "127.0.0.1";
+        generalMap.put("POP3Server", POP3Server);
         int POP3port = 1225;
         generalMap.put("POP3port", POP3port);
         int autoReload = 10;
