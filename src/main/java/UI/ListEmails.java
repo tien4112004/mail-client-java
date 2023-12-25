@@ -193,6 +193,12 @@ public class ListEmails extends MainMenu {
                 emailSearcher.search();
                 return true;
             default:
+                // handle invalid input and number
+                if (!userInput.matches("\\d+")) {
+                    System.out.println(ANSI_TEXT_RED + "[ERROR] Invalid input." + ANSI_RESET);
+                    sleep(TIME_2_SECONDS);
+                    return true;
+                }
                 handleEmailSelection(userInput);
                 return true;
         }
@@ -245,7 +251,6 @@ public class ListEmails extends MainMenu {
         emailList.remove(emailIndex);
         System.out.printf("%s%s%s\n", ANSI_TEXT_GREEN, "Email removed.", ANSI_RESET);
         sleep(TIME_2_SECONDS);
-        list();
     }
 
     private void moveEmailHandler(List<String> mailList, int currentPage) {
@@ -257,6 +262,5 @@ public class ListEmails extends MainMenu {
         System.out.printf("%s%s%s\n", ANSI_TEXT_GREEN, "Email moved to " + destination + ".", ANSI_RESET);
         sleep(TIME_2_SECONDS);
         mailList.remove(emailIndex);
-        list();
     }
 }
