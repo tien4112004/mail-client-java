@@ -15,6 +15,36 @@ public class Mailbox {
     Path directory;
     Filter[] filters;
 
+    public Mailbox(String name, String directory, String[] senderKeywords, String[] subjectKeywords,
+            String[] contentKeywords) {
+        this(name, directory);
+        SenderFilter senderFilter = null;
+        SubjectFilter subjectFilter = null;
+        ContentFilter contentFilter = null;
+        int notNull = 0;
+
+        if (senderKeywords != null && senderKeywords.length != 0) {
+            senderFilter = new SenderFilter(senderKeywords)
+            notNull++;
+        }
+        if (subjectKeywords != null && subjectKeywords.length != 0) {
+            subjectFilter = new SubjectFilter(subjectKeywords);
+            notNull++;
+        }
+        if (contentKeywords != null && contentKeywords.length != 0) {
+            contentFilter = new ContentFilter(contentKeywords);
+            notNull++;
+        }
+
+        filters = new Filter[notNull];
+        if (senderFilter != null)
+            filters[--notNull] = senderFilter;
+        if (subjectFilter != null)
+            filters[--notNull] = subjectFilter;
+        if (contentFilter != null) 
+            filters[--notNull] = contentFilter;
+    }
+
     public Mailbox(String name, String directory) {
         this.name = name;
         this.directory = Paths.get(directory);
