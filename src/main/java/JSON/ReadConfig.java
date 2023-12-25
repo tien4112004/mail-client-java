@@ -2,6 +2,7 @@ package JSON;
 
 import java.io.File;
 import java.io.FileReader;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,29 +42,42 @@ public class ReadConfig {
         return generalMap;
     }
 
-    public String readMailboxAttributes(JSONObject mailboxObject, String mailboxName) {
-        // Map<String, Object> mailboxMap = new HashMap<>();
+    public Mailbox createMailbox(JSONObject mailboxObject, String mailboxName) {
         // Mailbox's directory
         String directory = mailboxObject.get("Directory").toString();
+
         // Mailbox's filters
-        // Map<String, Object> filters = new HashMap<>();
-        // filters.put("senderFilter", mailboxObject.get("senderFilter"));
-        // filters.put("subjectFilter", mailboxObject.get("subjectFilter"));
-        // filters.put("contentFilter", mailboxObject.get("contentFilter"));
+        JSONObject filters = (JSONObject)mailboxObject.get("Filters");
+        List<String> subjectKeywords = new ArrayList<>();
+        List<String> senderKeywords = new ArrayList<>();
+        List<String> contentKeywords = new ArrayList<>();
+        for (Object obj : filters.entrySet()) {
+            Map.Entry entry = (Map.Entry) obj;
+            if (entry.getKey().toString().equals("SubjectFilter")) {
+                subjectKeywords = (List<String>) entry.getValue();
+            }
+            if (entry.getKey().toString().equals("SenderFilter")) {
+                senderKeywords = (List<String>) entry.getValue();
+            }
+            if (entry.getKey().toString().equals("ContentFilter")) {
+                contentKeywords = (List<String>) entry.getValue();
+            }
+        }
 
-        // mailboxMap.put("Directory", directory);
-        // mailboxMap.put("Filters", filters);
-
-        Mailbox mailbox = new Mailbox(mailboxName, directory);
+        // Create new mailbox
+        Mailbox mailbox = new Mailbox(mailboxName, directory, senderKeywords.toArray(new String[0]), subjectKeywords.toArray(new String[0]), contentKeywords.toArray(new String[0]));
         return mailbox;
     }
 
     public Mailbox[] readMailboxs() {
+        List<Mailbox> mailboxsList = new ArrayList<>();
         for (Object obj : ((JSONObject) Config.get("Mailboxs")).entrySet()) {
-            JSONObject je = (JSONObject) obj;
-
-            String directory = je.get("Directory").toString();
-            Mailbox mailbox = new Mailbox();
+            Map.Entry entry = (Map.Entry) obj;
+            JSONObject je = (JSONObject) entry.getValue();
+            Mailbox mailbox = createMailbox(je, entry.getKey().toString());
+            mailboxsList.add(mailbox);
         }
+        Mailbox[] mailboxs = mailboxsList.toArray(new Mailbox[0]);
+        return mailboxs;
     }
 }

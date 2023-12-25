@@ -26,13 +26,11 @@ public class WriteConfig {
     // return (JSONObject)(new JSONObject().put(nameFilter, keywords));
     // }
 
-    private JSONObject addKeywords(JSONObject jsonObject, String nameFilter, List<String> keywords) {
-        for (String keyword : keywords) {
-            ((JSONArray) jsonObject.get(nameFilter)).add(keyword);
-        }
-        return jsonObject;
-
-    }
+    // private void addKeywords(JSONObject jsonObject, String nameFilter, List<String> keywords) {
+    //     for (String keyword : keywords) {
+    //         ((JSONArray) jsonObject.get(nameFilter)).add(keyword);
+    //     }
+    // }
 
     private JSONObject createMailbox(Mailbox mailbox, Filter[] filters) {
         JSONObject mailboxObject = new JSONObject();
@@ -41,11 +39,11 @@ public class WriteConfig {
         JSONObject filterObject = new JSONObject();
         for (Filter filter : filters) {
             if (filter instanceof SenderFilter)
-                addKeywords(filterObject, "SenderFilter", ((SenderFilter) filter).getKeywords());
+                filterObject.put("SenderFilter", ((SenderFilter) filter).getKeywords());
             if (filter instanceof SubjectFilter)
-                addKeywords(filterObject, "SubjectFilter", ((SubjectFilter) filter).getKeywords());
+                filterObject.put("SubjectFilter", ((SubjectFilter) filter).getKeywords());
             if (filter instanceof ContentFilter)
-                addKeywords(filterObject, "ContentFilter", ((ContentFilter) filter).getKeywords());
+                filterObject.put("ContentFilter", ((ContentFilter) filter).getKeywords());                
         }
     
         mailboxObject.put("Filters", filterObject);
@@ -76,10 +74,9 @@ public class WriteConfig {
         }
         namedFilter.put("Mailboxs", mailboxFilters);
 
-        // Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        // JsonElement je = gson.toJsonTree(namedFilter);
-        // String prettyJson = gson.toJson(je);
-        String prettyJson = namedFilter.toJSONString();
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonElement je = gson.toJsonTree(namedFilter);
+        String prettyJson = gson.toJson(je);
         String configDirectory = DEFAULT_WORKING_DIRECTORY + "__Config.json";
         try (FileWriter file = new FileWriter(configDirectory)) {
             file.write(prettyJson);

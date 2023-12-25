@@ -1,5 +1,9 @@
 package JSON;
 
+import java.util.List;
+
+import javax.security.auth.Subject;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
@@ -10,9 +14,7 @@ import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
 
 import Filter.*;
-import Message.Message;
 import UI.MainMenu;
-import JSON.ConfigJSON;
 
 public class ConfigJSONTest {
     @BeforeEach
@@ -46,29 +48,43 @@ public class ConfigJSONTest {
         UI.username = "example@localhost";
         UI.password = "123456";
 
-        ConfigJSON configJSON = new ConfigJSON();
+        WriteConfig configJSON = new WriteConfig();
         try {
             configJSON.writeConfig(mailboxs, UI);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        deleteFolder(new File("./test1/"));
-        deleteFolder(new File("./example/"));
-        deleteFolder(new File("./email/"));
     }
 
-    public static void deleteFolder(File folder) {
-        File[] files = folder.listFiles();
-        if (files == null)
-            return;
-        for (File file : files) {
-            if (file.isDirectory()) {
-                deleteFolder(file);
-            } else {
-                file.delete();
+    @Test
+    public void readJSONTest() {
+        ReadConfig readConfig = new ReadConfig();
+        Mailbox[] mailboxs = readConfig.readMailboxs();
+        for (Mailbox mailbox : mailboxs) {
+            System.out.println("Name: " + mailbox.getMailboxName());
+            System.out.println("\t - Directory: " + mailbox.getMailboxDirectory());
+            System.out.println("\t - Filters: ");
+            for (Filter filter : mailbox.getFilters()) {
+                if (filter instanceof SenderFilter) {
+                    System.out.print("\t\t + SenderFilter: ");
+                    printKeywords(((SenderFilter) filter).getKeywords()); 
+                }
+                if (filter instanceof SubjectFilter) {
+                    System.out.print("\t\t + SubjectFilter: ");
+                    printKeywords(((SubjectFilter) filter).getKeywords()); 
+                }
+                if (filter instanceof ContentFilter) {
+                    System.out.print("\t\t + ContentFilter: ");
+                    printKeywords(((ContentFilter) filter).getKeywords()); 
+                }
             }
         }
-        folder.delete();
+    }
+
+    private void printKeywords(List<String> keywords) {
+        for (String word : keywords) {
+            System.out.print(word + " ");
+        }
+        System.out.println();
     }
 }
