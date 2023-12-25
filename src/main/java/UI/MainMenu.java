@@ -22,7 +22,6 @@ public class MainMenu extends UI {
     public String password;
     List<Mailbox> mailboxes;
     ListMailboxes listMailboxesUI;
-    Mailbox currentMailbox;
     ListEmails listEmailsUI;
     String currentEmailDirectory;
 

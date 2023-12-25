@@ -3,6 +3,7 @@ package Socket;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.List;
 import java.io.FileReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,9 +15,11 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import Filter.Mailbox;
 import JSON.WriteMessageStatus;
 import Message.Message;
 import Message.MessageParser;
+import net.lecousin.framework.concurrent.async.MutualExclusion;
 // import Config.Config;
 import scala.collection.mutable.StringBuilder;
 
@@ -37,26 +40,33 @@ public class POP3Socket extends MailSocket {
     private JSONParser parser = new JSONParser();
     private JSONArray messageList = null;
     private WriteMessageStatus writeMessageStatus = null;
+    private List<Mailbox> mailboxes = null;
 
     public POP3Socket(String server, int port, String username, String password) {
         super(server, port);
-        this.username = username;
-        this.password = password;
-        try {
-            String MessageStatusJSONDirectory = DEFAULT_WORKING_DIRECTORY + "MessageStatus.json";
-            File file = new File(MessageStatusJSONDirectory);
-            writeMessageStatus = new WriteMessageStatus();
-            if (file.exists())
-                messageList = (JSONArray) parser.parse(new FileReader(MessageStatusJSONDirectory));
-            else
-                messageList = new JSONArray();
-            connect();
-            login();
-            UIDL();
-            retrieveMessage();
-        } catch (Exception e) {
-            e.printStackTrace();
+        synchronized(MutualExclusion.class) {
+            this.username = username;
+            this.password = password;
+            try {
+                String MessageStatusJSONDirectory = DEFAULT_WORKING_DIRECTORY + "MessageStatus.json";
+                File file = new File(MessageStatusJSONDirectory);
+                writeMessageStatus = new WriteMessageStatus();
+                if (file.exists())
+                    messageList = (JSONArray) parser.parse(new FileReader(MessageStatusJSONDirectory));
+                else
+                    messageList = new JSONArray();
+                connect();
+                login();
+                retrieveMessage();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+
+    }
+
+    public void addMailboxes(List<Mailbox> mailboxes) {
+        this.mailboxes = mailboxes;
     }
 
     @Override
@@ -182,6 +192,7 @@ public class POP3Socket extends MailSocket {
     }
 
     public void retrieveMessage() throws IOException {
+        UIDL();
         for (int i = 0; i < messagesID.length; i++) {
             JSONObject messageObject = new JSONObject();
             messageObject.put(messagesID[i], false);
@@ -189,16 +200,11 @@ public class POP3Socket extends MailSocket {
                 break;
             }
             String rawMessage = RETR(i + 1 + "");
-            // Files.write(Paths.get("./test.msg"), rawMessage.getBytes());
             MessageParser parser = new MessageParser();
-            // parser.parse(rawMessage);
-            // Message email = parser.createMessage();
-            // email.saveMail(messagesID[i]);
-            saveEmail("Inbox/" + messagesID[i], rawMessage); // to be changed
+            String emailDirectory = DEFAULT_WORKING_DIRECTORY + "Inbox/" + messagesID[i];
+            saveEmail(emailDirectory, rawMessage); // to be changed
             messageList.add(messageObject);
-
-            // Filter - temporary
-
+            filterEmail(emailDirectory, mailboxes);
         }
         writeMessageStatus.writeJSON(messageList);
         // quit();
@@ -210,6 +216,17 @@ public class POP3Socket extends MailSocket {
             Files.write(emailPath, rawMessage.getBytes());
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void filterEmail(String emailDirectory, List<Mailbox> mailboxes) {
+        if (mailboxes == null) {
+            System.out.println("[ERROR] Mailboxes not initialized.");
+            return;
+        }
+        Path emailPath = Paths.get(emailDirectory);
+        for (Mailbox mailbox : mailboxes) {
+            mailbox.addEmailIfMatches(emailPath);
         }
     }
 

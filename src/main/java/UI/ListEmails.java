@@ -206,8 +206,26 @@ public class ListEmails extends MainMenu {
         currentPage = Math.min(currentPage + 1, mailList.size() / PAGE_SIZE);
     }
 
+    private boolean isInvalidOptions(String userInput) {
+        if (userInput.length() > 1 || !userInput.matches("[0-9]+")) {
+            System.out.printf("%sInvalid option!%s\n", ANSI_TEXT_RED, ANSI_RESET);
+            sleep(TIME_2_SECONDS);
+            return true;
+        }
+        return false;
+    }
+
     private void handleEmailSelection(String userInput) {
+        if (isInvalidOptions(userInput))
+            return;
+
         int emailIndex = currentPage * PAGE_SIZE + Integer.parseInt(userInput);
+        if (emailIndex >= mailList.size() || Integer.parseInt(userInput) > 9 || Integer.parseInt(userInput) < 0) {
+            System.out.printf("%s[ERROR] Invalid email number!%s\n", ANSI_TEXT_RED, ANSI_RESET);
+            sleep(TIME_2_SECONDS);
+            return;
+        }
+
         String emailDirectory = mailList.get(currentPage * PAGE_SIZE + Integer.parseInt(userInput));
         ViewEmail emailViewer = new ViewEmail(emailDirectory, mailList, emailIndex, mailboxes, inputHandler);
         messageObject = (JSONObject) messageList.get(emailIndex);
@@ -245,7 +263,6 @@ public class ListEmails extends MainMenu {
         emailList.remove(emailIndex);
         System.out.printf("%s%s%s\n", ANSI_TEXT_GREEN, "Email removed.", ANSI_RESET);
         sleep(TIME_2_SECONDS);
-        list();
     }
 
     private void moveEmailHandler(List<String> mailList, int currentPage) {
@@ -257,6 +274,5 @@ public class ListEmails extends MainMenu {
         System.out.printf("%s%s%s\n", ANSI_TEXT_GREEN, "Email moved to " + destination + ".", ANSI_RESET);
         sleep(TIME_2_SECONDS);
         mailList.remove(emailIndex);
-        list();
     }
 }

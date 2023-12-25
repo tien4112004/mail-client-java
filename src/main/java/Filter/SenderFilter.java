@@ -1,15 +1,17 @@
 package Filter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import Message.Message;
 
 public class SenderFilter implements Filter {
-    private String[] senderKeywords;
+    // private String[] senderKeywords;
+    private List<String> senderKeywords;
 
     public SenderFilter(String... senderKeywords) {
-        this.senderKeywords = senderKeywords;
-        for (String keyword : senderKeywords) {
-            keyword = keyword.toLowerCase();
-        }
+        this.senderKeywords = new ArrayList<String>();
+        addKeywords(senderKeywords);
     }
 
     public boolean matches(Message email) {
@@ -24,7 +26,14 @@ public class SenderFilter implements Filter {
         return false;
     }
 
-    public String[] getKeywords() {
+    public List<String> getKeywords() {
         return senderKeywords;
+    }
+
+    public void addKeywords(String... keywords) {
+        for (String keyword : keywords) {
+            keyword = keyword.toLowerCase();
+            senderKeywords.add(keyword);
+        }
     }
 }

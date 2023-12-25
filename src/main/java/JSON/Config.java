@@ -26,8 +26,7 @@ public class Config {
     private Map<String, Object> filterMap = new HashMap<String, Object>();
     private Map<String, Object> generalMap = new HashMap<String, Object>();
 
-    // Read keyword about work and spam from text files, then put it into JSONObject
-    // filter.
+    // Read all filter from object filter and put it into a JSONArray.
     private String[] workKeywordsHandler() {
         String data = "";
         try {
@@ -59,7 +58,6 @@ public class Config {
         return data.split(", ");
     }
 
-    
     private JSONObject createFilter(Message message) throws IOException {
         String[] workKeywords = workKeywordsHandler();
         String[] spamKeywords = spamKeywordsHandler();

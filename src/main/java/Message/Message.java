@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.UUID;
 
 import javax.activation.MimetypesFileTypeMap;
-import javax.security.auth.login.CredentialException;
 
 import java.util.Arrays;
 import java.util.Base64;
