@@ -30,23 +30,17 @@ public class ConfigJSONTest {
 
     @Test
     public void testFilter() {
-        Mailbox testMailbox = new Mailbox("test1", "./test1/");
-        Filter filter = new ContentFilter("test");
-        testMailbox.addEmailIfMatches(Paths.get("./test1/testEmail.msg"), filter);
-        assertTrue(Files.exists(Paths.get("./test1/testEmail.msg")));
+        String[] senderKeywords = { "null", "null", "null", "null", "null" };
+        String[] subjectKeywords = { "null", "null", "null", "null", "null" };
+        String[] contentKeywords = { "null", "null", "null", "null", "null" };
 
-        Mailbox exampleMailbox = new Mailbox("example", "./example/");
-        Filter exampleFilter = new SenderFilter("example");
-        exampleMailbox.addEmailIfMatches(Paths.get("./test/testEmail.msg"), exampleFilter);
-        assertTrue(Files.exists(Paths.get("./example/testEmail.msg")));
+        Mailbox testMailbox = new Mailbox("test1", "./test1/", senderKeywords, subjectKeywords, contentKeywords);
 
-        Mailbox emailMailbox = new Mailbox("email", "./email/");
-        Filter emailFilter = new SubjectFilter("email");
-        emailMailbox.addEmailIfMatches(Paths.get("./test/testEmail.msg"), emailFilter);
-        assertTrue(Files.exists(Paths.get("./email/testEmail.msg")));
+        Mailbox exampleMailbox = new Mailbox("example", "./example/", senderKeywords, subjectKeywords, contentKeywords);
 
-        Mailbox[] mailboxs = {testMailbox, exampleMailbox, emailMailbox};
-        Filter[] filters = {filter, exampleFilter, emailFilter};
+        Mailbox emailMailbox = new Mailbox("email", "./email/", senderKeywords, subjectKeywords, contentKeywords);
+
+        Mailbox[] mailboxs = { testMailbox, exampleMailbox, emailMailbox };
 
         MainMenu UI = new MainMenu();
         UI.username = "example@localhost";
@@ -54,7 +48,7 @@ public class ConfigJSONTest {
 
         ConfigJSON configJSON = new ConfigJSON();
         try {
-            configJSON.writeConfig(mailboxs, filters, UI);
+            configJSON.writeConfig(mailboxs, UI);
         } catch (Exception e) {
             e.printStackTrace();
         }

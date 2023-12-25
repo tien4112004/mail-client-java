@@ -119,9 +119,9 @@ public class Config {
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonElement je = gson.toJsonTree(namedFilter);
-        JsonArray jsonArray = new JsonArray();
-        jsonArray.add(je);
-        String prettyJson = gson.toJson(jsonArray);
+        // JsonArray jsonArray = new JsonArray();
+        // jsonArray.add(je);
+        String prettyJson = gson.toJson(je);
 
         String configDirectory = DEFAULT_WORKING_DIRECTORY + "Config.json";
         try (FileWriter file = new FileWriter(configDirectory)) {

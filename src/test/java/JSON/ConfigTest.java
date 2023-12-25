@@ -35,7 +35,7 @@ public class ConfigTest {
   // assertArrayEquals(actual, expected);
   // }
 
-  // @Test
+  @Test
   public void testWriteConfig() throws IOException {
     // Config config = new Config();
     String sender = "sender@localhost";
@@ -53,7 +53,7 @@ public class ConfigTest {
     UI.password = "123456";
     // config.writeConfig(UI, message);
     // check if the file is created
-    boolean actual = Files.exists(Paths.get("src/main/java/JSON/Config.json"));
+    boolean actual = Files.exists(Paths.get("./Config.json"));
     assertTrue(actual);
   }
 }

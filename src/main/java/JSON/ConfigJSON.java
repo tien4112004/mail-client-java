@@ -13,6 +13,19 @@ import java.io.IOException;
 import Filter.*;
 import UI.MainMenu;
 
+// class NodeSerializer implements JsonSerializer<Node> {
+//     @Override
+//     public JsonElement serialize(Node src, Type typeOfSrc, JsonSerializationContext context) {
+//         JsonObject jsonObject = new JsonObject();
+//         jsonObject.addProperty("value", src.value);
+//         // Check for circular reference
+//         if (src.next != src) {
+//             jsonObject.add("next", context.serialize(src.next));
+//         }
+//         return jsonObject;
+//     }
+// }
+
 public class ConfigJSON {
     private final String DEFAULT_WORKING_DIRECTORY = "./";
 
@@ -25,21 +38,26 @@ public class ConfigJSON {
         mailboxObject.put("Directory", mailbox.getMailboxDirectory());
         
         JSONObject filterObject = new JSONObject();
-        for (Filter filter : filters) {
-            if (filter instanceof SenderFilter)
-                filterObject.put("senderFilter", ((SenderFilter)filter).getKeywords());
-            if (filter instanceof SubjectFilter)
-                filterObject.put("subjectFilter", ((SenderFilter)filter).getKeywords());    
-            if (filter instanceof ContentFilter)
-                filterObject.put("contentFilter", ((ContentFilter)filter).getKeywords());
+        
+        if (filters != null) {
+            for (Filter filter : filters) {
+                if (filter instanceof SenderFilter)
+                    filterObject.put("senderFilter", ((SenderFilter)filter).getKeywords());
+                if (filter instanceof SubjectFilter)
+                    filterObject.put("subjectFilter", ((SubjectFilter)filter).getKeywords());    
+                if (filter instanceof ContentFilter)
+                    filterObject.put("contentFilter", ((ContentFilter)filter).getKeywords());
+            }
+        }
+        else {
+            filterObject.put("senderFilter", "null");
+            filterObject.put("subjectFilter", "null");
+            filterObject.put("contentFilter", "null");
+
         }
         mailboxObject.put("Filter", filterObject);
 
-        JSONObject namedField = new JSONObject();
-        String mailboxName = mailbox.getMailboxName();
-        namedField.put(mailboxName, mailboxObject);
-
-        return namedField;
+        return mailboxObject;
     }
 
     private JSONObject createGeneral(MainMenu UI) throws IOException {
@@ -63,24 +81,22 @@ public class ConfigJSON {
         return general;
     }
 
-    public void writeConfig(Mailbox[] mailboxs, Filter[] filters, MainMenu UI) throws IOException {
+    public void writeConfig(Mailbox[] mailboxs, MainMenu UI) throws IOException {
         JSONObject general = createGeneral(UI);
         
         JSONObject namedFilter = new JSONObject();
-        namedFilter.put("General", general);
         
         JSONObject mailboxFilters = new JSONObject();
         for (Mailbox mailbox : mailboxs){
-            JSONObject filter = createMailbox(mailbox, filters);
+            JSONObject filter = createMailbox(mailbox, mailbox.getFilters());
             mailboxFilters.put(mailbox.getMailboxName(), filter);
         }
         namedFilter.put("Mailbox", mailboxFilters);
+        namedFilter.put("General", general);
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonElement je = gson.toJsonTree(namedFilter);
-        JsonArray jsonArray = new JsonArray();
-        jsonArray.add(je);
-        String prettyJson = gson.toJson(jsonArray);
+        String prettyJson = gson.toJson(je);
 
         String configDirectory = DEFAULT_WORKING_DIRECTORY + "Config.json";
         try (FileWriter file = new FileWriter(configDirectory)) {
