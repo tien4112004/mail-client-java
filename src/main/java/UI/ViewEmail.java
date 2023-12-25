@@ -60,7 +60,7 @@ public class ViewEmail extends UI {
         String[][] options = {
                 { "Q", "Back to list" },
                 { "#", "Download attachment #" },
-                { "A", "Dowmload all attachments" },
+                { "A", "Download all attachments" },
                 { "D", "Delete email" },
                 { "M", "Move to mailbox" }
         };
@@ -91,50 +91,51 @@ public class ViewEmail extends UI {
     }
 
     public void handleUserInput(String userInput) {
-        if (userInput.equals("Q")) {
-            return;
-        } else if (userInput.equals("A")) {
+        switch (userInput) {
+            case "Q":
+                return;
+            case "A":
+                // Handle "A" input
+                break;
+            case "D":
+                deleteEmailHandler();
+                return;
+            case "M":
+                for (int i = 0; i < mailboxes.size(); i++) {
+                    System.out.printf("[%d] %s\n", i + 1, mailboxes.get(i).getMailboxName());
+                }
+                String[][] options = {
+                        { ".", "Back to list" },
+                        { "#", "Move to mailbox #" },
+                        { "N", "New mailbox" },
+                        { "C", "Cancel" }
+                };
+                showOptions(options);
+                userInput = inputHandler.dialog("Move to: ");
 
-        } else if (userInput.equals("D")) {
-            deleteEmailHandler();
-            return;
-        } else if (userInput == "M") {
-            for (int i = 0; i < mailboxes.size(); i++) {
-                System.out.printf("[%d] %s\n", i + 1, mailboxes.get(i).getMailboxName());
-            }
-            String[][] options = {
-                    { ".", "Back to list" },
-                    { "#", "Move to mailbox #" },
-                    { "N", "New mailbox" },
-                    { "C", "Cancel" }
-            };
-            showOptions(options);
-            userInput = inputHandler.dialog("Move to: ");
-
-            Mailbox destination;
-            switch (userInput) {
-                case ".":
-                    return;
-                case "C":
-                    return;
-                case "N":
-                    String newMailboxName = inputHandler.dialog("New mailbox name: ");
-                    mailboxes.add(new Mailbox(newMailboxName));
-                    System.out.println(ANSI_TEXT_GREEN + "New mailbox created!" + ANSI_RESET);
-                    sleep(1500);
-                    destination = mailboxes.get(mailboxes.size() - 1);
-                    break;
-                default:
-                    int mailboxOrder = Integer.parseInt(userInput);
-                    destination = mailboxes.get(mailboxOrder);
-            }
-            Mailbox.moveMailToMailbox(emailDirectory, destination);
-            mailList.remove(mailOrder);
-            System.out.printf("%s%s%s\n", ANSI_TEXT_GREEN, "Moved to ...", ANSI_RESET);
-            sleep(2000);
-            return;
-        } else {
-            // download i-th attachment
+                Mailbox destination;
+                switch (userInput) {
+                    case ".":
+                    case "C":
+                        return;
+                    case "N":
+                        String newMailboxName = inputHandler.dialog("New mailbox name: ");
+                        mailboxes.add(new Mailbox(newMailboxName));
+                        System.out.println(ANSI_TEXT_GREEN + "New mailbox created!" + ANSI_RESET);
+                        sleep(1500);
+                        destination = mailboxes.get(mailboxes.size() - 1);
+                        break;
+                    default:
+                        int mailboxOrder = Integer.parseInt(userInput);
+                        destination = mailboxes.get(mailboxOrder);
+                }
+                Mailbox.moveMailToMailbox(emailDirectory, destination);
+                mailList.remove(mailOrder);
+                System.out.printf("%s%s%s\n", ANSI_TEXT_GREEN, "Moved to ...", ANSI_RESET);
+                sleep(2000);
+                return;
+            default:
+                // Handle other inputs (e.g., download i-th attachment)
         }
     }
 

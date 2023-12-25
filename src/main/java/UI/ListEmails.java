@@ -193,12 +193,6 @@ public class ListEmails extends MainMenu {
                 emailSearcher.search();
                 return true;
             default:
-                // handle invalid input and number
-                if (!userInput.matches("\\d+")) {
-                    System.out.println(ANSI_TEXT_RED + "[ERROR] Invalid input." + ANSI_RESET);
-                    sleep(TIME_2_SECONDS);
-                    return true;
-                }
                 handleEmailSelection(userInput);
                 return true;
         }
@@ -212,8 +206,26 @@ public class ListEmails extends MainMenu {
         currentPage = Math.min(currentPage + 1, mailList.size() / PAGE_SIZE);
     }
 
+    private boolean isInvalidOptions(String userInput) {
+        if (userInput.length() > 1 || !userInput.matches("[0-9]+")) {
+            System.out.printf("%sInvalid option!%s\n", ANSI_TEXT_RED, ANSI_RESET);
+            sleep(TIME_2_SECONDS);
+            return true;
+        }
+        return false;
+    }
+
     private void handleEmailSelection(String userInput) {
+        if (isInvalidOptions(userInput))
+            return;
+
         int emailIndex = currentPage * PAGE_SIZE + Integer.parseInt(userInput);
+        if (emailIndex >= mailList.size() || Integer.parseInt(userInput) > 9 || Integer.parseInt(userInput) < 0) {
+            System.out.printf("%s[ERROR] Invalid email number!%s\n", ANSI_TEXT_RED, ANSI_RESET);
+            sleep(TIME_2_SECONDS);
+            return;
+        }
+
         String emailDirectory = mailList.get(currentPage * PAGE_SIZE + Integer.parseInt(userInput));
         ViewEmail emailViewer = new ViewEmail(emailDirectory, mailList, emailIndex, mailboxes, inputHandler);
         messageObject = (JSONObject) messageList.get(emailIndex);
