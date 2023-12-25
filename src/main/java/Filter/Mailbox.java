@@ -24,7 +24,7 @@ public class Mailbox {
         int notNull = 0;
 
         if (senderKeywords != null && senderKeywords.length != 0) {
-            senderFilter = new SenderFilter(senderKeywords)
+            senderFilter = new SenderFilter(senderKeywords);
             notNull++;
         }
         if (subjectKeywords != null && subjectKeywords.length != 0) {
@@ -41,7 +41,7 @@ public class Mailbox {
             filters[--notNull] = senderFilter;
         if (subjectFilter != null)
             filters[--notNull] = subjectFilter;
-        if (contentFilter != null) 
+        if (contentFilter != null)
             filters[--notNull] = contentFilter;
     }
 
