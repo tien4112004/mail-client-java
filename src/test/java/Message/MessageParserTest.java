@@ -66,7 +66,7 @@ public class MessageParserTest {
         MessageParser parser = new MessageParser();
 
         // Act
-        parser.parseContent(bodyLines[0], 2, bodyLines);
+        parser.parseContent(bodyLines, 2);
 
         // Assert
         assertEquals("Hello world", parser.getContent());
@@ -141,5 +141,20 @@ public class MessageParserTest {
                 parser.getContentType());
         assertEquals("Pdf test", parser.getContent());
         assertTrue(Files.exists(Paths.get("attachments/write/test.pdf")));
+    }
+
+    @Test
+    void testParseContentOnly() {
+        MessageParser parser = new MessageParser();
+
+        // Test with a simple message
+        String simpleMessage = "Content-Type: text/plain\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHello, World!";
+        parser.parseHeaderAndContent(simpleMessage);
+        assertEquals("Hello, World!", parser.getContent());
+
+        // Test with a multipart/mixed message
+        String multipartMessage = "Content-Type: multipart/mixed; boundary=foo\r\n\r\n--foo\r\nContent-Type: text/plain\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHello, World!\r\n--foo\r\nContent-Type: application/octet-stream\r\n\r\nSome binary data\r\n--foo--";
+        parser.parseHeaderAndContent(multipartMessage);
+        assertEquals("Hello, World!", parser.getContent());
     }
 }

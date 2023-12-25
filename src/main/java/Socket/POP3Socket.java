@@ -1,10 +1,8 @@
 package Socket;
 
 import java.io.IOException;
-import java.net.PasswordAuthentication;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 import java.io.FileReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -200,9 +198,11 @@ public class POP3Socket extends MailSocket {
             // parser.parse(rawMessage);
             // Message email = parser.createMessage();
             // email.saveMail(messagesID[i]);
-            saveEmail("Inbox/" + messagesID[i], rawMessage);
-            // TODO: filter
+            saveEmail("Inbox/" + messagesID[i], rawMessage); // to be changed
             messageList.add(messageObject);
+
+            // Filter - temporary
+
         }
         writeMessageStatus.writeJSON(messageList);
         // quit();

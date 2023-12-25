@@ -3,8 +3,8 @@ package UI;
 import Message.Message;
 import Socket.SMTPSocket;
 
-public class SendEmails extends MainMenu {
-    private String sender = "example@localhost";
+public class SendEmails extends UI {
+    private String sender = "example@localhost"; // get from JSON
     private String[] recipientsTo;
     private String[] recipientsCc;
     private String[] recipientsBcc;

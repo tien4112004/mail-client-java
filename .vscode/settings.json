@@ -2,5 +2,6 @@
   "java.configuration.updateBuildConfiguration": "automatic",
   "java.compile.nullAnalysis.mode": "automatic",
   "r.lsp.promptToInstall": false,
-  "maven.view": "flat"
+  "maven.view": "flat",
+  "java.debug.settings.onBuildFailureProceed": true
 }
