@@ -1,15 +1,16 @@
 package Filter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import Message.Message;
 
 public class ContentFilter implements Filter {
-    private String[] contentKeywords;
+    private List<String> contentKeywords;
 
     public ContentFilter(String... contentKeywords) {
-        this.contentKeywords = contentKeywords;
-        for (String keyword : contentKeywords) {
-            keyword = keyword.toLowerCase();
-        }
+        this.contentKeywords = new ArrayList<String>();
+        addKeywords(contentKeywords);
     }
 
     public boolean matches(Message email) {
@@ -24,7 +25,14 @@ public class ContentFilter implements Filter {
         return false;
     }
 
-    public String[] getKeywords() {
+    public List<String> getKeywords() {
         return contentKeywords;
+    }
+
+    public void addKeywords(String... keywords) {
+        for (String keyword : keywords) {
+            keyword = keyword.toLowerCase();
+            contentKeywords.add(keyword);
+        }
     }
 }
