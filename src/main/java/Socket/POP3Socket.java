@@ -19,6 +19,7 @@ import Filter.Mailbox;
 import JSON.WriteMessageStatus;
 import Message.Message;
 import Message.MessageParser;
+import net.lecousin.framework.concurrent.async.MutualExclusion;
 // import Config.Config;
 import scala.collection.mutable.StringBuilder;
 
@@ -43,23 +44,25 @@ public class POP3Socket extends MailSocket {
 
     public POP3Socket(String server, int port, String username, String password) {
         super(server, port);
-        this.username = username;
-        this.password = password;
-        try {
-            String MessageStatusJSONDirectory = DEFAULT_WORKING_DIRECTORY + "MessageStatus.json";
-            File file = new File(MessageStatusJSONDirectory);
-            writeMessageStatus = new WriteMessageStatus();
-            if (file.exists())
-                messageList = (JSONArray) parser.parse(new FileReader(MessageStatusJSONDirectory));
-            else
-                messageList = new JSONArray();
-            connect();
-            login();
-            UIDL();
-            retrieveMessage();
-        } catch (Exception e) {
-            e.printStackTrace();
+        synchronized(MutualExclusion.class) {
+            this.username = username;
+            this.password = password;
+            try {
+                String MessageStatusJSONDirectory = DEFAULT_WORKING_DIRECTORY + "MessageStatus.json";
+                File file = new File(MessageStatusJSONDirectory);
+                writeMessageStatus = new WriteMessageStatus();
+                if (file.exists())
+                    messageList = (JSONArray) parser.parse(new FileReader(MessageStatusJSONDirectory));
+                else
+                    messageList = new JSONArray();
+                connect();
+                login();
+                retrieveMessage();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+
     }
 
     public void addMailboxes(List<Mailbox> mailboxes) {
@@ -189,6 +192,7 @@ public class POP3Socket extends MailSocket {
     }
 
     public void retrieveMessage() throws IOException {
+        UIDL();
         for (int i = 0; i < messagesID.length; i++) {
             JSONObject messageObject = new JSONObject();
             messageObject.put(messagesID[i], false);
