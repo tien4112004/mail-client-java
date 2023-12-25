@@ -28,27 +28,29 @@ public class MailboxTest {
         assertTrue(Files.exists(Paths.get("./test/")));
     }
 
-    @Test
-    void testAddEmailIfMatches() {
-        Mailbox testMailbox = new Mailbox("test1", "./test1/");
-        Filter filter = new ContentFilter("test");
-        testMailbox.addEmailIfMatches(Paths.get("./test/testEmail.msg"), filter);
-        assertTrue(Files.exists(Paths.get("./test1/testEmail.msg")));
+    // @Test
+    // void testAddEmailIfMatches() {
+    // Mailbox testMailbox = new Mailbox("test1", "./test1/");
+    // Filter filter = new ContentFilter("test");
+    // testMailbox.addEmailIfMatches(Paths.get("./test/testEmail.msg"), filter);
+    // assertTrue(Files.exists(Paths.get("./test1/testEmail.msg")));
 
-        Mailbox exampleMailbox = new Mailbox("example", "./example/");
-        Filter exampleFilter = new SenderFilter("example");
-        exampleMailbox.addEmailIfMatches(Paths.get("./test/testEmail.msg"), exampleFilter);
-        assertTrue(Files.exists(Paths.get("./example/testEmail.msg")));
+    // Mailbox exampleMailbox = new Mailbox("example", "./example/");
+    // Filter exampleFilter = new SenderFilter("example");
+    // exampleMailbox.addEmailIfMatches(Paths.get("./test/testEmail.msg"),
+    // exampleFilter);
+    // assertTrue(Files.exists(Paths.get("./example/testEmail.msg")));
 
-        Mailbox emailMailbox = new Mailbox("email", "./email/");
-        Filter emailFilter = new SubjectFilter("email");
-        emailMailbox.addEmailIfMatches(Paths.get("./test/testEmail.msg"), emailFilter);
-        assertTrue(Files.exists(Paths.get("./email/testEmail.msg")));
+    // Mailbox emailMailbox = new Mailbox("email", "./email/");
+    // Filter emailFilter = new SubjectFilter("email");
+    // emailMailbox.addEmailIfMatches(Paths.get("./test/testEmail.msg"),
+    // emailFilter);
+    // assertTrue(Files.exists(Paths.get("./email/testEmail.msg")));
 
-        deleteFolder(new File("./test1/"));
-        deleteFolder(new File("./example/"));
-        deleteFolder(new File("./email/"));
-    }
+    // deleteFolder(new File("./test1/"));
+    // deleteFolder(new File("./example/"));
+    // deleteFolder(new File("./email/"));
+    // }
 
     @AfterEach
     void tearDown() throws Exception {

@@ -15,6 +15,36 @@ public class Mailbox {
     Path directory;
     Filter[] filters;
 
+    public Mailbox(String name, String directory, String[] senderKeywords, String[] subjectKeywords,
+            String[] contentKeywords) {
+        this(name, directory);
+        SenderFilter senderFilter = null;
+        SubjectFilter subjectFilter = null;
+        ContentFilter contentFilter = null;
+        int notNull = 0;
+
+        if (senderKeywords != null && senderKeywords.length != 0) {
+            senderFilter = new SenderFilter(senderKeywords);
+            notNull++;
+        }
+        if (subjectKeywords != null && subjectKeywords.length != 0) {
+            subjectFilter = new SubjectFilter(subjectKeywords);
+            notNull++;
+        }
+        if (contentKeywords != null && contentKeywords.length != 0) {
+            contentFilter = new ContentFilter(contentKeywords);
+            notNull++;
+        }
+
+        filters = new Filter[notNull];
+        if (senderFilter != null)
+            filters[--notNull] = senderFilter;
+        if (subjectFilter != null)
+            filters[--notNull] = subjectFilter;
+        if (contentFilter != null)
+            filters[--notNull] = contentFilter;
+    }
+
     public Mailbox(String name, String directory) {
         this.name = name;
         this.directory = Paths.get(directory);
@@ -30,12 +60,12 @@ public class Mailbox {
         this("mailbox");
     }
 
-    public void addEmailIfMatches(Path emailPath, Filter filter) {
+    public void addEmailIfMatches(Path emailPath) {
         String rawMessage = null;
         try {
             rawMessage = new String(Files.readAllBytes(emailPath));
         } catch (IOException e) {
-            System.out.println("[LOG][Mailbox] Error reading email file.");
+            System.out.println("[ERROR] Error reading email file.");
             e.printStackTrace();
         }
 
@@ -43,8 +73,10 @@ public class Mailbox {
         parser.fullParse(rawMessage);
         Message email = parser.createMessage();
 
-        if (filter.matches(email)) {
-            copyEmailToDirectory(emailPath);
+        for (Filter filter : filters) {
+            if (filter.matches(email)) {
+                copyEmailToDirectory(emailPath);
+            }
         }
     }
 
@@ -52,14 +84,14 @@ public class Mailbox {
         Path target = this.directory.resolve(emailPath.getFileName());
 
         if (Files.exists(target)) {
-            System.out.println("[LOG][Mailbox] Email already exists in mailbox.");
+            System.out.println("[ERROR] Email already exists in mailbox.");
             return;
         }
 
         try {
             Files.copy(emailPath, target, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            System.out.println("[LOG][Mailbox] Error in copying email file.");
+            System.out.println("[ERROR] Error in copying email file.");
             e.printStackTrace();
         }
     }
@@ -69,7 +101,7 @@ public class Mailbox {
             try {
                 Files.createDirectories(directory);
             } catch (IOException e) {
-                System.out.println("[LOG][createDirectory] Error in creating directory.");
+                System.out.println("[ERROR] Error in creating directory.");
                 e.printStackTrace();
             }
         }
@@ -78,7 +110,7 @@ public class Mailbox {
     public static void moveMailToFolder(String from, String to) {
         File fromFile = new File(from);
         if (!fromFile.exists()) {
-            System.out.println("[LOG][moveMailToFolder] File does not exist.");
+            System.out.println("[ERROR] File does not exist.");
             return;
         }
         File toFile = new File(to);
@@ -107,12 +139,5 @@ public class Mailbox {
 
     public Filter[] getFilters() {
         return filters;
-    }
-
-    public Mailbox search(String name) {
-        if (this.name.equals(name)) {
-            return this;
-        }
-        return null;
     }
 }

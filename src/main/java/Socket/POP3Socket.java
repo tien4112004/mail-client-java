@@ -3,6 +3,7 @@ package Socket;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.List;
 import java.io.FileReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,6 +15,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import Filter.Mailbox;
 import JSON.WriteMessageStatus;
 import Message.Message;
 import Message.MessageParser;
@@ -38,6 +40,7 @@ public class POP3Socket extends MailSocket {
     private JSONParser parser = new JSONParser();
     private JSONArray messageList = null;
     private WriteMessageStatus writeMessageStatus = null;
+    private List<Mailbox> mailboxes = null;
 
     public POP3Socket(String server, int port, String username, String password) {
         super(server, port);
@@ -60,6 +63,10 @@ public class POP3Socket extends MailSocket {
             }
         }
 
+    }
+
+    public void addMailboxes(List<Mailbox> mailboxes) {
+        this.mailboxes = mailboxes;
     }
 
     @Override
@@ -193,16 +200,11 @@ public class POP3Socket extends MailSocket {
                 break;
             }
             String rawMessage = RETR(i + 1 + "");
-            // Files.write(Paths.get("./test.msg"), rawMessage.getBytes());
             MessageParser parser = new MessageParser();
-            // parser.parse(rawMessage);
-            // Message email = parser.createMessage();
-            // email.saveMail(messagesID[i]);
-            saveEmail("Inbox/" + messagesID[i], rawMessage); // to be changed
+            String emailDirectory = DEFAULT_WORKING_DIRECTORY + "Inbox/" + messagesID[i];
+            saveEmail(emailDirectory, rawMessage); // to be changed
             messageList.add(messageObject);
-
-            // Filter - temporary
-
+            filterEmail(emailDirectory, mailboxes);
         }
         writeMessageStatus.writeJSON(messageList);
         // quit();
@@ -214,6 +216,17 @@ public class POP3Socket extends MailSocket {
             Files.write(emailPath, rawMessage.getBytes());
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void filterEmail(String emailDirectory, List<Mailbox> mailboxes) {
+        if (mailboxes == null) {
+            System.out.println("[ERROR] Mailboxes not initialized.");
+            return;
+        }
+        Path emailPath = Paths.get(emailDirectory);
+        for (Mailbox mailbox : mailboxes) {
+            mailbox.addEmailIfMatches(emailPath);
         }
     }
 
