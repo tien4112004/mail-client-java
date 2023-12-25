@@ -25,8 +25,7 @@ public class Config {
     private Map<String, Object> filterMap = new HashMap<String, Object>();
     private Map<String, Object> generalMap = new HashMap<String, Object>();
 
-    // Read keyword about work and spam from text files, then put it into JSONObject
-    // filter.
+    // Read all filter from object filter and put it into a JSONArray.
     private String[] workKeywordsHandler() {
         String data = "";
         try {
@@ -94,8 +93,12 @@ public class Config {
         generalMap.put("Username", username);
         String password = UI.password;
         generalMap.put("Password", password);
-        int SMPTport = 2225;
-        generalMap.put("SMTPport", SMPTport);
+        String SMTPServer = "127.0.0.1";
+        generalMap.put("SMTPport", SMTPServer);
+        int SMTPport = 2225;
+        generalMap.put("SMTPport", SMTPport);
+        String POP3Server = "127.0.0.1";
+        generalMap.put("POP3port", POP3Server);
         int POP3port = 1225;
         generalMap.put("POP3port", POP3port);
         int autoReload = 10;
