@@ -44,7 +44,7 @@ public class ConfigJSONTest {
 
         Mailbox emailMailbox = new Mailbox("email", "./email/", senderKeywords, subjectKeywords, contentKeywords);
 
-        Mailbox[] mailboxs = { testMailbox, exampleMailbox, emailMailbox };
+        Mailbox[] mailboxes = { testMailbox, exampleMailbox, emailMailbox };
 
         MainMenu UI = new MainMenu();
         UI.username = "example@localhost";
@@ -52,7 +52,7 @@ public class ConfigJSONTest {
 
         WriteConfig configJSON = new WriteConfig();
         try {
-            configJSON.writeConfig(mailboxs, UI);
+            configJSON.writeConfig(mailboxes, UI);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -61,8 +61,8 @@ public class ConfigJSONTest {
     @Test
     public void readJSONTest() {
         ReadConfig readConfig = new ReadConfig();
-        Mailbox[] mailboxs = readConfig.readMailboxs();
-        for (Mailbox mailbox : mailboxs) {
+        Mailbox[] mailboxes = readConfig.readMailboxes();
+        for (Mailbox mailbox : mailboxes) {
             System.out.println("Name: " + mailbox.getMailboxName());
             System.out.println("\t - Directory: " + mailbox.getMailboxDirectory());
             System.out.println("\t - Filters: ");

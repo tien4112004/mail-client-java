@@ -64,15 +64,15 @@ public class WriteConfig {
         return general;
     }
 
-    public void writeConfig(Mailbox[] mailboxs, MainMenu UI) throws IOException {
+    public void writeConfig(Mailbox[] mailboxes, MainMenu UI) throws IOException {
         JSONObject namedFilter = new JSONObject();
         namedFilter.put("General", createGeneral(UI));
 
         JSONObject mailboxFilters = new JSONObject();
-        for (Mailbox mailbox : mailboxs) {
+        for (Mailbox mailbox : mailboxes) {
             mailboxFilters.put(mailbox.getMailboxName(), createMailbox(mailbox, mailbox.getFilters()));
         }
-        namedFilter.put("Mailboxs", mailboxFilters);
+        namedFilter.put("Mailboxes", mailboxFilters);
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonElement je = gson.toJsonTree(namedFilter);

@@ -69,15 +69,15 @@ public class ReadConfig {
         return mailbox;
     }
 
-    public Mailbox[] readMailboxs() {
-        List<Mailbox> mailboxsList = new ArrayList<>();
-        for (Object obj : ((JSONObject) Config.get("Mailboxs")).entrySet()) {
+    public Mailbox[] readMailboxes() {
+        List<Mailbox> mailboxesList = new ArrayList<>();
+        for (Object obj : ((JSONObject) Config.get("Mailboxes")).entrySet()) {
             Map.Entry entry = (Map.Entry) obj;
             JSONObject je = (JSONObject) entry.getValue();
             Mailbox mailbox = createMailbox(je, entry.getKey().toString());
-            mailboxsList.add(mailbox);
+            mailboxesList.add(mailbox);
         }
-        Mailbox[] mailboxs = mailboxsList.toArray(new Mailbox[0]);
-        return mailboxs;
+        Mailbox[] mailboxes = mailboxesList.toArray(new Mailbox[0]);
+        return mailboxes;
     }
 }
