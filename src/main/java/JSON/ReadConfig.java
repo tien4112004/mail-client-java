@@ -21,7 +21,7 @@ public class ReadConfig {
     // "__Config.json";
 
     public ReadConfig() {
-        File file = new File(DEFAULT_WORKING_DIRECTORY + "__Config.json");
+        File file = new File(DEFAULT_WORKING_DIRECTORY + "Config.json");
         try {
             Config = (JSONObject) parser.parse(new FileReader(file));
         } catch (Exception e) {

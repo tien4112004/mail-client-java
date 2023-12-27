@@ -16,6 +16,8 @@ import org.junit.jupiter.api.BeforeEach;
 import Filter.*;
 import UI.MainMenu;
 
+import JSON.ReadConfig;
+
 public class ConfigJSONTest {
     @BeforeEach
     void setUp() {
@@ -31,7 +33,7 @@ public class ConfigJSONTest {
     }
 
     @Test
-    public void testFilter() {
+    public void testWrite() {
         String[] senderKeywords = { "null", "null", "null", "null", "null" };
         String[] subjectKeywords = { "null", "null", "null", "null", "null" };
         String[] contentKeywords = { "null", "null", "null", "null", "null" };

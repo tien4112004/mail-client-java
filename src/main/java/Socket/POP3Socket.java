@@ -201,7 +201,7 @@ public class POP3Socket extends MailSocket {
             }
             String rawMessage = RETR(i + 1 + "");
             MessageParser parser = new MessageParser();
-            String emailDirectory = DEFAULT_WORKING_DIRECTORY + "Inbox/" + messagesID[i];
+            String emailDirectory = DEFAULT_WORKING_DIRECTORY + "Inbox/" + messagesID[i] + ".msg";
             saveEmail(emailDirectory, rawMessage); // to be changed
             messageList.add(messageObject);
             filterEmail(emailDirectory, mailboxes);

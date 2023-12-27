@@ -76,8 +76,10 @@ public class WriteConfig {
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonElement je = gson.toJsonTree(namedFilter);
+        // JSONArray jsonArray = new JSONArray();
+        // jsonArray.add(je);
         String prettyJson = gson.toJson(je);
-        String configDirectory = DEFAULT_WORKING_DIRECTORY + "__Config.json";
+        String configDirectory = DEFAULT_WORKING_DIRECTORY + "Config.json";
         try (FileWriter file = new FileWriter(configDirectory)) {
             file.write(prettyJson);
             file.flush();

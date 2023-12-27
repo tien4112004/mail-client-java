@@ -21,8 +21,9 @@ public class UserInformation {
     public UserInformation(String configDirectory, InputHandler inputHandler) {
         try {
             this.inputHandler = inputHandler;
-            JSONArray configEleArray = (JSONArray) parser.parse(new FileReader(DEFAULT_CONFIG_DIRECTORY));
-            JSONObject configEle = (JSONObject) configEleArray.get(0);
+            // JSONArray configEleArray = (JSONArray) parser.parse(new FileReader(DEFAULT_CONFIG_DIRECTORY));
+            // JSONObject configEle = (JSONObject) configEleArray.get(0);
+            JSONObject configEle = (JSONObject) parser.parse(new FileReader(DEFAULT_CONFIG_DIRECTORY));
             JSONObject config = (JSONObject) configEle.get("General");
             Username = (String) config.get("Username");
             Password = (String) config.get("Password");
