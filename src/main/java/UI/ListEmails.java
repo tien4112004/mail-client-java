@@ -17,7 +17,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 public class ListEmails extends MainMenu {
-    private final int PAGE_SIZE = 10; // Number of emails per page
+    private final int PAGE_SIZE = 10;
     private final String FROM = formatString("From", 20);
     private final String SUBJECT = formatString("Subject", 30);
     private final String DATE = formatString("Date", 10);
@@ -31,7 +31,6 @@ public class ListEmails extends MainMenu {
     private int currentPage = 0;
     List<String> mailList;
 
-    // ReadMessageStatus readMessageStatus = null;
     JSONParser parser = new JSONParser();
     WriteMessageStatus writeMessageStatus = null;
     JSONArray messageList = null;
@@ -42,10 +41,6 @@ public class ListEmails extends MainMenu {
         this.inputHandler = inputHandler;
         this.writeMessageStatus = new WriteMessageStatus();
         try {
-            // Path MessageStatusJSONPath =
-            // Paths.get("src/main/java/JSON/MessageStatus.json");
-            // if (Files.exists(M, null))
-
             this.messageList = (JSONArray) parser.parse(new FileReader(MessageStatusJSONDirectory));
         } catch (Exception e) {
             e.printStackTrace();
@@ -127,7 +122,6 @@ public class ListEmails extends MainMenu {
             parser.quickParse(rawMessage);
             messageObject = (JSONObject) messageList.get(i);
             String readStatus = (messageObject.containsValue(false)) ? "*" : " ";
-            // String readStatus = "*";
             String sender = parser.getSender();
             sender = formatString(sender, 20);
             String subject = parser.getSubject();

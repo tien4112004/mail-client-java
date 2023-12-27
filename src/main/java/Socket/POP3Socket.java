@@ -44,7 +44,7 @@ public class POP3Socket extends MailSocket {
 
     public POP3Socket(String server, int port, String username, String password) {
         super(server, port);
-        synchronized(MutualExclusion.class) {
+        synchronized (MutualExclusion.class) {
             this.username = username;
             this.password = password;
             try {
@@ -57,7 +57,6 @@ public class POP3Socket extends MailSocket {
                     messageList = new JSONArray();
                 connect();
                 login();
-                retrieveMessage();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -200,9 +199,8 @@ public class POP3Socket extends MailSocket {
                 break;
             }
             String rawMessage = RETR(i + 1 + "");
-            MessageParser parser = new MessageParser();
             String emailDirectory = DEFAULT_WORKING_DIRECTORY + "Inbox/" + messagesID[i] + ".msg";
-            saveEmail(emailDirectory, rawMessage); // to be changed
+            saveEmail(emailDirectory, rawMessage);
             messageList.add(messageObject);
             filterEmail(emailDirectory, mailboxes);
         }
@@ -232,11 +230,6 @@ public class POP3Socket extends MailSocket {
 
     public void deleteMessage(String messageOrder) throws IOException {
         doCommand("DELE" + messageOrder, OK);
-    }
-
-    public String[] getMessageHead(String messageOrder) throws IOException {
-        String header = doCommand("TOP " + messageOrder + " 1", OK);
-        return header.split(CRLF);
     }
 
     public void quit() throws IOException {

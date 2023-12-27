@@ -1,17 +1,13 @@
 package UI;
 
-import java.io.IOException;
 import java.util.List;
-
-import javax.imageio.spi.IIOServiceProvider;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import Filter.Mailbox;
 
 public class ListMailboxes extends MainMenu {
-    private String username; // TODO: get from JSON
+    private String username;
     List<Mailbox> mailboxes = new ArrayList<Mailbox>(
             Arrays.asList(new Mailbox("Inbox"), new Mailbox("Sent"), new Mailbox("Spam")));
 
@@ -96,8 +92,8 @@ public class ListMailboxes extends MainMenu {
         int order = Integer.parseInt(userInput);
         int mailboxIndex = (currentPage - 1) * 10 + order;
 
-        if (mailboxIndex > mailboxes.size()) {
-            System.out.printf("%s[ERROR]Invalid mailbox number!%s\n", ANSI_TEXT_RED, ANSI_RESET);
+        if (mailboxIndex > mailboxes.size() || order > 9 || order < 0) {
+            System.out.printf("%s[ERROR] Invalid mailbox number!%s\n", ANSI_TEXT_RED, ANSI_RESET);
             sleep(TIME_2_SECONDS);
             return;
         }
@@ -105,15 +101,11 @@ public class ListMailboxes extends MainMenu {
         Mailbox mailbox = mailboxes.get(mailboxIndex - 1);
         ListEmails listEmails = new ListEmails(mailbox, inputHandler);
         listEmails.list();
-        if (mailboxIndex > mailboxes.size() || order > 9 || order < 0) {
-            System.out.println("[ERROR]Invalid mailbox number! Aborting...");
-            System.exit(0);
-        }
     }
 
     private boolean isInvalidOptions(String userInput) {
         if (userInput.length() > 1 || !userInput.matches("[1-9]+")) {
-            System.out.printf("%s[ERROR]Invalid option!%s\n", ANSI_TEXT_RED, ANSI_RESET);
+            System.out.printf("%s[ERROR] Invalid option!%s\n", ANSI_TEXT_RED, ANSI_RESET);
             sleep(TIME_2_SECONDS);
             return true;
         }

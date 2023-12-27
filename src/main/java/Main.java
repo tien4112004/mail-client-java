@@ -5,7 +5,9 @@ import java.util.List;
 
 import Filter.Mailbox;
 import Socket.POP3Socket;
+import UI.InputHandler;
 import UI.MainMenu;
+import UI.UserInformation;
 
 class Multithreading extends Thread {
     // private static final String ANSI_RESET = "\u001B[0m";
@@ -16,12 +18,14 @@ class Multithreading extends Thread {
     private String password;
 
     private POP3Socket pop3Socket;
+    private List<Mailbox> mailboxes;
 
-    public Multithreading(String server, int port, String username, String password) {
+    public Multithreading(String server, int port, String username, String password, List<Mailbox> mailboxes) {
         this.server = server;
         this.port = port;
         this.username = username;
         this.password = password;
+        this.mailboxes = mailboxes;
     }
 
     @Override
@@ -30,6 +34,8 @@ class Multithreading extends Thread {
             try {
                 // System.out.println(ANSI_TEXT_YELLOW + "Retrieving message..." + ANSI_RESET);
                 pop3Socket = new POP3Socket(server, port, username, password);
+                pop3Socket.addMailboxes(mailboxes);
+                pop3Socket.retrieveMessage();
                 pop3Socket.quit();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -45,8 +51,11 @@ class Multithreading extends Thread {
 
 public class Main {
     public static void main(String[] args) {
-        MainMenu ui = new MainMenu();
-        Multithreading reloadInterval = new Multithreading("localhost", 3335, ui.username, ui.password);
+        InputHandler inputHandler = new InputHandler();
+        UserInformation userInfo = new UserInformation(inputHandler);
+        MainMenu ui = new MainMenu(inputHandler, userInfo);
+        List<Mailbox> mailboxes = userInfo.getMailboxes();
+        Multithreading reloadInterval = new Multithreading("localhost", 3335, ui.username, ui.password, mailboxes);
         reloadInterval.start();
         try {
             ui.start();

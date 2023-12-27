@@ -1,82 +1,28 @@
 {
   "Mailboxes": {
-    "test1": {
+    "Inbox": {
       "Filters": {
-        "SubjectFilter": [
-          "null",
-          "null",
-          "null",
-          "null",
-          "null"
-        ],
-        "SenderFilter": [
-          "null",
-          "null",
-          "null",
-          "null",
-          "null"
-        ],
-        "ContentFilter": [
-          "null",
-          "null",
-          "null",
-          "null",
-          "null"
-        ]
+        "SubjectFilter": [],
+        "SenderFilter": [],
+        "ContentFilter": []
       },
-      "Directory": "./test1"
+      "Directory": "./Inbox"
     },
-    "email": {
+    "Spam": {
       "Filters": {
-        "SubjectFilter": [
-          "null",
-          "null",
-          "null",
-          "null",
-          "null"
-        ],
-        "SenderFilter": [
-          "null",
-          "null",
-          "null",
-          "null",
-          "null"
-        ],
-        "ContentFilter": [
-          "null",
-          "null",
-          "null",
-          "null",
-          "null"
-        ]
+        "SubjectFilter": [],
+        "SenderFilter": [],
+        "ContentFilter": []
       },
-      "Directory": "./email"
+      "Directory": "./Spam"
     },
-    "example": {
+    "Sent": {
       "Filters": {
-        "SubjectFilter": [
-          "null",
-          "null",
-          "null",
-          "null",
-          "null"
-        ],
-        "SenderFilter": [
-          "null",
-          "null",
-          "null",
-          "null",
-          "null"
-        ],
-        "ContentFilter": [
-          "null",
-          "null",
-          "null",
-          "null",
-          "null"
-        ]
+        "SubjectFilter": ["QC", "Promotion", "spam"],
+        "SenderFilter": [],
+        "ContentFilter": ["QC", "Advertisement", "spam"]
       },
-      "Directory": "./example"
+      "Directory": "./Sent"
     }
   },
   "General": {
@@ -84,8 +30,8 @@
     "POP3port": 1225,
     "SMTPport": 2225,
     "SMPTServer": "127.0.0.1",
-    "Username": "example@localhost",
+    "Username": "pttien@fit.hcmus.edu.vn",
     "RetrieveIntervalSecond": 10,
-    "Password": "123456"
+    "Password": "test"
   }
 }

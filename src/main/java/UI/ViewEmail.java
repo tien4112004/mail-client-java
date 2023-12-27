@@ -11,9 +11,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.io.IOException;
 
-public class ViewEmail extends MainMenu {
+public class ViewEmail extends UI {
     private final String LONG_DAY_DISPLAY_FORMAT = "EEE, d MMM yyyy HH:mm:ss";
 
+    private InputHandler inputHandler;
     private String emailDirectory;
     private List<String> mailList;
     private List<Mailbox> mailboxes;

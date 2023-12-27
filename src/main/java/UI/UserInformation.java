@@ -4,11 +4,17 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.FileNotFoundException;
+import java.util.Map;
+import java.util.List;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
+import Filter.Mailbox;
+import JSON.ReadConfig;
+import JSON.WriteConfig;
 
 public class UserInformation {
     private static final String DEFAULT_WORKING_DIRECTORY = "./";
@@ -17,21 +23,25 @@ public class UserInformation {
     InputHandler inputHandler;
     private String Username;
     private String Password;
+    private List<Mailbox> mailboxes;
 
     public UserInformation(String configDirectory, InputHandler inputHandler) {
-        try {
-            this.inputHandler = inputHandler;
-            // JSONArray configEleArray = (JSONArray) parser.parse(new FileReader(DEFAULT_CONFIG_DIRECTORY));
-            // JSONObject configEle = (JSONObject) configEleArray.get(0);
-            JSONObject configEle = (JSONObject) parser.parse(new FileReader(DEFAULT_CONFIG_DIRECTORY));
-            JSONObject config = (JSONObject) configEle.get("General");
-            Username = (String) config.get("Username");
-            Password = (String) config.get("Password");
-        } catch (Exception e) {
-            System.out.println("Config file not found!");
-            handleUserInput();
-            // e.printStackTrace();
+        this.inputHandler = inputHandler;
+        ReadConfig readConfig = null;
+        for (int i = 0; i < 3; i++) {
+            try {
+                readConfig = new ReadConfig();
+                break;
+            } catch (Exception e) {
+                System.out.println("Config file not found!");
+                handleUserInput();
+                System.out.printf("Retrying %d/3...\n", i + 1);
+            }
         }
+        Map<String, Object> generalMap = readConfig.readGeneral();
+        Username = (String) generalMap.get("Username");
+        Password = (String) generalMap.get("Password");
+        mailboxes = readConfig.readMailboxes();
     }
 
     public UserInformation(InputHandler inputHandler) {
@@ -46,26 +56,24 @@ public class UserInformation {
         return Password;
     }
 
+    public List<Mailbox> getMailboxes() {
+        return mailboxes;
+    }
+
     private void handleUserInput() {
-        Username = inputHandler.dialog("Enter username: ");
-        Password = inputHandler.dialog("Enter password: ");
+        Username = inputHandler.dialog("Username: ");
+        Password = inputHandler.dialog("Password: ");
 
-        JSONObject config = new JSONObject();
-        config.put("Username", Username);
-        config.put("Password", Password);
-
-        JSONObject general = new JSONObject();
-        general.put("General", config);
-
-        JSONArray configEleArray = new JSONArray();
-        configEleArray.add(general);
-
-        try (FileWriter file = new FileWriter(DEFAULT_CONFIG_DIRECTORY)) {
-            file.write(configEleArray.toJSONString());
-            System.out.println("Config file created successfully.");
-        } catch (IOException ioException) {
-            System.out.println("Error writing to config file.");
-            ioException.printStackTrace();
+        WriteConfig writeConfig = new WriteConfig();
+        Mailbox defaultMailboxes[] = { new Mailbox("Inbox"), new Mailbox("Sent"), new Mailbox("Spam") };
+        try {
+            writeConfig.writeConfig(defaultMailboxes, Username, Password);
+            System.out.println("\u001B[32mConfiguration file created.\u001B[0m");
+            Thread.sleep(1500);
+        } catch (Exception e) {
+            System.out.println("Error in writing configuration file.");
+            e.printStackTrace();
         }
     }
+
 }

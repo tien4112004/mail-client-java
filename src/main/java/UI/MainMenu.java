@@ -1,28 +1,15 @@
 package UI;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 
 import Filter.Mailbox;
-import Message.Message;
-import Socket.POP3Socket;
-
-// import javax.imageio.stream.ImageOutputStreamImpl;
-// import javax.sound.sampled.SourceDataLine;
-
-// import Config.Config;
-// import Socket.SMTPSocket;
 
 public class MainMenu extends UI {
     private UserInformation userInfo;
     public String username;
     public String password;
     List<Mailbox> mailboxes;
-    ListMailboxes listMailboxesUI;
-    ListEmails listEmailsUI;
     String currentEmailDirectory;
 
     protected InputHandler inputHandler;
@@ -33,6 +20,14 @@ public class MainMenu extends UI {
         this.username = userInfo.getUsername();
         this.password = userInfo.getPassword();
         // get mailboxes from JSON
+    }
+
+    public MainMenu(InputHandler inputHandler, UserInformation userInfo) {
+        this.inputHandler = inputHandler;
+        this.userInfo = userInfo;
+        this.username = userInfo.getUsername();
+        this.password = userInfo.getPassword();
+        // // get mailboxes from JSON
     }
 
     protected void showOption() {
@@ -51,12 +46,11 @@ public class MainMenu extends UI {
                 new SendEmails(inputHandler).send();
                 break;
             case 2:
-                listMailboxesUI = new ListMailboxes(username, inputHandler);
+                ListMailboxes listMailboxesUI = new ListMailboxes(username, inputHandler);
                 listMailboxesUI.list();
                 break;
             case 3:
                 System.exit(0);
-                break;
             default:
                 System.out.println("Invalid option! Aborting...");
                 System.exit(0);
