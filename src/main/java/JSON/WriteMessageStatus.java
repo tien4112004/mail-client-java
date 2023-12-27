@@ -18,6 +18,7 @@ import com.google.gson.JsonElement;
 
 import Socket.POP3Socket;
 // import JSON.ReadMessageStatus;
+import net.lecousin.framework.concurrent.async.MutualExclusion;
 
 public class WriteMessageStatus {
     // public WriteMessageStatus(String server, int port, String username, String
@@ -43,16 +44,18 @@ public class WriteMessageStatus {
     private final String DEFAULT_WORKING_DIRECTORY = "./";
 
     public void writeJSON(JSONArray messageList) throws IOException {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        JsonElement je = gson.toJsonTree(messageList);
-        String prettyJson = gson.toJson(je);
+        synchronized(MutualExclusion.class) {
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            JsonElement je = gson.toJsonTree(messageList);
+            String prettyJson = gson.toJson(je);
 
-        String messageStatusJSONDirectory = DEFAULT_WORKING_DIRECTORY + "MessageStatus.json";
-        try (FileWriter file = new FileWriter(messageStatusJSONDirectory)) {
-            file.write(prettyJson);
-            file.flush();
-        } catch (IOException e) {
-            System.out.println(e);
+            String messageStatusJSONDirectory = DEFAULT_WORKING_DIRECTORY + "MessageStatus.json";
+            try (FileWriter file = new FileWriter(messageStatusJSONDirectory)) {
+                file.write(prettyJson);
+                file.flush();
+            } catch (IOException e) {
+                System.out.println(e);
+            }
         }
     }
 }
