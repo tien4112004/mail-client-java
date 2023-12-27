@@ -24,9 +24,13 @@ import java.nio.file.Paths;
 public class POP3SocketTest {
     private POP3Socket POP3Socket;
     private String[] messagesID = null;
+    private Path path;
 
     @Before
     public void setUp() throws IOException {
+        path = Paths.get("./Inbox/");
+        if (!Files.exists(path))
+            Files.createDirectories(path);
         String sender = "example@localhost";
         String[] recipientsTo = new String[] { "pttien@fit.hcmus.edu.vn" };
         String[] recipientsCc = new String[] { "example@localhost" };
@@ -76,10 +80,13 @@ public class POP3SocketTest {
         POP3Socket.retrieveMessage();
     }
 
-    @AfterEach
-    public void tearDown() throws IOException {
-        POP3Socket.quit();
-        Path path = Paths.get("./MessageStatus.json");
+    @After
+    public void tearDownAfter() throws IOException {
+        Path path = Paths.get("./Inbox/");
+        for (String ID : messagesID) {
+            path = Paths.get("./Inbox/" + ID + ".msg");
+            Files.deleteIfExists(path);
+        }
         Files.deleteIfExists(path);
     }
 }
