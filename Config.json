@@ -1,14 +1,5 @@
 {
-  "General": {
-    "POP3Server": "127.0.0.1",
-    "POP3port": 1225,
-    "SMTPport": 2225,
-    "SMPTServer": "127.0.0.1",
-    "Username": "example@localhost",
-    "RetrieveIntervalSecond": 10,
-    "Password": "123456"
-  },
-  "Mailboxs": {
+  "Mailboxes": {
     "test1": {
       "Filters": {
         "SubjectFilter": [
@@ -87,5 +78,14 @@
       },
       "Directory": "./example"
     }
+  },
+  "General": {
+    "POP3Server": "127.0.0.1",
+    "POP3port": 1225,
+    "SMTPport": 2225,
+    "SMPTServer": "127.0.0.1",
+    "Username": "example@localhost",
+    "RetrieveIntervalSecond": 10,
+    "Password": "123456"
   }
 }
