@@ -2,27 +2,27 @@
   "Mailboxes": {
     "Inbox": {
       "Filters": {
-        "SubjectFilter": [],
-        "SenderFilter": [],
-        "ContentFilter": []
+        "SubjectFilter": ["null", "null", "null", "null", "null"],
+        "SenderFilter": ["null", "null", "null", "null", "null"],
+        "ContentFilter": ["null", "null", "null", "null", "null"]
       },
       "Directory": "./Inbox"
     },
     "Spam": {
       "Filters": {
-        "SubjectFilter": [],
-        "SenderFilter": [],
-        "ContentFilter": []
+        "SubjectFilter": ["null", "null", "null", "null", "null"],
+        "SenderFilter": ["null", "null", "null", "null", "null"],
+        "ContentFilter": ["null", "null", "null", "null", "null"]
       },
       "Directory": "./Spam"
     },
-    "Sent": {
+    "example": {
       "Filters": {
-        "SubjectFilter": ["QC", "Promotion", "spam"],
-        "SenderFilter": [],
-        "ContentFilter": ["QC", "Advertisement", "spam"]
+        "SubjectFilter": ["null", "null", "null", "null", "null"],
+        "SenderFilter": ["null", "null", "null", "null", "null"],
+        "ContentFilter": ["null", "null", "null", "null", "null"]
       },
-      "Directory": "./Sent"
+      "Directory": "./example"
     }
   },
   "General": {
@@ -30,8 +30,8 @@
     "POP3port": 1225,
     "SMTPport": 2225,
     "SMPTServer": "127.0.0.1",
-    "Username": "pttien@fit.hcmus.edu.vn",
+    "Username": "example@localhost",
     "RetrieveIntervalSecond": 10,
-    "Password": "test"
+    "Password": "*****"
   }
 }

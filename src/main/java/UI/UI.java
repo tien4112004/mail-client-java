@@ -54,10 +54,16 @@ public class UI {
         System.out.println();
     }
 
-    protected void showList(String[] list) {
-        for (int i = 0; i < list.length; i++) {
-            System.out.printf("[%d] %s\n", i + 1, list[i]);
+    protected void printList(String prompt, String[] list) {
+        if (list == null) {
+            return;
         }
+        System.out.print(prompt);
+        System.out.printf("%s ", list[0]);
+        for (int i = 1; i < list.length; i++) {
+            System.out.printf(", %s ", list[i]);
+        }
+        System.out.println();
     }
 
     protected void sleep(int milisecond) {

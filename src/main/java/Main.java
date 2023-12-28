@@ -10,8 +10,8 @@ import UI.MainMenu;
 import UI.UserInformation;
 
 class Multithreading extends Thread {
-    // private static final String ANSI_RESET = "\u001B[0m";
-    // private static final String ANSI_TEXT_YELLOW = "\u001B[33m";
+    private static final String ANSI_RESET = "\u001B[0m";
+    private static final String ANSI_TEXT_YELLOW = "\u001B[33m";
     private String server;
     private int port;
     private String username;
@@ -30,7 +30,8 @@ class Multithreading extends Thread {
 
     @Override
     public void run() {
-        while (true) {
+        int tries = 0;
+        while (tries < 3) {
             try {
                 // System.out.println(ANSI_TEXT_YELLOW + "Retrieving message..." + ANSI_RESET);
                 pop3Socket = new POP3Socket(server, port, username, password);
@@ -38,7 +39,9 @@ class Multithreading extends Thread {
                 pop3Socket.retrieveMessage();
                 pop3Socket.quit();
             } catch (Exception e) {
-                e.printStackTrace();
+                // e.printStackTrace();
+                tries++;
+                System.out.printf("%s[POP3] Retrying... (%d/3)%s\n", ANSI_TEXT_YELLOW, tries, ANSI_RESET);
             }
             try {
                 sleep(10000);
@@ -46,6 +49,8 @@ class Multithreading extends Thread {
                 e.printStackTrace();
             }
         }
+
+        System.out.printf("%s[POP3] Stopped%s\n", ANSI_TEXT_YELLOW, ANSI_RESET);
     }
 }
 

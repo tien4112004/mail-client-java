@@ -19,31 +19,42 @@ public class ViewEmail extends UI {
     private List<String> mailList;
     private List<Mailbox> mailboxes;
 
-    private int mailOrder;
+    private int emailIndex;
 
-    public ViewEmail(String emailDirectory, List<String> mailList, int mailOrder, List<Mailbox> mailboxes,
+    public ViewEmail(String emailDirectory, List<String> mailList, int emailIndex, List<Mailbox> mailboxes,
             InputHandler inputHandler) {
         this.emailDirectory = emailDirectory;
         this.mailList = mailList;
-        this.mailOrder = mailOrder;
+        this.emailIndex = emailIndex;
         this.mailboxes = mailboxes;
         this.inputHandler = inputHandler;
     }
 
     public void showEmail() {
         clearConsole();
-        Path emailPath = Paths.get(emailDirectory);
-        String rawMessage;
-        try {
-            rawMessage = new String(java.nio.file.Files.readAllBytes(emailPath));
-        } catch (IOException e) {
-            System.out.println(ANSI_TEXT_RED + "[ERROR] Error in reading email." + ANSI_RESET);
-            e.printStackTrace();
+        String rawEmail = readEmail();
+        if (rawEmail == null) {
             return;
         }
 
         MessageParser parser = new MessageParser();
-        parser.fullParse(rawMessage);
+        parser.fullParse(rawEmail);
+        displayEmailContent(parser);
+        handleUserInput();
+    }
+
+    private String readEmail() {
+        Path emailPath = Paths.get(emailDirectory);
+        try {
+            return new String(java.nio.file.Files.readAllBytes(emailPath));
+        } catch (IOException e) {
+            System.out.println(ANSI_TEXT_RED + "[ERROR] Error in reading email." + ANSI_RESET);
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private void displayEmailContent(MessageParser parser) {
         System.out.println("Date: " + parser.getDate(LONG_DAY_DISPLAY_FORMAT));
         System.out.println("From: " + parser.getSender());
         printList("To: ", parser.getRecipientsTo());
@@ -51,8 +62,7 @@ public class ViewEmail extends UI {
         System.out.println("Subject: " + parser.getSubject());
         System.out.println("Content: " + parser.getContent());
 
-        String[] attachmentDirectories = parser.getAttachmentDirectories();
-        attachmentDirectories = resolveAttachmentDirectories(attachmentDirectories);
+        String[] attachmentDirectories = resolveAttachmentDirectories(parser.getAttachmentDirectories());
         System.out.println("Attachments: ");
         for (int i = 0; i < attachmentDirectories.length; i++) {
             System.out.printf("[%d] %s\n", i + 1, attachmentDirectories[i]);
@@ -66,20 +76,6 @@ public class ViewEmail extends UI {
                 { "M", "Move to mailbox" }
         };
         showOptions(options);
-        String userInput = inputHandler.dialog(EMPTY_PROMPT);
-        handleUserInput(userInput);
-    }
-
-    private void printList(String prompt, String[] list) {
-        if (list == null) {
-            return;
-        }
-        System.out.print(prompt);
-        System.out.printf("%s ", list[0]);
-        for (int i = 1; i < list.length; i++) {
-            System.out.printf(", %s ", list[i]);
-        }
-        System.out.println();
     }
 
     private String[] resolveAttachmentDirectories(String[] attachmentDirectories) {
@@ -91,7 +87,9 @@ public class ViewEmail extends UI {
         return resolvedAttachmentDirectories;
     }
 
-    public void handleUserInput(String userInput) {
+    public void handleUserInput() {
+        String userInput = inputHandler.dialog(EMPTY_PROMPT);
+
         switch (userInput) {
             case "Q":
                 return;
@@ -99,48 +97,17 @@ public class ViewEmail extends UI {
                 // Handle "A" input
                 break;
             case "D":
-                deleteEmailHandler();
+                deleteEmail();
                 return;
             case "M":
-                for (int i = 0; i < mailboxes.size(); i++) {
-                    System.out.printf("[%d] %s\n", i + 1, mailboxes.get(i).getMailboxName());
-                }
-                String[][] options = {
-                        { ".", "Back to list" },
-                        { "#", "Move to mailbox #" },
-                        { "N", "New mailbox" },
-                        { "C", "Cancel" }
-                };
-                showOptions(options);
-                userInput = inputHandler.dialog("Move to: ");
-
-                Mailbox destination;
-                switch (userInput) {
-                    case ".":
-                    case "C":
-                        return;
-                    case "N":
-                        String newMailboxName = inputHandler.dialog("New mailbox name: ");
-                        mailboxes.add(new Mailbox(newMailboxName));
-                        System.out.println(ANSI_TEXT_GREEN + "New mailbox created!" + ANSI_RESET);
-                        sleep(1500);
-                        destination = mailboxes.get(mailboxes.size() - 1);
-                        break;
-                    default:
-                        int mailboxOrder = Integer.parseInt(userInput);
-                        destination = mailboxes.get(mailboxOrder);
-                }
-                Mailbox.moveMailToMailbox(emailDirectory, destination);
-                mailList.remove(mailOrder);
-                System.out.printf("%s%s%s\n", ANSI_TEXT_GREEN, "Moved to ...", ANSI_RESET);
-                sleep(2000);
+                moveEmail();
                 return;
             default:
                 // Handle other inputs (e.g., download i-th attachment)
         }
     }
 
-    private void deleteEmailHandler() {
+    private void deleteEmail() {
         Path emailPath = Paths.get(emailDirectory);
         try {
             Files.delete(emailPath);
@@ -149,8 +116,16 @@ public class ViewEmail extends UI {
             sleep(1500);
             e.printStackTrace();
         }
-        mailList.remove(mailOrder);
+        mailList.remove(emailIndex);
         System.out.printf("%s%s%s\n", ANSI_TEXT_GREEN, "Email removed.", ANSI_RESET);
         sleep(2000);
+    }
+
+    private void moveEmail() {
+        String destination = inputHandler.dialog("Destination mailbox: ");
+        Mailbox.moveMailToFolder(emailDirectory, destination);
+        System.out.printf("%s%s%s\n", ANSI_TEXT_GREEN, "Email moved to " + destination + ".", ANSI_RESET);
+        sleep(TIME_2_SECONDS);
+        mailList.remove(emailIndex);
     }
 }

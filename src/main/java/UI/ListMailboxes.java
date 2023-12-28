@@ -6,19 +6,19 @@ import java.util.Arrays;
 
 import Filter.Mailbox;
 
-public class ListMailboxes extends MainMenu {
+public class ListMailboxes extends UI {
     private String username;
-    List<Mailbox> mailboxes = new ArrayList<Mailbox>(
-            Arrays.asList(new Mailbox("Inbox"), new Mailbox("Sent"), new Mailbox("Spam")));
+    List<Mailbox> mailboxes = null;
 
     private static final int MAILBOXES_PER_PAGE = 10;
-    private final String PART_SPLITER = "========================================================================================\n";
+    private final String UI_SPLITER = "========================================================================================\n";
 
     public int currentPage = 1;
 
-    public ListMailboxes(String username, InputHandler inputHandler) {
+    public ListMailboxes(String username, InputHandler inputHandler, List<Mailbox> mailboxes) {
         this.username = username;
-        this.inputHandler = super.inputHandler;
+        this.inputHandler = inputHandler;
+        this.mailboxes = mailboxes;
     }
 
     public void list() {
@@ -47,7 +47,7 @@ public class ListMailboxes extends MainMenu {
 
         System.out.printf("Mailboxes for %s%s%s (Page %d/%d): \n", ANSI_TEXT_BLUE, username, ANSI_RESET, currentPage,
                 pageCount);
-        System.out.print(PART_SPLITER);
+        System.out.print(UI_SPLITER);
 
         for (int i = start; i < end; i++) {
             System.out.printf("[%d] %s\n", i + 1, mailboxes.get(i).getMailboxName());
@@ -117,6 +117,5 @@ public class ListMailboxes extends MainMenu {
         mailboxes.add(new Mailbox(newMailboxName));
         System.out.println(ANSI_TEXT_GREEN + "New mailbox created!" + ANSI_RESET);
         sleep(1500);
-        list();
     }
 }

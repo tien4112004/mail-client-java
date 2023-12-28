@@ -220,8 +220,9 @@ public class ListEmails extends MainMenu {
             return;
         }
 
-        String emailDirectory = mailList.get(currentPage * PAGE_SIZE + Integer.parseInt(userInput));
+        String emailDirectory = mailList.get(emailIndex);
         ViewEmail emailViewer = new ViewEmail(emailDirectory, mailList, emailIndex, mailboxes, inputHandler);
+        // TO BE CHANGED
         messageObject = (JSONObject) messageList.get(emailIndex);
         messageList.remove(messageObject);
         String keyObject = (String) messageObject.keySet().toArray()[0];
@@ -232,6 +233,7 @@ public class ListEmails extends MainMenu {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        //
         emailViewer.showEmail();
     }
 
