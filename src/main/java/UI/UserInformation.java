@@ -16,6 +16,11 @@ public class UserInformation {
     private String Username;
     private String Password;
     private List<Mailbox> mailboxes;
+    private int retrieveIntervalSeconds;
+    private String SMTPServer;
+    private int SMTPPort;
+    private String POP3Server;
+    private int POP3Port;
 
     public UserInformation(String configDirectory, InputHandler inputHandler) {
         this.inputHandler = inputHandler;
@@ -38,6 +43,26 @@ public class UserInformation {
         return mailboxes;
     }
 
+    public int getRetrieveIntervalSeconds() {
+        return retrieveIntervalSeconds;
+    }
+
+    public String getSMTPServer() {
+        return SMTPServer;
+    }
+
+    public int getSMTPPort() {
+        return SMTPPort;
+    }
+
+    public String getPOP3Server() {
+        return POP3Server;
+    }
+
+    public int getPOP3Port() {
+        return POP3Port;
+    }
+
     private void readConfig(String configDirectory) {
         ReadConfig readConfig = null;
         for (int tries = 0; tries < 3; tries++) {
@@ -54,6 +79,12 @@ public class UserInformation {
         Username = (String) generalMap.get("Username");
         Password = (String) generalMap.get("Password");
         mailboxes = readConfig.readMailboxes();
+        // server informations
+        retrieveIntervalSeconds = Integer.parseInt((String) generalMap.get("RetrieveIntervalSecond"));
+        SMTPServer = (String) generalMap.get("SMTPServer");
+        SMTPPort = Integer.parseInt((String) generalMap.get("SMTPport"));
+        POP3Server = (String) generalMap.get("POP3Server");
+        POP3Port = Integer.parseInt((String) generalMap.get("POP3port"));
     }
 
     private void handleUserInput() {

@@ -183,7 +183,7 @@ public class MessageParser {
             String uniqueFileName = getUniqueFileName(directoryPath, fileName);
             filePath = directoryPath.resolve(uniqueFileName);
             Files.write(filePath, fileContent);
-            System.out.println(String.format("%sSaved attachment \"%s\".%s", ANSI_GREEN, fileName, ANSI_RESET));
+            System.out.println(String.format("%sCached attachment \"%s\".%s", ANSI_GREEN, fileName, ANSI_RESET));
         } catch (Exception e) {
             System.out.println(String.format(ERROR_CANNOT_WRITE_FILE, e.getMessage()));
         }

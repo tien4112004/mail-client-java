@@ -12,6 +12,9 @@ public class MainMenu extends UI {
     List<Mailbox> mailboxes;
     String currentEmailDirectory;
 
+    private String SMTPServer;
+    private int SMTPPort;
+
     protected InputHandler inputHandler;
 
     public MainMenu() {
@@ -27,6 +30,8 @@ public class MainMenu extends UI {
         this.username = userInfo.getUsername();
         this.password = userInfo.getPassword();
         this.mailboxes = userInfo.getMailboxes();
+        this.SMTPServer = userInfo.getSMTPServer();
+        this.SMTPPort = userInfo.getSMTPPort();
     }
 
     protected void displayMenu() {
@@ -47,7 +52,7 @@ public class MainMenu extends UI {
         switch (userInput) {
             case "S":
                 clearConsole();
-                new SendEmails(username, inputHandler).send();
+                new SendEmails(SMTPServer, SMTPPort, username, inputHandler).send();
                 return;
             case "M":
                 clearConsole();

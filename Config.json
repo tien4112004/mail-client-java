@@ -27,7 +27,7 @@
   },
   "General": {
     "POP3Server": "127.0.0.1",
-    "POP3port": 1225,
+    "POP3port": 3335,
     "SMTPport": 2225,
     "SMPTServer": "127.0.0.1",
     "Username": "pttien@fit.hcmus.edu.vn",

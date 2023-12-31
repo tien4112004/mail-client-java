@@ -16,13 +16,16 @@ class Multithreading extends Thread {
 
     private POP3Socket pop3Socket;
     private List<Mailbox> mailboxes;
+    private int retrieveIntervalSeconds;
 
-    public Multithreading(String server, int port, String username, String password, List<Mailbox> mailboxes) {
+    public Multithreading(String server, int port, String username, String password, List<Mailbox> mailboxes,
+            int retrieveIntervalSeconds) {
         this.server = server;
         this.port = port;
         this.username = username;
         this.password = password;
         this.mailboxes = mailboxes;
+        this.retrieveIntervalSeconds = retrieveIntervalSeconds;
     }
 
     @Override
@@ -41,7 +44,7 @@ class Multithreading extends Thread {
                 System.out.printf("%s[POP3] Retrying... (%d/3)%s\n", ANSI_TEXT_YELLOW, tries, ANSI_RESET);
             }
             try {
-                sleep(10000);
+                sleep(retrieveIntervalSeconds * 1000);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -55,9 +58,14 @@ public class Main {
     public static void main(String[] args) {
         InputHandler inputHandler = new InputHandler();
         UserInformation userInfo = new UserInformation(inputHandler);
+        int retrieveIntervalSeconds = userInfo.getRetrieveIntervalSeconds();
+        String POP3Server = userInfo.getPOP3Server();
+        int POP3Port = userInfo.getPOP3Port();
+
         MainMenu ui = new MainMenu(inputHandler, userInfo);
         List<Mailbox> mailboxes = userInfo.getMailboxes();
-        Multithreading reloadInterval = new Multithreading("localhost", 3335, ui.username, ui.password, mailboxes);
+        Multithreading reloadInterval = new Multithreading(POP3Server, POP3Port, ui.username, ui.password,
+                mailboxes, retrieveIntervalSeconds);
         reloadInterval.start();
         try {
             ui.start();
