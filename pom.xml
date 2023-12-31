@@ -4,7 +4,7 @@
 
   <groupId>com.yourcompany</groupId>
   <artifactId>mail-client-java</artifactId>
-  <version>0.0.1-alpha</version>
+  <version>0.0.3-alpha</version>
   <packaging>jar</packaging>
 
   <name>mail-client-java</name>

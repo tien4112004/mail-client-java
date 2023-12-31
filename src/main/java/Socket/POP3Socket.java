@@ -152,8 +152,13 @@ public class POP3Socket extends MailSocket {
 
     public void UIDL() throws IOException {
         doCommand("UIDL", OK);
-        String[] rawID = getMultipleLinesResponse().split(CRLF);
+        String response = getMultipleLinesResponse();
+        if (response == null || response.length() == 0) {
+            this.messagesID = new String[0];
+            return;
+        }
 
+        String[] rawID = response.split(CRLF);
         this.messagesID = new String[rawID.length];
         for (int i = 0; i < rawID.length; i++) {
             if (rawID[i].length() > 2) {

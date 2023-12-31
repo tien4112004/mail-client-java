@@ -2,79 +2,25 @@
   "Mailboxes": {
     "Inbox": {
       "Filters": {
-        "SubjectFilter": [
-          "null",
-          "null",
-          "null",
-          "null",
-          "null"
-        ],
-        "SenderFilter": [
-          "null",
-          "null",
-          "null",
-          "null",
-          "null"
-        ],
-        "ContentFilter": [
-          "null",
-          "null",
-          "null",
-          "null",
-          "null"
-        ]
+        "SubjectFilter": ["null", "null", "null", "null", "null"],
+        "SenderFilter": ["null", "null", "null", "null", "null"],
+        "ContentFilter": ["null", "null", "null", "null", "null"]
       },
       "Directory": "./Inbox"
     },
     "email": {
       "Filters": {
-        "SubjectFilter": [
-          "null",
-          "null",
-          "null",
-          "null",
-          "null"
-        ],
-        "SenderFilter": [
-          "null",
-          "null",
-          "null",
-          "null",
-          "null"
-        ],
-        "ContentFilter": [
-          "null",
-          "null",
-          "null",
-          "null",
-          "null"
-        ]
+        "SubjectFilter": ["null", "null", "null", "null", "null"],
+        "SenderFilter": ["null", "null", "null", "null", "null"],
+        "ContentFilter": ["null", "null", "null", "null", "null"]
       },
       "Directory": "./email"
     },
     "example": {
       "Filters": {
-        "SubjectFilter": [
-          "null",
-          "null",
-          "null",
-          "null",
-          "null"
-        ],
-        "SenderFilter": [
-          "null",
-          "null",
-          "null",
-          "null",
-          "null"
-        ],
-        "ContentFilter": [
-          "null",
-          "null",
-          "null",
-          "null",
-          "null"
-        ]
+        "SubjectFilter": ["null", "null", "null", "null", "null"],
+        "SenderFilter": ["null", "null", "null", "null", "null"],
+        "ContentFilter": ["null", "null", "null", "null", "null"]
       },
       "Directory": "./example"
     }
@@ -84,7 +30,7 @@
     "POP3port": 3335,
     "SMTPport": 2225,
     "SMPTServer": "127.0.0.1",
-    "Username": "example@localhost",
+    "Username": "pttien@fit.hcmus.edu.vn",
     "RetrieveIntervalSecond": 10,
     "Password": "*****"
   }

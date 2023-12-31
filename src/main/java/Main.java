@@ -39,7 +39,7 @@ class Multithreading extends Thread {
                 pop3Socket.retrieveMessage();
                 pop3Socket.quit();
             } catch (Exception e) {
-                // e.printStackTrace();
+                e.printStackTrace();
                 tries++;
                 System.out.printf("%s[POP3] Retrying... (%d/3)%s\n", ANSI_TEXT_YELLOW, tries, ANSI_RESET);
             }

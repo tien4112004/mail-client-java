@@ -156,10 +156,20 @@ public class MessageParser {
             String fileName = contentDisposition.substring(contentDisposition.indexOf("filename=") + 10,
                     contentDisposition.length() - 1);
             String encodedFileContent = joinLinesUntilBoundary(startIndex, bodyLines);
+            encodedFileContent = padBase64String(encodedFileContent);
             byte[] fileContent = Base64.getDecoder().decode(encodedFileContent);
             String fileDirectory = saveAttachment(fileName, fileContent, saveDirectory);
             attachmentDirectories.add(fileDirectory);
         }
+    }
+
+    private String padBase64String(String base64) {
+        int remainder = base64.length() % 4;
+        if (remainder > 0) {
+            String padding = new String(new char[4 - remainder]).replace("\0", "=");
+            base64 += padding;
+        }
+        return base64;
     }
 
     private String joinLinesUntilBoundary(int startIndex, String[] lines) {
