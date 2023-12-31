@@ -47,7 +47,7 @@ public class MainMenu extends UI {
         switch (userInput) {
             case "S":
                 clearConsole();
-                new SendEmails(inputHandler).send();
+                new SendEmails(username, inputHandler).send();
                 return;
             case "M":
                 clearConsole();

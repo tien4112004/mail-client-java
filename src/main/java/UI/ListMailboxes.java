@@ -85,6 +85,16 @@ public class ListMailboxes extends UI {
         }
     }
 
+    @Override
+    protected boolean isInvalidOptions(String userInput) {
+        if (userInput.length() > 1 || !userInput.matches("[1-9]+")) {
+            System.out.printf("%s[ERROR] Invalid option!%s\n", ANSI_TEXT_RED, ANSI_RESET);
+            sleep(TIME_2_SECONDS);
+            return true;
+        }
+        return false;
+    }
+
     private void handleMailboxSelection(String userInput) {
         if (isInvalidOptions(userInput))
             return;
@@ -101,15 +111,6 @@ public class ListMailboxes extends UI {
         Mailbox mailbox = mailboxes.get(mailboxIndex - 1);
         ListEmails listEmails = new ListEmails(mailbox, inputHandler);
         listEmails.list();
-    }
-
-    private boolean isInvalidOptions(String userInput) {
-        if (userInput.length() > 1 || !userInput.matches("[1-9]+")) {
-            System.out.printf("%s[ERROR] Invalid option!%s\n", ANSI_TEXT_RED, ANSI_RESET);
-            sleep(TIME_2_SECONDS);
-            return true;
-        }
-        return false;
     }
 
     private void createNewMailbox() {

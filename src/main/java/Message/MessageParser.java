@@ -18,10 +18,7 @@ public class MessageParser {
     private static final String ERROR_FILE_NOT_FOUND = "[ERROR][Message] File \"%s\" not found.";
     private static final String ERROR_CANNOT_WRITE_FILE = "[ERROR][Message] Cannot write file \"%s\".";
     private static final String DEFAULT_DATE_FORMAT = "EEE, d MMM yyyy HH:mm:ss Z";
-    private static final String CONTENT_TYPE_TEXT = "Content-Type: text/plain; charset=UTF-8; format=flowed";
     private static final String CONTENT_TRANSFER_ENCODING = "Content-Transfer-Encoding: 7bit";
-    private static final String CONTENT_DISPOSITION = "Content-Disposition: attachment; filename=\"%s\"";
-    private static final String CONTENT_TRANSFER_ENCODING_BASE64 = "Content-Transfer-Encoding: base64";
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
     private static final String ANSI_GREEN = "\u001B[32m";
     private static final String ANSI_RESET = "\u001B[0m";
@@ -160,8 +157,8 @@ public class MessageParser {
                     contentDisposition.length() - 1);
             String encodedFileContent = joinLinesUntilBoundary(startIndex, bodyLines);
             byte[] fileContent = Base64.getDecoder().decode(encodedFileContent);
-            saveAttachment(fileName, fileContent, saveDirectory);
-            attachmentDirectories.add(saveDirectory + fileName);
+            String fileDirectory = saveAttachment(fileName, fileContent, saveDirectory);
+            attachmentDirectories.add(fileDirectory);
         }
     }
 
@@ -175,19 +172,39 @@ public class MessageParser {
         return joinedLines.toString();
     }
 
-    private void saveAttachment(String fileName, byte[] fileContent, String saveDirectory) {
+    private String saveAttachment(String fileName, byte[] fileContent, String saveDirectory) {
+        Path filePath = null;
         try {
             Path directoryPath = Paths.get(saveDirectory);
             if (!Files.exists(directoryPath)) {
                 Files.createDirectories(directoryPath);
             }
 
-            Path filePath = directoryPath.resolve(fileName);
+            String uniqueFileName = getUniqueFileName(directoryPath, fileName);
+            filePath = directoryPath.resolve(uniqueFileName);
             Files.write(filePath, fileContent);
             System.out.println(String.format("%sSaved attachment \"%s\".%s", ANSI_GREEN, fileName, ANSI_RESET));
         } catch (Exception e) {
             System.out.println(String.format(ERROR_CANNOT_WRITE_FILE, e.getMessage()));
         }
+        return filePath.toString();
+    }
+
+    private String getUniqueFileName(Path directoryPath, String fileName) {
+        String uniqueFileName = fileName;
+        int counter = 0;
+        while (Files.exists(directoryPath.resolve(uniqueFileName))) {
+            counter++;
+            int dotIndex = fileName.lastIndexOf(".");
+            if (dotIndex > 0) {
+                String nameWithoutExtension = fileName.substring(0, dotIndex);
+                String extension = fileName.substring(dotIndex);
+                uniqueFileName = nameWithoutExtension + "(" + counter + ")" + extension;
+            } else {
+                uniqueFileName = fileName + "(" + counter + ")";
+            }
+        }
+        return uniqueFileName;
     }
 
     public String getSender() {

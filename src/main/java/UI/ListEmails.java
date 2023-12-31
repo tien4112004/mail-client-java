@@ -200,15 +200,6 @@ public class ListEmails extends MainMenu {
         currentPage = Math.min(currentPage + 1, mailList.size() / PAGE_SIZE);
     }
 
-    private boolean isInvalidOptions(String userInput) {
-        if (userInput.length() > 1 || !userInput.matches("[0-9]+")) {
-            System.out.printf("%sInvalid option!%s\n", ANSI_TEXT_RED, ANSI_RESET);
-            sleep(TIME_2_SECONDS);
-            return true;
-        }
-        return false;
-    }
-
     private void handleEmailSelection(String userInput) {
         if (isInvalidOptions(userInput))
             return;
@@ -222,6 +213,7 @@ public class ListEmails extends MainMenu {
 
         String emailDirectory = mailList.get(emailIndex);
         ViewEmail emailViewer = new ViewEmail(emailDirectory, mailList, emailIndex, mailboxes, inputHandler);
+
         // TO BE CHANGED
         messageObject = (JSONObject) messageList.get(emailIndex);
         messageList.remove(messageObject);
@@ -233,7 +225,8 @@ public class ListEmails extends MainMenu {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //
+        // END
+
         emailViewer.showEmail();
     }
 

@@ -12,7 +12,8 @@ public class SendEmails extends UI {
     private String content;
     private String[] attachments;
 
-    public SendEmails(InputHandler inputHandler) {
+    public SendEmails(String sender, InputHandler inputHandler) {
+        this.sender = sender;
         this.inputHandler = inputHandler;
     }
 

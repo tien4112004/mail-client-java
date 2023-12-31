@@ -58,7 +58,8 @@ public class POP3Socket extends MailSocket {
                 connect();
                 login();
             } catch (Exception e) {
-                e.printStackTrace();
+                System.err.println("[POP3] Error: " + e.getMessage());
+                // e.printStackTrace();
             }
         }
 
@@ -196,7 +197,8 @@ public class POP3Socket extends MailSocket {
             JSONObject messageObject = new JSONObject();
             messageObject.put(messagesID[i], false);
             if (exist(messagesID[i])) {
-                break;
+                // break;
+                continue;
             }
             String rawMessage = RETR(i + 1 + "");
             String emailDirectory = DEFAULT_WORKING_DIRECTORY + "Inbox/" + messagesID[i] + ".msg";
