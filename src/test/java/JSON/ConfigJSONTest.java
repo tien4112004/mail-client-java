@@ -38,7 +38,7 @@ public class ConfigJSONTest {
         String[] subjectKeywords = { "null", "null", "null", "null", "null" };
         String[] contentKeywords = { "null", "null", "null", "null", "null" };
 
-        Mailbox testMailbox = new Mailbox("test1", "./test1/", senderKeywords, subjectKeywords, contentKeywords);
+        Mailbox testMailbox = new Mailbox("Inbox", "./Inbox/", senderKeywords, subjectKeywords, contentKeywords);
 
         Mailbox exampleMailbox = new Mailbox("example", "./example/", senderKeywords, subjectKeywords, contentKeywords);
 

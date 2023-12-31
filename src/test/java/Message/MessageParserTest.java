@@ -1,9 +1,8 @@
 package Message;
 
-// import Message.MessageParser;
-
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.AfterAll;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -140,7 +139,7 @@ public class MessageParserTest {
         assertEquals("multipart/mixed; boundary=\"------------c9a195a417c24c1890187baee07e8ad5\"",
                 parser.getContentType());
         assertEquals("Pdf test", parser.getContent());
-        assertTrue(Files.exists(Paths.get("attachments/write/test.pdf")));
+        assertTrue(Files.exists(Paths.get("attachments/test.pdf")));
     }
 
     @Test
@@ -156,5 +155,16 @@ public class MessageParserTest {
         String multipartMessage = "Content-Type: multipart/mixed; boundary=foo\r\n\r\n--foo\r\nContent-Type: text/plain\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHello, World!\r\n--foo\r\nContent-Type: application/octet-stream\r\n\r\nSome binary data\r\n--foo--";
         parser.parseHeaderAndContent(multipartMessage);
         assertEquals("Hello, World!", parser.getContent());
+    }
+
+    @AfterAll
+    public static void cleanUp() {
+        try {
+            Files.delete(Paths.get("attachments/write/test.txt"));
+            Files.delete(Paths.get("attachments/write/test.cpp"));
+            Files.delete(Paths.get("attachments/test.pdf"));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

@@ -52,7 +52,7 @@ public class WriteConfig {
         general.put("SMPTServer", "127.0.0.1");
         general.put("SMTPport", 2225);
         general.put("POP3Server", "127.0.0.1");
-        general.put("POP3port", 1225);
+        general.put("POP3port", 3335);
         general.put("RetrieveIntervalSecond", 10);
 
         return general;

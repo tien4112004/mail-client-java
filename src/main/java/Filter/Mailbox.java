@@ -73,6 +73,9 @@ public class Mailbox {
         parser.parseHeaderAndContent(rawMessage);
         Message email = parser.createMessage();
 
+        if (filters == null)
+            return;
+
         for (Filter filter : filters) {
             if (filter.matches(email)) {
                 copyEmailToDirectory(emailPath);

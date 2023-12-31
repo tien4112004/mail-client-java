@@ -40,7 +40,7 @@ public class POP3Socket extends MailSocket {
     private JSONParser parser = new JSONParser();
     private JSONArray messageList = null;
     private WriteMessageStatus writeMessageStatus = null;
-    private List<Mailbox> mailboxes = null;
+    private List<Mailbox> mailboxes;
 
     public POP3Socket(String server, int port, String username, String password) {
         super(server, port);
