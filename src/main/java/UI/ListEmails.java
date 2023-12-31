@@ -120,8 +120,10 @@ public class ListEmails extends MainMenu {
             }
             MessageParser parser = new MessageParser();
             parser.quickParse(rawMessage);
+            // TO BE CHANGED
             messageObject = (JSONObject) messageList.get(i);
             String readStatus = (messageObject.containsValue(false)) ? "*" : " ";
+            // END
             String sender = parser.getSender();
             sender = formatString(sender, 20);
             String subject = parser.getSubject();
@@ -188,6 +190,7 @@ public class ListEmails extends MainMenu {
                 return true;
             default:
                 handleEmailSelection(userInput);
+                clearAttachmentsCaches();
                 return true;
         }
     }
@@ -263,5 +266,21 @@ public class ListEmails extends MainMenu {
         System.out.printf("%s%s%s\n", ANSI_TEXT_GREEN, "Email moved to " + destination + ".", ANSI_RESET);
         sleep(TIME_2_SECONDS);
         mailList.remove(emailIndex);
+    }
+
+    private void clearAttachmentsCaches() {
+        Path attachmentCacheDirectory = Paths.get(DEFAULT_WORKING_DIRECTORY + "attachments");
+        try {
+            List<String> attachmentCacheList = Files.walk(attachmentCacheDirectory).filter(Files::isRegularFile)
+                    .map(Path::toString)
+                    .collect(Collectors.toList());
+            for (String attachmentCache : attachmentCacheList) {
+                Path attachmentCachePath = Paths.get(attachmentCache);
+                Files.delete(attachmentCachePath);
+            }
+        } catch (IOException e) {
+            System.out.println(ANSI_TEXT_RED + "[ERROR] Error in deleting attachments cache." + ANSI_RESET);
+            e.printStackTrace();
+        }
     }
 }
