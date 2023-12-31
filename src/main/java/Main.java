@@ -1,3 +1,6 @@
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import Filter.Mailbox;
@@ -33,7 +36,10 @@ class Multithreading extends Thread {
         int tries = 0;
         while (tries < 3) {
             try {
-                // System.out.println(ANSI_TEXT_YELLOW + "Retrieving message..." + ANSI_RESET);
+                Path MessageStatusPath = Paths.get("./MessageStatus.json");
+                // if (!Files.exists(MessageStatusPath))
+                // System.out.println(ANSI_TEXT_YELLOW + "Please wait for the first
+                // launching..." + ANSI_RESET);
                 pop3Socket = new POP3Socket(server, port, username, password);
                 pop3Socket.addMailboxes(mailboxes);
                 pop3Socket.retrieveMessage();
@@ -67,6 +73,19 @@ public class Main {
         Multithreading reloadInterval = new Multithreading(POP3Server, POP3Port, ui.username, ui.password,
                 mailboxes, retrieveIntervalSeconds);
         reloadInterval.start();
+
+        Path MessageStatusPath = Paths.get("./MessageStatus.json");
+        if (!Files.exists(MessageStatusPath)) {
+            System.out.println("\u001B[33mPreparing for the first launch...\u001B[0m");
+            while (!Files.exists(MessageStatusPath)) {
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
         try {
             ui.start();
         } catch (Exception e) {
