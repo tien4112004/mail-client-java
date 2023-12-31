@@ -40,11 +40,11 @@ public class POP3Socket extends MailSocket {
     private JSONParser parser = new JSONParser();
     private JSONArray messageList = null;
     private WriteMessageStatus writeMessageStatus = null;
-    private List<Mailbox> mailboxes = null;
+    private List<Mailbox> mailboxes;
 
     public POP3Socket(String server, int port, String username, String password) {
         super(server, port);
-        synchronized(MutualExclusion.class) {
+        synchronized (MutualExclusion.class) {
             this.username = username;
             this.password = password;
             try {
@@ -57,9 +57,9 @@ public class POP3Socket extends MailSocket {
                     messageList = new JSONArray();
                 connect();
                 login();
-                retrieveMessage();
             } catch (Exception e) {
-                e.printStackTrace();
+                System.err.println("[POP3] Error: " + e.getMessage());
+                // e.printStackTrace();
             }
         }
 
@@ -152,8 +152,13 @@ public class POP3Socket extends MailSocket {
 
     public void UIDL() throws IOException {
         doCommand("UIDL", OK);
-        String[] rawID = getMultipleLinesResponse().split(CRLF);
+        String response = getMultipleLinesResponse();
+        if (response == null || response.length() == 0) {
+            this.messagesID = new String[0];
+            return;
+        }
 
+        String[] rawID = response.split(CRLF);
         this.messagesID = new String[rawID.length];
         for (int i = 0; i < rawID.length; i++) {
             if (rawID[i].length() > 2) {
@@ -197,12 +202,12 @@ public class POP3Socket extends MailSocket {
             JSONObject messageObject = new JSONObject();
             messageObject.put(messagesID[i], false);
             if (exist(messagesID[i])) {
-                break;
+                // break;
+                continue;
             }
             String rawMessage = RETR(i + 1 + "");
-            MessageParser parser = new MessageParser();
             String emailDirectory = DEFAULT_WORKING_DIRECTORY + "Inbox/" + messagesID[i] + ".msg";
-            saveEmail(emailDirectory, rawMessage); // to be changed
+            saveEmail(emailDirectory, rawMessage);
             messageList.add(messageObject);
             filterEmail(emailDirectory, mailboxes);
         }
@@ -232,11 +237,6 @@ public class POP3Socket extends MailSocket {
 
     public void deleteMessage(String messageOrder) throws IOException {
         doCommand("DELE" + messageOrder, OK);
-    }
-
-    public String[] getMessageHead(String messageOrder) throws IOException {
-        String header = doCommand("TOP " + messageOrder + " 1", OK);
-        return header.split(CRLF);
     }
 
     public void quit() throws IOException {

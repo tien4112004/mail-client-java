@@ -38,7 +38,7 @@ public class ConfigJSONTest {
         String[] subjectKeywords = { "null", "null", "null", "null", "null" };
         String[] contentKeywords = { "null", "null", "null", "null", "null" };
 
-        Mailbox testMailbox = new Mailbox("test1", "./test1/", senderKeywords, subjectKeywords, contentKeywords);
+        Mailbox testMailbox = new Mailbox("Inbox", "./Inbox/", senderKeywords, subjectKeywords, contentKeywords);
 
         Mailbox exampleMailbox = new Mailbox("example", "./example/", senderKeywords, subjectKeywords, contentKeywords);
 
@@ -52,7 +52,7 @@ public class ConfigJSONTest {
 
         WriteConfig configJSON = new WriteConfig();
         try {
-            configJSON.writeConfig(mailboxes, UI);
+            configJSON.writeConfig(mailboxes, "example@localhost", "*****");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -60,8 +60,13 @@ public class ConfigJSONTest {
 
     @Test
     public void readJSONTest() {
-        ReadConfig readConfig = new ReadConfig();
-        Mailbox[] mailboxes = readConfig.readMailboxes();
+        ReadConfig readConfig = null;
+        try {
+            readConfig = new ReadConfig();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        List<Mailbox> mailboxes = readConfig.readMailboxes();
         for (Mailbox mailbox : mailboxes) {
             System.out.println("Name: " + mailbox.getMailboxName());
             System.out.println("\t - Directory: " + mailbox.getMailboxDirectory());
@@ -69,15 +74,15 @@ public class ConfigJSONTest {
             for (Filter filter : mailbox.getFilters()) {
                 if (filter instanceof SenderFilter) {
                     System.out.print("\t\t + SenderFilter: ");
-                    printKeywords(((SenderFilter) filter).getKeywords()); 
+                    printKeywords(((SenderFilter) filter).getKeywords());
                 }
                 if (filter instanceof SubjectFilter) {
                     System.out.print("\t\t + SubjectFilter: ");
-                    printKeywords(((SubjectFilter) filter).getKeywords()); 
+                    printKeywords(((SubjectFilter) filter).getKeywords());
                 }
                 if (filter instanceof ContentFilter) {
                     System.out.print("\t\t + ContentFilter: ");
-                    printKeywords(((ContentFilter) filter).getKeywords()); 
+                    printKeywords(((ContentFilter) filter).getKeywords());
                 }
             }
         }

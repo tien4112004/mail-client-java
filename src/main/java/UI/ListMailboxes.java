@@ -1,28 +1,24 @@
 package UI;
 
-import java.io.IOException;
 import java.util.List;
-
-import javax.imageio.spi.IIOServiceProvider;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import Filter.Mailbox;
 
-public class ListMailboxes extends MainMenu {
-    private String username; // TODO: get from JSON
-    List<Mailbox> mailboxes = new ArrayList<Mailbox>(
-            Arrays.asList(new Mailbox("Inbox"), new Mailbox("Sent"), new Mailbox("Spam")));
+public class ListMailboxes extends UI {
+    private String username;
+    List<Mailbox> mailboxes = null;
 
     private static final int MAILBOXES_PER_PAGE = 10;
-    private final String PART_SPLITER = "========================================================================================\n";
+    private final String UI_SPLITER = "========================================================================================\n";
 
     public int currentPage = 1;
 
-    public ListMailboxes(String username, InputHandler inputHandler) {
+    public ListMailboxes(String username, InputHandler inputHandler, List<Mailbox> mailboxes) {
         this.username = username;
-        this.inputHandler = super.inputHandler;
+        this.inputHandler = inputHandler;
+        this.mailboxes = mailboxes;
     }
 
     public void list() {
@@ -51,7 +47,7 @@ public class ListMailboxes extends MainMenu {
 
         System.out.printf("Mailboxes for %s%s%s (Page %d/%d): \n", ANSI_TEXT_BLUE, username, ANSI_RESET, currentPage,
                 pageCount);
-        System.out.print(PART_SPLITER);
+        System.out.print(UI_SPLITER);
 
         for (int i = start; i < end; i++) {
             System.out.printf("[%d] %s\n", i + 1, mailboxes.get(i).getMailboxName());
@@ -89,6 +85,16 @@ public class ListMailboxes extends MainMenu {
         }
     }
 
+    @Override
+    protected boolean isInvalidOptions(String userInput) {
+        if (userInput.length() > 1 || !userInput.matches("[1-9]+")) {
+            System.out.printf("%s[ERROR] Invalid option!%s\n", ANSI_TEXT_RED, ANSI_RESET);
+            sleep(TIME_2_SECONDS);
+            return true;
+        }
+        return false;
+    }
+
     private void handleMailboxSelection(String userInput) {
         if (isInvalidOptions(userInput))
             return;
@@ -96,8 +102,8 @@ public class ListMailboxes extends MainMenu {
         int order = Integer.parseInt(userInput);
         int mailboxIndex = (currentPage - 1) * 10 + order;
 
-        if (mailboxIndex > mailboxes.size()) {
-            System.out.printf("%s[ERROR]Invalid mailbox number!%s\n", ANSI_TEXT_RED, ANSI_RESET);
+        if (mailboxIndex > mailboxes.size() || order > 9 || order < 0) {
+            System.out.printf("%s[ERROR] Invalid mailbox number!%s\n", ANSI_TEXT_RED, ANSI_RESET);
             sleep(TIME_2_SECONDS);
             return;
         }
@@ -105,19 +111,6 @@ public class ListMailboxes extends MainMenu {
         Mailbox mailbox = mailboxes.get(mailboxIndex - 1);
         ListEmails listEmails = new ListEmails(mailbox, inputHandler);
         listEmails.list();
-        if (mailboxIndex > mailboxes.size() || order > 9 || order < 0) {
-            System.out.println("[ERROR]Invalid mailbox number! Aborting...");
-            System.exit(0);
-        }
-    }
-
-    private boolean isInvalidOptions(String userInput) {
-        if (userInput.length() > 1 || !userInput.matches("[1-9]+")) {
-            System.out.printf("%s[ERROR]Invalid option!%s\n", ANSI_TEXT_RED, ANSI_RESET);
-            sleep(TIME_2_SECONDS);
-            return true;
-        }
-        return false;
     }
 
     private void createNewMailbox() {
@@ -125,6 +118,5 @@ public class ListMailboxes extends MainMenu {
         mailboxes.add(new Mailbox(newMailboxName));
         System.out.println(ANSI_TEXT_GREEN + "New mailbox created!" + ANSI_RESET);
         sleep(1500);
-        list();
     }
 }

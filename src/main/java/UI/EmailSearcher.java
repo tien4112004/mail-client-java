@@ -9,8 +9,6 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.ArrayList;
 
-import javax.security.auth.Subject;
-
 public class EmailSearcher extends UI {
     private static final int PAGE_SIZE = 10;
     private int currentPage = 0;
@@ -32,10 +30,11 @@ public class EmailSearcher extends UI {
     }
 
     public void getFilter() {
-        String[][] filterOptions = { { "1", "Sender" }, { "2", "Subject" }, { "3", "Content" } };
         System.out.print("Search by: ");
+        String[][] filterOptions = { { "1", "Sender" }, { "2", "Subject" }, { "3", "Content" } };
         showOptions(filterOptions);
         String option = inputHandler.dialog(EMPTY_PROMPT);
+
         String[] keywords = inputHandler.dialogList("Keywords [separated by commas]: \n");
 
         switch (option) {

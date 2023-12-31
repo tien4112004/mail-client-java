@@ -33,7 +33,6 @@ public class UI {
     }
 
     protected void showOptions(String[][] options) {
-        // Calculate the maximum length of the trigger keys and triggered commands
         int maxKeyLength = 0;
         int maxCommandLength = 0;
         for (String[] option : options) {
@@ -54,10 +53,25 @@ public class UI {
         System.out.println();
     }
 
-    protected void showList(String[] list) {
-        for (int i = 0; i < list.length; i++) {
-            System.out.printf("[%d] %s\n", i + 1, list[i]);
+    protected void printList(String prompt, String[] list) {
+        if (list == null) {
+            return;
         }
+        System.out.print(prompt);
+        System.out.printf("%s ", list[0]);
+        for (int i = 1; i < list.length; i++) {
+            System.out.printf(", %s ", list[i]);
+        }
+        System.out.println();
+    }
+
+    protected boolean isInvalidOptions(String userInput) {
+        if (userInput.length() > 1 || !userInput.matches("[0-9]+")) {
+            System.out.printf("%s[ERROR] Invalid option!%s\n", ANSI_TEXT_RED, ANSI_RESET);
+            sleep(TIME_2_SECONDS);
+            return true;
+        }
+        return false;
     }
 
     protected void sleep(int milisecond) {

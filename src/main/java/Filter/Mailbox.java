@@ -70,8 +70,11 @@ public class Mailbox {
         }
 
         MessageParser parser = new MessageParser();
-        parser.fullParse(rawMessage);
+        parser.parseHeaderAndContent(rawMessage);
         Message email = parser.createMessage();
+
+        if (filters == null)
+            return;
 
         for (Filter filter : filters) {
             if (filter.matches(email)) {

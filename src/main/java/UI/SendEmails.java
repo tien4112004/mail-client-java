@@ -11,8 +11,13 @@ public class SendEmails extends UI {
     private String subject;
     private String content;
     private String[] attachments;
+    private String SMTPServer;
+    private int SMTPPort;
 
-    public SendEmails(InputHandler inputHandler) {
+    public SendEmails(String SMTPServer, int SMTPPort, String sender, InputHandler inputHandler) {
+        this.SMTPServer = SMTPServer;
+        this.SMTPPort = SMTPPort;
+        this.sender = sender;
         this.inputHandler = inputHandler;
     }
 
@@ -57,7 +62,7 @@ public class SendEmails extends UI {
         compose();
         Message message = new Message(sender, recipientsTo, recipientsCc, recipientsBcc, subject, content,
                 attachments);
-        SMTPSocket smtpSocket = new SMTPSocket("localhost", 2225);
+        SMTPSocket smtpSocket = new SMTPSocket(SMTPServer, SMTPPort);
 
         System.out.println(ANSI_TEXT_YELLOW + "Sending email..." + ANSI_RESET);
 

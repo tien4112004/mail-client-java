@@ -1,29 +1,19 @@
 package UI;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 
 import Filter.Mailbox;
-import Message.Message;
-import Socket.POP3Socket;
-
-// import javax.imageio.stream.ImageOutputStreamImpl;
-// import javax.sound.sampled.SourceDataLine;
-
-// import Config.Config;
-// import Socket.SMTPSocket;
 
 public class MainMenu extends UI {
     private UserInformation userInfo;
     public String username;
     public String password;
     List<Mailbox> mailboxes;
-    ListMailboxes listMailboxesUI;
-    ListEmails listEmailsUI;
     String currentEmailDirectory;
+
+    private String SMTPServer;
+    private int SMTPPort;
 
     protected InputHandler inputHandler;
 
@@ -32,31 +22,46 @@ public class MainMenu extends UI {
         this.userInfo = new UserInformation(inputHandler);
         this.username = userInfo.getUsername();
         this.password = userInfo.getPassword();
-        // get mailboxes from JSON
     }
 
-    protected void showOption() {
+    public MainMenu(InputHandler inputHandler, UserInformation userInfo) {
+        this.inputHandler = inputHandler;
+        this.userInfo = userInfo;
+        this.username = userInfo.getUsername();
+        this.password = userInfo.getPassword();
+        this.mailboxes = userInfo.getMailboxes();
+        this.SMTPServer = userInfo.getSMTPServer();
+        this.SMTPPort = userInfo.getSMTPPort();
+    }
+
+    protected void displayMenu() {
         clearConsole();
         System.out.printf("Welcome back, %s%s%s!\n", ANSI_TEXT_BLUE, username, ANSI_RESET);
         String[][] options = {
-                { "1", "Send new email" },
-                { "2", "Open mailboxes" },
-                { "3", "Quit" }
+                { "S", "Send new email" },
+                { "M", "Open mailboxes" },
+                { "Q", "Quit" }
         };
         showOptions(options);
-        int option = inputHandler.getMenuOption();
-        clearConsole();
-        switch (option) {
-            case 1:
-                new SendEmails(inputHandler).send();
-                break;
-            case 2:
-                listMailboxesUI = new ListMailboxes(username, inputHandler);
+
+        System.out.print("\nPlease select an option: ");
+    }
+
+    private void handleUserInput() {
+        String userInput = inputHandler.dialog(EMPTY_PROMPT);
+        switch (userInput) {
+            case "S":
+                clearConsole();
+                new SendEmails(SMTPServer, SMTPPort, username, inputHandler).send();
+                return;
+            case "M":
+                clearConsole();
+                ListMailboxes listMailboxesUI = new ListMailboxes(username, inputHandler, mailboxes);
                 listMailboxesUI.list();
-                break;
-            case 3:
+                return;
+            case "Q":
+                clearConsole();
                 System.exit(0);
-                break;
             default:
                 System.out.println("Invalid option! Aborting...");
                 System.exit(0);
@@ -64,7 +69,10 @@ public class MainMenu extends UI {
     }
 
     public void start() throws IOException {
-        while (true)
-            showOption();
+        while (true) {
+            clearConsole();
+            displayMenu();
+            handleUserInput();
+        }
     }
 }

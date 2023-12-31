@@ -17,7 +17,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 public class ListEmails extends MainMenu {
-    private final int PAGE_SIZE = 10; // Number of emails per page
+    private final int PAGE_SIZE = 10;
     private final String FROM = formatString("From", 20);
     private final String SUBJECT = formatString("Subject", 30);
     private final String DATE = formatString("Date", 10);
@@ -31,7 +31,6 @@ public class ListEmails extends MainMenu {
     private int currentPage = 0;
     List<String> mailList;
 
-    // ReadMessageStatus readMessageStatus = null;
     JSONParser parser = new JSONParser();
     WriteMessageStatus writeMessageStatus = null;
     JSONArray messageList = null;
@@ -42,10 +41,6 @@ public class ListEmails extends MainMenu {
         this.inputHandler = inputHandler;
         this.writeMessageStatus = new WriteMessageStatus();
         try {
-            // Path MessageStatusJSONPath =
-            // Paths.get("src/main/java/JSON/MessageStatus.json");
-            // if (Files.exists(M, null))
-
             this.messageList = (JSONArray) parser.parse(new FileReader(MessageStatusJSONDirectory));
         } catch (Exception e) {
             e.printStackTrace();
@@ -125,9 +120,10 @@ public class ListEmails extends MainMenu {
             }
             MessageParser parser = new MessageParser();
             parser.quickParse(rawMessage);
+            // TO BE CHANGED
             messageObject = (JSONObject) messageList.get(i);
             String readStatus = (messageObject.containsValue(false)) ? "*" : " ";
-            // String readStatus = "*";
+            // END
             String sender = parser.getSender();
             sender = formatString(sender, 20);
             String subject = parser.getSubject();
@@ -194,6 +190,7 @@ public class ListEmails extends MainMenu {
                 return true;
             default:
                 handleEmailSelection(userInput);
+                clearAttachmentsCaches();
                 return true;
         }
     }
@@ -204,15 +201,6 @@ public class ListEmails extends MainMenu {
 
     private void nextPage() {
         currentPage = Math.min(currentPage + 1, mailList.size() / PAGE_SIZE);
-    }
-
-    private boolean isInvalidOptions(String userInput) {
-        if (userInput.length() > 1 || !userInput.matches("[0-9]+")) {
-            System.out.printf("%sInvalid option!%s\n", ANSI_TEXT_RED, ANSI_RESET);
-            sleep(TIME_2_SECONDS);
-            return true;
-        }
-        return false;
     }
 
     private void handleEmailSelection(String userInput) {
@@ -226,8 +214,10 @@ public class ListEmails extends MainMenu {
             return;
         }
 
-        String emailDirectory = mailList.get(currentPage * PAGE_SIZE + Integer.parseInt(userInput));
+        String emailDirectory = mailList.get(emailIndex);
         ViewEmail emailViewer = new ViewEmail(emailDirectory, mailList, emailIndex, mailboxes, inputHandler);
+
+        // TO BE CHANGED
         messageObject = (JSONObject) messageList.get(emailIndex);
         messageList.remove(messageObject);
         String keyObject = (String) messageObject.keySet().toArray()[0];
@@ -238,6 +228,8 @@ public class ListEmails extends MainMenu {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        // END
+
         emailViewer.showEmail();
     }
 
@@ -274,5 +266,21 @@ public class ListEmails extends MainMenu {
         System.out.printf("%s%s%s\n", ANSI_TEXT_GREEN, "Email moved to " + destination + ".", ANSI_RESET);
         sleep(TIME_2_SECONDS);
         mailList.remove(emailIndex);
+    }
+
+    private void clearAttachmentsCaches() {
+        Path attachmentCacheDirectory = Paths.get(DEFAULT_WORKING_DIRECTORY + "attachments");
+        try {
+            List<String> attachmentCacheList = Files.walk(attachmentCacheDirectory).filter(Files::isRegularFile)
+                    .map(Path::toString)
+                    .collect(Collectors.toList());
+            for (String attachmentCache : attachmentCacheList) {
+                Path attachmentCachePath = Paths.get(attachmentCache);
+                Files.delete(attachmentCachePath);
+            }
+        } catch (IOException e) {
+            System.out.println(ANSI_TEXT_RED + "[ERROR] Error in deleting attachments cache." + ANSI_RESET);
+            e.printStackTrace();
+        }
     }
 }

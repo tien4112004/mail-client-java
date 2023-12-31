@@ -11,38 +11,54 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.io.IOException;
 
-public class ViewEmail extends MainMenu {
+public class ViewEmail extends UI {
     private final String LONG_DAY_DISPLAY_FORMAT = "EEE, d MMM yyyy HH:mm:ss";
 
+    private InputHandler inputHandler;
     private String emailDirectory;
     private List<String> mailList;
     private List<Mailbox> mailboxes;
+    private MessageParser parser;
+    private String[] attachmentDirectories;
 
-    private int mailOrder;
+    private int emailIndex;
 
-    public ViewEmail(String emailDirectory, List<String> mailList, int mailOrder, List<Mailbox> mailboxes,
+    public ViewEmail(String emailDirectory, List<String> mailList, int emailIndex, List<Mailbox> mailboxes,
             InputHandler inputHandler) {
         this.emailDirectory = emailDirectory;
         this.mailList = mailList;
-        this.mailOrder = mailOrder;
+        this.emailIndex = emailIndex;
         this.mailboxes = mailboxes;
         this.inputHandler = inputHandler;
     }
 
     public void showEmail() {
         clearConsole();
-        Path emailPath = Paths.get(emailDirectory);
-        String rawMessage;
+        String rawEmail;
         try {
-            rawMessage = new String(java.nio.file.Files.readAllBytes(emailPath));
+            rawEmail = readEmail();
         } catch (IOException e) {
-            System.out.println(ANSI_TEXT_RED + "[ERROR] Error in reading email." + ANSI_RESET);
-            e.printStackTrace();
             return;
         }
 
-        MessageParser parser = new MessageParser();
-        parser.fullParse(rawMessage);
+        parser = new MessageParser();
+        parser.fullParse(rawEmail);
+        displayEmailContent();
+        handleUserInput();
+    }
+
+    private String readEmail() throws IOException {
+        Path emailPath = Paths.get(emailDirectory);
+        try {
+            return new String(java.nio.file.Files.readAllBytes(emailPath));
+        } catch (IOException e) {
+            System.out.println(ANSI_TEXT_RED + "[ERROR] Error in reading email." + ANSI_RESET);
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    private void displayEmailContent() {
         System.out.println("Date: " + parser.getDate(LONG_DAY_DISPLAY_FORMAT));
         System.out.println("From: " + parser.getSender());
         printList("To: ", parser.getRecipientsTo());
@@ -50,8 +66,7 @@ public class ViewEmail extends MainMenu {
         System.out.println("Subject: " + parser.getSubject());
         System.out.println("Content: " + parser.getContent());
 
-        String[] attachmentDirectories = parser.getAttachmentDirectories();
-        attachmentDirectories = resolveAttachmentDirectories(attachmentDirectories);
+        attachmentDirectories = resolveAttachmentDirectories(parser.getAttachmentDirectories());
         System.out.println("Attachments: ");
         for (int i = 0; i < attachmentDirectories.length; i++) {
             System.out.printf("[%d] %s\n", i + 1, attachmentDirectories[i]);
@@ -65,20 +80,6 @@ public class ViewEmail extends MainMenu {
                 { "M", "Move to mailbox" }
         };
         showOptions(options);
-        String userInput = inputHandler.dialog(EMPTY_PROMPT);
-        handleUserInput(userInput);
-    }
-
-    private void printList(String prompt, String[] list) {
-        if (list == null) {
-            return;
-        }
-        System.out.print(prompt);
-        System.out.printf("%s ", list[0]);
-        for (int i = 1; i < list.length; i++) {
-            System.out.printf(", %s ", list[i]);
-        }
-        System.out.println();
     }
 
     private String[] resolveAttachmentDirectories(String[] attachmentDirectories) {
@@ -90,56 +91,28 @@ public class ViewEmail extends MainMenu {
         return resolvedAttachmentDirectories;
     }
 
-    public void handleUserInput(String userInput) {
+    public void handleUserInput() {
+        String userInput = inputHandler.dialog(EMPTY_PROMPT);
+
         switch (userInput) {
             case "Q":
                 return;
             case "A":
-                // Handle "A" input
-                break;
+                saveAllAttachments();
+                return;
             case "D":
-                deleteEmailHandler();
+                deleteEmail();
                 return;
             case "M":
-                for (int i = 0; i < mailboxes.size(); i++) {
-                    System.out.printf("[%d] %s\n", i + 1, mailboxes.get(i).getMailboxName());
-                }
-                String[][] options = {
-                        { ".", "Back to list" },
-                        { "#", "Move to mailbox #" },
-                        { "N", "New mailbox" },
-                        { "C", "Cancel" }
-                };
-                showOptions(options);
-                userInput = inputHandler.dialog("Move to: ");
-
-                Mailbox destination;
-                switch (userInput) {
-                    case ".":
-                    case "C":
-                        return;
-                    case "N":
-                        String newMailboxName = inputHandler.dialog("New mailbox name: ");
-                        mailboxes.add(new Mailbox(newMailboxName));
-                        System.out.println(ANSI_TEXT_GREEN + "New mailbox created!" + ANSI_RESET);
-                        sleep(1500);
-                        destination = mailboxes.get(mailboxes.size() - 1);
-                        break;
-                    default:
-                        int mailboxOrder = Integer.parseInt(userInput);
-                        destination = mailboxes.get(mailboxOrder);
-                }
-                Mailbox.moveMailToMailbox(emailDirectory, destination);
-                mailList.remove(mailOrder);
-                System.out.printf("%s%s%s\n", ANSI_TEXT_GREEN, "Moved to ...", ANSI_RESET);
-                sleep(2000);
+                moveEmail();
                 return;
             default:
-                // Handle other inputs (e.g., download i-th attachment)
+                saveAttachment(userInput);
+                return;
         }
     }
 
-    private void deleteEmailHandler() {
+    private void deleteEmail() {
         Path emailPath = Paths.get(emailDirectory);
         try {
             Files.delete(emailPath);
@@ -148,8 +121,45 @@ public class ViewEmail extends MainMenu {
             sleep(1500);
             e.printStackTrace();
         }
-        mailList.remove(mailOrder);
+        mailList.remove(emailIndex);
         System.out.printf("%s%s%s\n", ANSI_TEXT_GREEN, "Email removed.", ANSI_RESET);
         sleep(2000);
+    }
+
+    private void moveEmail() {
+        String destination = inputHandler.dialog("Destination mailbox: ");
+        Mailbox.moveMailToFolder(emailDirectory, destination);
+        System.out.printf("%s%s%s\n", ANSI_TEXT_GREEN, "Email moved to " + destination + ".", ANSI_RESET);
+        sleep(TIME_2_SECONDS);
+        mailList.remove(emailIndex);
+    }
+
+    private void saveAttachment(int attachmentIndex, String saveDirectory) {
+        try {
+            Path attachmentPath = Paths.get(attachmentDirectories[attachmentIndex - 1]);
+            Path savePath = Paths.get(saveDirectory + "/" + attachmentPath.getFileName());
+            Files.copy(attachmentPath, savePath);
+            System.out.printf("%sAttachment #%d saved to %s.%s\n", ANSI_TEXT_GREEN, attachmentIndex, saveDirectory,
+                    ANSI_RESET);
+        } catch (IOException e) {
+            System.out.println(ANSI_TEXT_RED + "[ERROR] Error in saving attachment." + ANSI_RESET);
+            e.printStackTrace();
+        }
+    }
+
+    private void saveAllAttachments() {
+        String saveDirectory = inputHandler.dialog("Save directory: ");
+        for (int i = 1; i <= attachmentDirectories.length; i++) {
+            saveAttachment(i, saveDirectory);
+        }
+        sleep(TIME_3_SECONDS);
+    }
+
+    private void saveAttachment(String attachmentIndex) {
+        if (isInvalidOptions(attachmentIndex))
+            return;
+        String saveDirectory = inputHandler.dialog("Save directory: ");
+        saveAttachment(Integer.parseInt(attachmentIndex), saveDirectory);
+        sleep(TIME_2_SECONDS);
     }
 }

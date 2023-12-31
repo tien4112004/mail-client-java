@@ -20,6 +20,10 @@ import java.nio.file.Files;
 import java.security.NoSuchProviderException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
+import Filter.Mailbox;
 
 public class POP3SocketTest {
     private POP3Socket POP3Socket;
@@ -42,7 +46,15 @@ public class POP3SocketTest {
         SMTPSocket SMTPSocket = new SMTPSocket("localhost", 2225);
         SMTPSocket.sendEmail(message);
 
+        // create mailbox list
+        List<Mailbox> mailboxes = new ArrayList<>();
+        mailboxes.add(new Mailbox("Inbox"));
+        mailboxes.add(new Mailbox("example"));
+        mailboxes.add(new Mailbox("email"));
+
         POP3Socket = new POP3Socket("localhost", 3335, "example@localhost", "123");
+        POP3Socket.addMailboxes(mailboxes);
+        POP3Socket.retrieveMessage();
         messagesID = POP3Socket.messagesID;
     }
 
@@ -81,12 +93,17 @@ public class POP3SocketTest {
     }
 
     @After
-    public void tearDownAfter() throws IOException {
-        Path path = Paths.get("./Inbox/");
-        for (String ID : messagesID) {
-            path = Paths.get("./Inbox/" + ID + ".msg");
+    public void tearDownAfter() {
+        try {
+            Path path = Paths.get("./Inbox/");
+            for (String ID : messagesID) {
+                path = Paths.get("./Inbox/" + ID + ".msg");
+                Files.deleteIfExists(path);
+            }
             Files.deleteIfExists(path);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
-        Files.deleteIfExists(path);
     }
 }

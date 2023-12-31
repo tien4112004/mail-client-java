@@ -1,6 +1,6 @@
 {
   "Mailboxes": {
-    "test1": {
+    "Inbox": {
       "Filters": {
         "SubjectFilter": [
           "null",
@@ -24,7 +24,7 @@
           "null"
         ]
       },
-      "Directory": "./test1"
+      "Directory": "./Inbox"
     },
     "email": {
       "Filters": {
@@ -81,11 +81,11 @@
   },
   "General": {
     "POP3Server": "127.0.0.1",
-    "POP3port": 1225,
+    "POP3port": 3335,
     "SMTPport": 2225,
     "SMPTServer": "127.0.0.1",
     "Username": "example@localhost",
     "RetrieveIntervalSecond": 10,
-    "Password": "123456"
+    "Password": "*****"
   }
 }
