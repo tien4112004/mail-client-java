@@ -5,9 +5,7 @@ import java.util.Map;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -28,9 +26,10 @@ public class ReadMessageStatus{
         }
     } 
 
-    public void setStatus(Map<String, Object> messagesID, String messageID, boolean value) {
-        for (Map.Entry<String, Object> entry : messagesID.entrySet()) {
-            String key = entry.getKey();
+    public void setStatus(JSONObject messagesID, String messageID, boolean value) {
+        Map<String, Object> entry = new HashMap<>(messagesID);
+        for (Map.Entry<String, Object> e : entry.entrySet()) {
+            String key = e.getKey();
             if (key.equals(messageID)) {
                 messagesID.replace(key, value);
                 break;
@@ -38,11 +37,12 @@ public class ReadMessageStatus{
         }
     }
 
-    public boolean isRead(Map<String, Object> messagesID, String messageID) {
-        for (Map.Entry<String, Object> entry : messagesID.entrySet()) {
-            String key = (String) entry.getKey();
+    public boolean isRead(JSONObject messagesID, String messageID) {
+        Map<String, Object> entry = new HashMap<>(messagesID);
+        for (Map.Entry<String, Object> e : entry.entrySet()) {
+            String key = (String) e.getKey();
             if (key.equals(messageID)) {
-                String status = entry.getValue().toString();
+                String status = e.getValue().toString();
                 return (status == "true");
             }
         }
@@ -60,7 +60,7 @@ public class ReadMessageStatus{
         return false;
     }
 
-    public Map<String, Object> readStatus() {
+    public JSONObject readStatus() {
         Map<String, Object> messageStatus = new HashMap<>();   
         for (Object obj : messageList.entrySet()) {
             Map.Entry entry = (Map.Entry) obj;
@@ -68,7 +68,7 @@ public class ReadMessageStatus{
             boolean value = (entry.getValue().toString() == "true")?true:false;
             messageStatus.put(key, value);
         }
-        return messageStatus;
+        return new JSONObject(messageStatus);
     }
 
     public JSONObject getMessageList() {

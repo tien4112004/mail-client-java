@@ -4,7 +4,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.google.gson.Gson;
@@ -16,14 +15,6 @@ import net.lecousin.framework.concurrent.async.MutualExclusion;
 public class WriteMessageStatus {
     private final String DEFAULT_WORKING_DIRECTORY = "./";
     private JSONObject messageList;
-
-    public WriteMessageStatus(Map<String, Object> messagesID) {
-        try  {
-            this.messageList = new JSONObject(messagesID); 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     public WriteMessageStatus(JSONObject messageList) {
         this.messageList = messageList;

@@ -35,7 +35,7 @@ public class ListEmails extends MainMenu {
 
     JSONParser parser = new JSONParser();
     ReadMessageStatus readMessageStatus = new ReadMessageStatus();
-    Map<String, Object> messagesID = readMessageStatus.readStatus();
+    JSONObject messagesID = readMessageStatus.readStatus();
     JSONObject messageList = null;
 
 
