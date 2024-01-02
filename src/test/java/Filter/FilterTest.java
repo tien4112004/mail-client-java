@@ -15,7 +15,7 @@ class FilterTest {
         String[] recipientsBcc = new String[] { "example@fit.hcmus.edu.vn" };
         String subject = "Test Email";
         String content = "This is a test email";
-        String[] attachments = { "attachments/test.cpp", "attachments/test.txt" };
+        String[] attachments = { "src/test/java/attachmentsTest/test.cpp", "src/test/java/attachmentsTest/test.txt" };
         Message message = new Message(sender, recipientsTo, recipientsCc,
                 recipientsBcc, subject, content, attachments);
 
@@ -31,7 +31,7 @@ class FilterTest {
         String[] recipientsBcc = new String[] { "example@fit.hcmus.edu.vn" };
         String subject = "Test Email";
         String content = "This is a test email";
-        String[] attachments = { "attachments/test.cpp", "attachments/test.txt" };
+        String[] attachments = { "src/test/java/attachmentsTest/test.cpp", "src/test/java/attachmentsTest/test.txt" };
         Message message = new Message(sender, recipientsTo, recipientsCc,
                 recipientsBcc, subject, content, attachments);
         assertTrue(filter.matches(message));
@@ -49,7 +49,7 @@ class FilterTest {
         String[] recipientsBcc = new String[] { "example@fit.hcmus.edu.vn" };
         String subject = "Test Email";
         String content = "This is a test email";
-        String[] attachments = { "attachments/test.cpp", "attachments/test.txt" };
+        String[] attachments = { "src/test/java/attachmentsTest/test.cpp", "src/test/java/attachmentsTest/test.txt" };
         Message message = new Message(sender, recipientsTo, recipientsCc,
                 recipientsBcc, subject, content, attachments);
         assertFalse(filter.matches(message));

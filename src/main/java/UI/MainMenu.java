@@ -51,20 +51,23 @@ public class MainMenu extends UI {
         String userInput = inputHandler.dialog(EMPTY_PROMPT);
         switch (userInput) {
             case "S":
+            case "s":
                 clearConsole();
                 new SendEmails(SMTPServer, SMTPPort, username, inputHandler).send();
                 return;
             case "M":
+            case "m":
                 clearConsole();
                 ListMailboxes listMailboxesUI = new ListMailboxes(username, inputHandler, mailboxes);
                 listMailboxesUI.list();
                 return;
             case "Q":
+            case "q":
                 clearConsole();
                 System.exit(0);
             default:
-                System.out.println("Invalid option! Aborting...");
-                System.exit(0);
+                displayErrorMessage(userInput + " is not a valid option.");
+                return;
         }
     }
 

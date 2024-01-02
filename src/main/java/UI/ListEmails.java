@@ -112,24 +112,17 @@ public class ListEmails extends MainMenu {
         int start = currentPage * PAGE_SIZE;
         int end = Math.min(start + PAGE_SIZE, mailList.size());
         for (int i = start; i < end; i++) {
-            String rawMessage = "";
-            try {
-                rawMessage = new String(Files.readAllBytes(Paths.get(mailList.get(i))));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            String rawMessage = readRawMessage(mailList.get(i));
             MessageParser parser = new MessageParser();
             parser.quickParse(rawMessage);
             // TO BE CHANGED
             messageObject = (JSONObject) messageList.get(i);
             String readStatus = (messageObject.containsValue(false)) ? "*" : " ";
             // END
-            String sender = parser.getSender();
-            sender = formatString(sender, 20);
-            String subject = parser.getSubject();
-            subject = formatString(subject, 30);
+            String sender = formatString(parser.getSender(), 20);
+            String subject = formatString(parser.getSubject(), 30);
             String date = parser.getDate(SHORT_DATE_DISPLAY_FORMAT);
-            String attachment = (parser.hasAttachment() ? formatString("*", 10) : formatString("", 10));
+            String attachment = formatString(parser.hasAttachment() ? "*" : " ", 10);
 
             System.out.printf("[%d] %s| %s | %s | %s | %s |\n", i % 10, readStatus, sender, subject, date,
                     attachment);
@@ -149,6 +142,15 @@ public class ListEmails extends MainMenu {
         showOptions(options);
     }
 
+    private String readRawMessage(String filePath) {
+        try {
+            return new String(Files.readAllBytes(Paths.get(filePath)));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
     private void loadEmails() {
         Path path = mailbox.getMailboxDirectory();
         try {
@@ -156,7 +158,7 @@ public class ListEmails extends MainMenu {
                     .map(Path::toString)
                     .collect(Collectors.toList());
         } catch (IOException e) {
-            System.out.println(ANSI_TEXT_RED + "[ERROR] Error in listing emails." + ANSI_RESET);
+            displayErrorMessage("Error in listing emails.");
             e.printStackTrace();
         }
 
@@ -177,14 +179,18 @@ public class ListEmails extends MainMenu {
                 nextPage();
                 return true;
             case "Q":
+            case "q":
                 return false;
             case "D":
-                deleteEmailHandler(mailList, currentPage);
+            case "d":
+                deleteEmail(mailList, currentPage);
                 return true;
             case "M":
+            case "m":
                 moveEmailHandler(mailList, currentPage);
                 return true;
             case "S":
+            case "s":
                 EmailSearcher emailSearcher = new EmailSearcher(mailList, inputHandler);
                 emailSearcher.search();
                 return true;
@@ -207,12 +213,10 @@ public class ListEmails extends MainMenu {
         if (isInvalidOptions(userInput))
             return;
 
-        int emailIndex = currentPage * PAGE_SIZE + Integer.parseInt(userInput);
-        if (emailIndex >= mailList.size() || Integer.parseInt(userInput) > 9 || Integer.parseInt(userInput) < 0) {
-            System.out.printf("%s[ERROR] Invalid email number!%s\n", ANSI_TEXT_RED, ANSI_RESET);
-            sleep(TIME_2_SECONDS);
+        if (!validateEmailIndex(userInput))
             return;
-        }
+
+        int emailIndex = currentPage * PAGE_SIZE + Integer.parseInt(userInput);
 
         String emailDirectory = mailList.get(emailIndex);
         ViewEmail emailViewer = new ViewEmail(emailDirectory, mailList, emailIndex, mailboxes, inputHandler);
@@ -233,6 +237,17 @@ public class ListEmails extends MainMenu {
         emailViewer.showEmail();
     }
 
+    private boolean validateEmailIndex(String userInput) {
+        if (isInvalidOptions(userInput))
+            return false;
+        int emailIndex = currentPage * PAGE_SIZE + Integer.parseInt(userInput);
+        if (emailIndex >= mailList.size() || Integer.parseInt(userInput) > 9 || Integer.parseInt(userInput) < 0) {
+            displayErrorMessage("Invalid email number!");
+            return false;
+        }
+        return true;
+    }
+
     private String formatString(String original, int length) {
         if (original == null)
             return formatString("null", length);
@@ -242,18 +257,24 @@ public class ListEmails extends MainMenu {
         return original.format("%-" + length + "." + length + "s", original);
     }
 
-    private void deleteEmailHandler(List<String> emailList, int currentPage) {
+    private void deleteEmail(List<String> emailList, int currentPage) {
         String userInput = inputHandler.dialog("Mail to delete: ");
+        if (!validateEmailIndex(userInput))
+            return;
+
         int emailIndex = currentPage * PAGE_SIZE + Integer.parseInt(userInput);
+
+        displayStatusMessage("Deleting email...");
+
         Path emailPath = Paths.get(emailList.get(emailIndex));
         try {
             Files.delete(emailPath);
         } catch (IOException e) {
-            System.out.println(ANSI_TEXT_RED + "[ERROR] Error in deleting email." + ANSI_RESET);
+            displayErrorMessage(userInput + " is not a valid email number.");
             e.printStackTrace();
         }
         emailList.remove(emailIndex);
-        System.out.printf("%s%s%s\n", ANSI_TEXT_GREEN, "Email removed.", ANSI_RESET);
+        displaySuccessMessage("Email deleted.");
         sleep(TIME_2_SECONDS);
     }
 
@@ -262,8 +283,9 @@ public class ListEmails extends MainMenu {
         int emailIndex = currentPage * PAGE_SIZE + Integer.parseInt(userInput);
         String emailDirectory = mailList.get(emailIndex);
         String destination = inputHandler.dialog("Destination mailbox: ");
+        displayStatusMessage("Moving email...");
         Mailbox.moveMailToFolder(emailDirectory, destination);
-        System.out.printf("%s%s%s\n", ANSI_TEXT_GREEN, "Email moved to " + destination + ".", ANSI_RESET);
+        displaySuccessMessage("Email moved to " + destination + ".");
         sleep(TIME_2_SECONDS);
         mailList.remove(emailIndex);
     }
@@ -279,7 +301,7 @@ public class ListEmails extends MainMenu {
                 Files.delete(attachmentCachePath);
             }
         } catch (IOException e) {
-            System.out.println(ANSI_TEXT_RED + "[ERROR] Error in deleting attachments cache." + ANSI_RESET);
+            displayErrorMessage("Error in deleting attachments cache.");
             e.printStackTrace();
         }
     }

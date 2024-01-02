@@ -62,7 +62,6 @@ public class POP3Socket extends MailSocket {
                 // e.printStackTrace();
             }
         }
-
     }
 
     public void addMailboxes(List<Mailbox> mailboxes) {

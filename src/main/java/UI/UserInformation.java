@@ -9,7 +9,7 @@ import Filter.Mailbox;
 import JSON.ReadConfig;
 import JSON.WriteConfig;
 
-public class UserInformation {
+public class UserInformation extends UI {
     private static final String DEFAULT_WORKING_DIRECTORY = "./";
     private static final String DEFAULT_CONFIG_DIRECTORY = DEFAULT_WORKING_DIRECTORY + "Config.json";
     InputHandler inputHandler;
@@ -95,10 +95,9 @@ public class UserInformation {
         Mailbox defaultMailboxes[] = { new Mailbox("Inbox"), new Mailbox("Sent"), new Mailbox("Spam") };
         try {
             writeConfig.writeConfig(defaultMailboxes, Username, Password);
-            System.out.println("\u001B[32mConfiguration file created.\u001B[0m");
-            Thread.sleep(1500);
+            displaySuccessMessage("Configuration file created!");
         } catch (Exception e) {
-            System.out.println("Error in writing configuration file.");
+            displayErrorMessage("Failed to create configuration file!");
             e.printStackTrace();
         }
     }

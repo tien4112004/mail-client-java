@@ -122,7 +122,7 @@ public class Message {
         body += content + CRLF + CRLF;
     }
 
-    private void processAttachments(String[] attachments, String boundary) {
+    private void processAttachments(String[] attachments, String boundary) throws IllegalArgumentException {
         if (attachments == null || attachments.length == 0 || attachments[0].length() == 0) {
             return;
         }
@@ -141,7 +141,8 @@ public class Message {
                 body += CONTENT_TRANSFER_ENCODING_BASE64 + CRLF + CRLF;
                 body += encodedFile + CRLF;
             } catch (Exception e) {
-                System.out.println(String.format(ERROR_FILE_NOT_FOUND, e.getMessage()));
+                // System.out.println(String.format(ERROR_FILE_NOT_FOUND, e.getMessage()));
+                throw new IllegalArgumentException(String.format(ERROR_FILE_NOT_FOUND, e.getMessage()));
             }
         }
         body += "--" + boundary + "--" + CRLF;

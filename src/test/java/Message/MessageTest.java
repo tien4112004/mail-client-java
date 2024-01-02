@@ -47,7 +47,7 @@ class MessageTest {
         String[] recipientsBcc = { "recipientBcc1@localhost", "recipientBcc2@localhost" };
         String subject = "Test Email";
         String content = "This is a test email";
-        String[] attachments = { "src/test/java/attachments/test.cpp", "src/test/java/attachments/test.txt" };
+        String[] attachments = { "src/test/java/attachmentsTest/test.cpp", "src/test/java/attachmentsTest/test.txt" };
 
         Message message = new Message(sender, recipientsTo, recipientsCc, recipientsBcc, subject, content, attachments);
 
@@ -70,10 +70,10 @@ class MessageTest {
         String content = "This is a test email";
         String[] attachments = { "path/to/nonexistent/attachment" };
 
-        // assertThrows(Exception.class, () -> {
-        // new Message(sender, recipientsTo, recipientsCc, recipientsBcc, subject,
-        // content, attachments);
-        // });
+        assertThrows(Exception.class, () -> {
+            new Message(sender, recipientsTo, recipientsCc, recipientsBcc, subject,
+                    content, attachments);
+        });
     }
 
     @Test
