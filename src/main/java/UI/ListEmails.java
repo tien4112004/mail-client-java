@@ -3,6 +3,7 @@ package UI;
 import Filter.Mailbox;
 import Message.MessageParser;
 import JSON.WriteMessageStatus;
+import JSON.ReadMessageStatus;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -10,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.json.simple.JSONArray;
@@ -32,16 +34,16 @@ public class ListEmails extends MainMenu {
     List<String> mailList;
 
     JSONParser parser = new JSONParser();
-    WriteMessageStatus writeMessageStatus = null;
-    JSONArray messageList = null;
-    JSONObject messageObject = null;
+    ReadMessageStatus readMessageStatus = new ReadMessageStatus();
+    Map<String, Object> messagesID = readMessageStatus.readStatus();
+    JSONObject messageList = null;
+
 
     public ListEmails(Mailbox mailbox, InputHandler inputHandler) {
         this.mailbox = mailbox;
         this.inputHandler = inputHandler;
-        this.writeMessageStatus = new WriteMessageStatus();
         try {
-            this.messageList = (JSONArray) parser.parse(new FileReader(MessageStatusJSONDirectory));
+            this.messageList = (JSONObject) parser.parse(new FileReader(MessageStatusJSONDirectory));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -50,13 +52,6 @@ public class ListEmails extends MainMenu {
     public ListEmails(List<String> mailList, InputHandler inputHandler) {
         this.mailList = mailList;
         this.inputHandler = inputHandler;
-        this.writeMessageStatus = new WriteMessageStatus();
-        try {
-            this.messageList = (JSONArray) parser.parse(new FileReader(MessageStatusJSONDirectory));
-        } catch (Exception e) {
-            System.out.printf("%s%s%s\n", ANSI_TEXT_RED, "[ERROR] Error in reading email status.", ANSI_RESET);
-            return;
-        }
     }
 
     protected void list() {
@@ -120,10 +115,11 @@ public class ListEmails extends MainMenu {
             }
             MessageParser parser = new MessageParser();
             parser.quickParse(rawMessage);
-            // TO BE CHANGED
-            messageObject = (JSONObject) messageList.get(i);
-            String readStatus = (messageObject.containsValue(false)) ? "*" : " ";
-            // END
+            String msgID = mailList.get(i).split("/")[2];
+            msgID = msgID.substring(0, msgID.length() - 4);
+            boolean status = readMessageStatus.isRead(messagesID, msgID);
+            String readStatus = (status == true) ? " " : "*";
+            // String readStatus = "*";
             String sender = parser.getSender();
             sender = formatString(sender, 20);
             String subject = parser.getSubject();
@@ -161,7 +157,7 @@ public class ListEmails extends MainMenu {
         }
 
         try {
-            messageList = (JSONArray) parser.parse(new FileReader(MessageStatusJSONDirectory));
+            messageList = (JSONObject) parser.parse(new FileReader(MessageStatusJSONDirectory));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -216,15 +212,11 @@ public class ListEmails extends MainMenu {
 
         String emailDirectory = mailList.get(emailIndex);
         ViewEmail emailViewer = new ViewEmail(emailDirectory, mailList, emailIndex, mailboxes, inputHandler);
-
-        // TO BE CHANGED
-        messageObject = (JSONObject) messageList.get(emailIndex);
-        messageList.remove(messageObject);
-        String keyObject = (String) messageObject.keySet().toArray()[0];
-        messageObject.replace(keyObject, true);
-        messageList.add(emailIndex, messageObject);
+        String msgID = mailList.get(emailIndex).split("/")[2];
+        readMessageStatus.setStatus(messagesID, msgID.substring(0, msgID.length() - 4), true);
         try {
-            writeMessageStatus.writeJSON(messageList);
+            WriteMessageStatus writeMessageStatus = new WriteMessageStatus(messagesID);
+            writeMessageStatus.writeJSON();
         } catch (IOException e) {
             e.printStackTrace();
         }

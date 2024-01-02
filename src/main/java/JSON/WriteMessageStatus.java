@@ -1,49 +1,35 @@
 package JSON;
 
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
+import java.util.Map;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.omg.CORBA.ExceptionList;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 
-import Socket.POP3Socket;
-// import JSON.ReadMessageStatus;
 import net.lecousin.framework.concurrent.async.MutualExclusion;
 
 public class WriteMessageStatus {
-    // public WriteMessageStatus(String server, int port, String username, String
-    // password) throws Exception {
-    // super(server, port, username, password);
-    // }
-
-    // public JSONArray createJSONArray() throws IOException {
-    // JSONArray messageList = new JSONArray();
-    // boolean status = false;
-
-    // for (int i = 0; i < messagesID.length; i++){
-    // if (exist(i)) break;
-
-    // JSONObject msgObject = new JSONObject();
-    // msgObject.put(messagesID[i], status);
-    // messageList.add(msgObject);
-    // }
-
-    // return messageList;
-    // }
-
     private final String DEFAULT_WORKING_DIRECTORY = "./";
+    private JSONObject messageList;
 
-    public void writeJSON(JSONArray messageList) throws IOException {
+    public WriteMessageStatus(Map<String, Object> messagesID) {
+        try  {
+            this.messageList = new JSONObject(messagesID); 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public WriteMessageStatus(JSONObject messageList) {
+        this.messageList = messageList;
+    }
+
+    public void writeJSON() throws IOException {
         synchronized(MutualExclusion.class) {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             JsonElement je = gson.toJsonTree(messageList);
