@@ -36,10 +36,6 @@ class Multithreading extends Thread {
         int tries = 0;
         while (tries < 3) {
             try {
-                Path MessageStatusPath = Paths.get("./MessageStatus.json");
-                // if (!Files.exists(MessageStatusPath))
-                // System.out.println(ANSI_TEXT_YELLOW + "Please wait for the first
-                // launching..." + ANSI_RESET);
                 pop3Socket = new POP3Socket(server, port, username, password);
                 pop3Socket.addMailboxes(mailboxes);
                 pop3Socket.retrieveMessage();
