@@ -8,6 +8,8 @@ import javax.activation.MimetypesFileTypeMap;
 
 import java.util.Base64;
 import java.util.Date;
+import java.io.EOFException;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
@@ -127,6 +129,7 @@ public class Email {
         for (String attachment : attachments) {
             try {
                 Path filePath = Paths.get(attachment);
+                validateFileSize(filePath);
                 String MimeType = new MimetypesFileTypeMap().getContentType(filePath.toString());
                 byte[] fileContent = Files.readAllBytes(filePath);
                 String encodedFile = Base64.getEncoder().encodeToString(fileContent).replaceAll("(.{76})",
@@ -139,11 +142,17 @@ public class Email {
                 body += CONTENT_TRANSFER_ENCODING_BASE64 + CRLF + CRLF;
                 body += encodedFile + CRLF;
             } catch (Exception e) {
-                // System.out.println(String.format(ERROR_FILE_NOT_FOUND, e.getMessage()));
-                throw new IllegalArgumentException(String.format(ERROR_FILE_NOT_FOUND, e.getMessage()));
+                throw new IllegalArgumentException("Error in reading attachment: " + e.getMessage());
             }
         }
         body += "--" + boundary + "--" + CRLF;
+    }
+
+    private void validateFileSize(Path filePath) throws IOException, IllegalArgumentException {
+        long fileSize = Files.size(filePath);
+        if (fileSize > 3 * 1024 * 1024) {
+            throw new IllegalArgumentException("File size exceeds 3MB");
+        }
     }
     //
     /*
