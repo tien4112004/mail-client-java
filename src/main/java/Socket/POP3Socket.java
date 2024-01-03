@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.io.FileReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -16,6 +17,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import Filter.Mailbox;
+import JSON.ReadMessageStatus;
 import JSON.WriteMessageStatus;
 import Message.Message;
 import Message.MessageParser;
@@ -35,10 +37,11 @@ public class POP3Socket extends MailSocket {
     private final String DEFAULT_WORKING_DIRECTORY = "./";
 
     public String[] messagesID = null;
+    private ReadMessageStatus readMessageStatus = new ReadMessageStatus();
     private String username;
     private String password;
     private JSONParser parser = new JSONParser();
-    private JSONArray messageList = null;
+    private JSONObject messageList = null;
     private WriteMessageStatus writeMessageStatus = null;
     private List<Mailbox> mailboxes;
 
@@ -50,11 +53,16 @@ public class POP3Socket extends MailSocket {
             try {
                 String MessageStatusJSONDirectory = DEFAULT_WORKING_DIRECTORY + "MessageStatus.json";
                 File file = new File(MessageStatusJSONDirectory);
-                writeMessageStatus = new WriteMessageStatus();
-                if (file.exists())
-                    messageList = (JSONArray) parser.parse(new FileReader(MessageStatusJSONDirectory));
+                if (file.exists()){
+                    messageList = (JSONObject) parser.parse(new FileReader(MessageStatusJSONDirectory));
+                    String msgID = new String();
+                    for (Object e : messageList.keySet()) {
+                        msgID = (new StringBuilder()).append(msgID).append(" ").append(e.toString()).toString();
+                    }
+                    messagesID = msgID.split(" ");
+                }
                 else
-                    messageList = new JSONArray();
+                    messageList = new JSONObject();
                 connect();
                 login();
             } catch (Exception e) {
@@ -176,20 +184,10 @@ public class POP3Socket extends MailSocket {
     // return (messageList == null) ? false : messageList.contains(messageObject);
     // }
 
-    private boolean exist(String keyObject) {
-        for (Object obj : messageList) {
-            JSONObject messageObject = (JSONObject) obj;
-            if (messageObject.containsKey(keyObject)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public String RETR(String messageOrder) throws IOException {
         String keyObject = messagesID[Integer.parseInt(messageOrder) - 1];
         String message = "retrieved";
-        if (!exist(keyObject))
+        if (!readMessageStatus.exist(messageList, keyObject))
             message = doCommand("RETR " + messageOrder, OK);
 
         return message;
@@ -198,19 +196,21 @@ public class POP3Socket extends MailSocket {
     public void retrieveMessage() throws IOException {
         UIDL();
         for (int i = 0; i < messagesID.length; i++) {
-            JSONObject messageObject = new JSONObject();
-            messageObject.put(messagesID[i], false);
-            if (exist(messagesID[i])) {
-                // break;
+            if (readMessageStatus.exist(messageList, messagesID[i])) {
                 continue;
             }
             String rawMessage = RETR(i + 1 + "");
+            messageList.put(messagesID[i], false);
             String emailDirectory = DEFAULT_WORKING_DIRECTORY + "Inbox/" + messagesID[i] + ".msg";
             saveEmail(emailDirectory, rawMessage);
-            messageList.add(messageObject);
             filterEmail(emailDirectory, mailboxes);
         }
-        writeMessageStatus.writeJSON(messageList);
+        try {
+            WriteMessageStatus writeMessageStatus = new WriteMessageStatus(messageList);
+            writeMessageStatus.writeJSON();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         // quit();
     }
 
