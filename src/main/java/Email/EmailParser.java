@@ -1,4 +1,4 @@
-package Message;
+package Email;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -11,11 +11,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-import Filter.*;
-
-public class MessageParser {
+public class EmailParser {
     private static final String CRLF = "\r\n";
-    private static final String ERROR_FILE_NOT_FOUND = "[ERROR][Message] File \"%s\" not found.";
     private static final String ERROR_CANNOT_WRITE_FILE = "[ERROR][Message] Cannot write file \"%s\".";
     private static final String DEFAULT_DATE_FORMAT = "EEE, d MMM yyyy HH:mm:ss Z";
     private static final String CONTENT_TRANSFER_ENCODING = "Content-Transfer-Encoding: 7bit";
@@ -37,7 +34,7 @@ public class MessageParser {
     private String header;
     List<String> attachmentDirectories = new ArrayList<String>();
 
-    public MessageParser() {
+    public EmailParser() {
         // do nothing
     }
 
@@ -245,9 +242,9 @@ public class MessageParser {
         return attachmentDirectories.toArray(new String[attachmentDirectories.size()]);
     }
 
-    public Message createMessage() {
+    public Email createMessage() {
         String[] attachments = getAttachmentDirectories();
-        Message message = new Message(sender, recipientsTo, recipientsCc, EMPTY_STRING_ARRAY, subject, content,
+        Email message = new Email(sender, recipientsTo, recipientsCc, EMPTY_STRING_ARRAY, subject, content,
                 attachments);
         return message;
     }

@@ -1,6 +1,7 @@
-package Message;
+package Email;
 
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.AfterAll;
 
@@ -9,7 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
 
-public class MessageParserTest {
+public class EmailParserTest {
     @Test
     public void testParseHeader() {
         // Arrange
@@ -22,7 +23,7 @@ public class MessageParserTest {
                 "",
                 "Hello world"
         };
-        MessageParser parser = new MessageParser();
+        EmailParser parser = new EmailParser();
 
         // Act
         int headerEndIndex = parser.parseHeader(lines);
@@ -42,7 +43,7 @@ public class MessageParserTest {
     public void testParse() {
         // Arrange
         String rawMessage = "From: sender@example.com\r\nTo: recipient@example.com\r\nSubject: Hello world!\r\n\r\nHello world";
-        MessageParser parser = new MessageParser();
+        EmailParser parser = new EmailParser();
 
         // Act
         parser.fullParse(rawMessage);
@@ -62,7 +63,7 @@ public class MessageParserTest {
                 "Hello world",
                 "--"
         };
-        MessageParser parser = new MessageParser();
+        EmailParser parser = new EmailParser();
 
         // Act
         parser.parseContent(bodyLines, 2);
@@ -82,7 +83,7 @@ public class MessageParserTest {
                 "Content-Disposition: attachment; filename=\"test.cpp\"",
                 ""
         };
-        MessageParser parser = new MessageParser();
+        EmailParser parser = new EmailParser();
 
         // Act
         parser.parseFile(bodyLines[0], 2, bodyLines, "attachments/write");
@@ -99,7 +100,7 @@ public class MessageParserTest {
         // Arrange
         Path filePath = Paths.get("src/test/java/Message/testEmail.msg");
         String rawEmail = new String(Files.readAllBytes(filePath));
-        MessageParser parser = new MessageParser();
+        EmailParser parser = new EmailParser();
 
         // Act
         parser.fullParse(rawEmail);
@@ -119,14 +120,14 @@ public class MessageParserTest {
     @Test
     public void testParseFullEmailWithPdf() {
         // Arrange
-        Path filePath = Paths.get("src/test/java/Message/testPdf.msg");
+        Path filePath = Paths.get("src/test/java/Email/testPdf.msg");
         String rawEmail = "";
         try {
             rawEmail = new String(Files.readAllBytes(filePath));
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-        MessageParser parser = new MessageParser();
+        EmailParser parser = new EmailParser();
 
         // Act
         parser.fullParse(rawEmail);
@@ -144,7 +145,7 @@ public class MessageParserTest {
 
     @Test
     void testParseContentOnly() {
-        MessageParser parser = new MessageParser();
+        EmailParser parser = new EmailParser();
 
         // Test with a simple message
         String simpleMessage = "Content-Type: text/plain\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHello, World!";

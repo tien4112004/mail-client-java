@@ -1,6 +1,6 @@
 package UI;
 
-import Message.Message;
+import Email.Email;
 import Socket.SMTPSocket;
 
 public class SendEmails extends UI {
@@ -63,7 +63,7 @@ public class SendEmails extends UI {
         try {
             System.out.println(ANSI_TEXT_YELLOW + "Sending email..." + ANSI_RESET);
             SMTPSocket smtpSocket = new SMTPSocket(SMTPServer, SMTPPort);
-            Message message = new Message(sender, recipientsTo, recipientsCc,
+            Email message = new Email(sender, recipientsTo, recipientsCc,
                     recipientsBcc, subject, content,
                     attachments);
             smtpSocket.connect();

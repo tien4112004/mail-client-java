@@ -1,4 +1,4 @@
-package Message;
+package Email;
 
 // import java.security.cert.CRL;
 import java.text.SimpleDateFormat;
@@ -6,15 +6,13 @@ import java.util.UUID;
 
 import javax.activation.MimetypesFileTypeMap;
 
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
-import java.net.FileNameMap;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
 
-public class Message {
+public class Email {
     private static final String CRLF = "\r\n";
     private static final String DEFAULT_CHARSET = "UTF-8";
     private static final String ERROR_RECIPIENT_EMPTY = "[ERROR][Message] Recipients cannot be empty.";
@@ -38,7 +36,7 @@ public class Message {
     private String content;
     private String[] attachmentDirectories;
 
-    public Message(String sender, String[] recipientsTo, String[] recipientsCC, String[] recipientsBCC,
+    public Email(String sender, String[] recipientsTo, String[] recipientsCC, String[] recipientsBCC,
             String subject, String content, String... attachments) {
         this.sender = sender.trim();
         this.subject = subject.trim();

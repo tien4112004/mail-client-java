@@ -1,9 +1,10 @@
-package Message;
+package Email;
 
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-class MessageTest {
+class EmailTest {
     @Test
     void testMessageConstructor() {
         String sender = "sender@localhost";
@@ -14,7 +15,7 @@ class MessageTest {
         String content = "This is a test email";
         String[] attachments = {};
 
-        Message message = new Message(sender, recipientsTo, recipientsCc, recipientsBcc, subject, content, attachments);
+        Email message = new Email(sender, recipientsTo, recipientsCc, recipientsBcc, subject, content, attachments);
 
         assertEquals(sender, message.getSender());
         assertArrayEquals(new String[] { recipientsTo[0], recipientsTo[1], recipientsCc[0], recipientsCc[1],
@@ -35,7 +36,7 @@ class MessageTest {
         String[] attachments = {};
 
         assertThrows(IllegalArgumentException.class, () -> {
-            new Message(sender, recipientsTo, recipientsCc, recipientsBcc, subject, content, attachments);
+            new Email(sender, recipientsTo, recipientsCc, recipientsBcc, subject, content, attachments);
         });
     }
 
@@ -49,7 +50,7 @@ class MessageTest {
         String content = "This is a test email";
         String[] attachments = { "src/test/java/attachmentsTest/test.cpp", "src/test/java/attachmentsTest/test.txt" };
 
-        Message message = new Message(sender, recipientsTo, recipientsCc, recipientsBcc, subject, content, attachments);
+        Email message = new Email(sender, recipientsTo, recipientsCc, recipientsBcc, subject, content, attachments);
 
         assertEquals(sender, message.getSender());
         assertArrayEquals(new String[] { recipientsTo[0], recipientsTo[1], recipientsCc[0], recipientsCc[1],
@@ -71,7 +72,7 @@ class MessageTest {
         String[] attachments = { "path/to/nonexistent/attachment" };
 
         assertThrows(Exception.class, () -> {
-            new Message(sender, recipientsTo, recipientsCc, recipientsBcc, subject,
+            new Email(sender, recipientsTo, recipientsCc, recipientsBcc, subject,
                     content, attachments);
         });
     }
@@ -86,7 +87,7 @@ class MessageTest {
         String content = "This is a test email";
         String[] attachments = {};
 
-        Message message = new Message(sender, recipientsTo, recipientsCc, recipientsBcc, subject, content, attachments);
+        Email message = new Email(sender, recipientsTo, recipientsCc, recipientsBcc, subject, content, attachments);
 
         assertArrayEquals(new String[] { recipientsTo[0], recipientsTo[1], recipientsCc[0], recipientsCc[1],
                 recipientsBcc[0], recipientsBcc[1] }, message.getRecipients());

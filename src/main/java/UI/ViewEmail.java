@@ -1,9 +1,8 @@
 package UI;
 
-import Message.MessageParser;
-
 import java.util.List;
 
+import Email.EmailParser;
 import Filter.Mailbox;
 
 import java.nio.file.Files;
@@ -18,7 +17,7 @@ public class ViewEmail extends UI {
     private String emailDirectory;
     private List<String> mailList;
     private List<Mailbox> mailboxes;
-    private MessageParser parser;
+    private EmailParser parser;
     private String[] attachmentDirectories;
 
     private int emailIndex;
@@ -41,7 +40,7 @@ public class ViewEmail extends UI {
         } catch (IOException e) {
             return;
         }
-        parser = new MessageParser();
+        parser = new EmailParser();
         parser.fullParse(rawEmail);
         clearConsole();
         displayEmailContent();
@@ -144,7 +143,7 @@ public class ViewEmail extends UI {
             Path savePath = Paths.get(saveDirectory + "/" + attachmentPath.getFileName());
             displayStatusMessage("Saving attachment...");
             Files.copy(attachmentPath, savePath);
-            displayStatusMessage(String.format("Attachment #%d saved to %s.", attachmentIndex, saveDirectory));
+            displaySuccessMessage(String.format("Attachment #%d saved to %s.", attachmentIndex, saveDirectory));
         } catch (IOException e) {
             displayErrorMessage("Error in saving attachment.");
             // e.printStackTrace();

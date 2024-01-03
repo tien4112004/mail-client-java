@@ -1,7 +1,6 @@
 package UI;
 
 import Filter.Mailbox;
-import Message.MessageParser;
 import JSON.WriteMessageStatus;
 import JSON.ReadMessageStatus;
 
@@ -17,6 +16,8 @@ import java.util.stream.Collectors;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+
+import Email.EmailParser;
 
 public class ListEmails extends MainMenu {
     private final int PAGE_SIZE = 10;
@@ -107,7 +108,7 @@ public class ListEmails extends MainMenu {
         int end = Math.min(start + PAGE_SIZE, mailList.size());
         for (int i = start; i < end; i++) {
             String rawMessage = readRawMessage(mailList.get(i));
-            MessageParser parser = new MessageParser();
+            EmailParser parser = new EmailParser();
             parser.quickParse(rawMessage);
             String msgID = mailList.get(i).split("/")[2];
             msgID = msgID.substring(0, msgID.length() - 4);
@@ -294,8 +295,8 @@ public class ListEmails extends MainMenu {
                 Files.delete(attachmentCachePath);
             }
         } catch (IOException e) {
-            displayErrorMessage("Error in deleting attachments cache.");
             e.printStackTrace();
+            displayErrorMessage("Error in deleting attachments cache.");
         }
     }
 }

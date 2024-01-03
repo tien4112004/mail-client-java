@@ -1,8 +1,9 @@
 package Filter;
 
-import Filter.ContentFilter;
-import Message.Message;
 import org.junit.jupiter.api.Test;
+
+import Email.Email;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ContentFilterTest {
@@ -12,9 +13,9 @@ public class ContentFilterTest {
     @Test
     public void testMatches() {
         // Arrange
-        Message email1 = new Message("sender1", recipientTo, EMPTY_LIST, EMPTY_LIST, "this is the subject",
+        Email email1 = new Email("sender1", recipientTo, EMPTY_LIST, EMPTY_LIST, "this is the subject",
                 "This is the content of the first email");
-        Message email2 = new Message("sender1", recipientTo, EMPTY_LIST, EMPTY_LIST, "this is the subject",
+        Email email2 = new Email("sender1", recipientTo, EMPTY_LIST, EMPTY_LIST, "this is the subject",
                 "This is the content of the first email");
         ContentFilter filter = new ContentFilter("first", "second");
 
@@ -30,7 +31,7 @@ public class ContentFilterTest {
     @Test
     public void testDoesNotMatch() {
         // Arrange
-        Message email = new Message("sender1", recipientTo, EMPTY_LIST, EMPTY_LIST, "this is the subject",
+        Email email = new Email("sender1", recipientTo, EMPTY_LIST, EMPTY_LIST, "this is the subject",
                 "This is the content of the first email");
         ContentFilter filter = new ContentFilter("nonexistent");
 

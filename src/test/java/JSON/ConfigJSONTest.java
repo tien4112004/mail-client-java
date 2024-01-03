@@ -1,12 +1,6 @@
 package JSON;
 
 import java.util.List;
-
-import javax.security.auth.Subject;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -15,8 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 
 import Filter.*;
 import UI.MainMenu;
-
-import JSON.ReadConfig;
 
 public class ConfigJSONTest {
     @BeforeEach

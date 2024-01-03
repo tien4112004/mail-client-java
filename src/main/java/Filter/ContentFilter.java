@@ -3,7 +3,7 @@ package Filter;
 import java.util.ArrayList;
 import java.util.List;
 
-import Message.Message;
+import Email.Email;
 
 public class ContentFilter implements Filter {
     private List<String> contentKeywords;
@@ -13,7 +13,7 @@ public class ContentFilter implements Filter {
         addKeywords(contentKeywords);
     }
 
-    public boolean matches(Message email) {
+    public boolean matches(Email email) {
         if (contentKeywords == null)
             return false;
 

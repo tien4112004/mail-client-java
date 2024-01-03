@@ -59,7 +59,7 @@ public class ListMailboxes extends UI {
                 { "<", "Previous page" },
                 { ">", "Next page" },
                 { "#", "Open mailbox #" },
-                { "N", "New mailbox" },
+                //{ "N", "New mailbox" },
                 { "Q", "Quit" }
         };
         showOptions(options);

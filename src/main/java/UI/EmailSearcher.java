@@ -1,12 +1,14 @@
 package UI;
 
 import Filter.*;
-import Message.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+
+import Email.*;
+
 import java.util.ArrayList;
 
 public class EmailSearcher extends UI {
@@ -48,7 +50,7 @@ public class EmailSearcher extends UI {
                 this.filter = new ContentFilter(keywords);
                 break;
             default:
-                System.out.println(ANSI_TEXT_RED + "[ERROR] Invalid filter option." + ANSI_RESET);
+                displayErrorMessage("Invalid filter option.");
                 return;
         }
     }
@@ -56,16 +58,16 @@ public class EmailSearcher extends UI {
     public void search() {
         getFilter();
         for (String emailDirectory : emailDirectories) {
-            MessageParser messageParser = new MessageParser();
+            EmailParser messageParser = new EmailParser();
             String rawEmail = null;
             try {
                 rawEmail = new String(Files.readAllBytes(Paths.get(emailDirectory)));
             } catch (IOException e) {
-                System.out.println(ANSI_TEXT_RED + "[ERROR] Cannot read email." + ANSI_RESET);
+                displayErrorMessage("Cannot read email.");
                 // e.printStackTrace();
             }
             messageParser.parseHeaderAndContent(rawEmail);
-            Message currentEmail = messageParser.createMessage();
+            Email currentEmail = messageParser.createMessage();
             if (filter.matches(currentEmail)) {
                 searchResult.add(emailDirectory);
             }
@@ -76,7 +78,7 @@ public class EmailSearcher extends UI {
     private void showSearchResult() {
         clearConsole();
         if (searchResult.size() == 0) {
-            System.out.println(ANSI_TEXT_RED + "[ERROR] No email found." + ANSI_RESET);
+            displayErrorMessage("No matched email.");
             return;
         }
         ListEmails listSearchResult = new ListEmails(searchResult, inputHandler);

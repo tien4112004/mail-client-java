@@ -1,14 +1,14 @@
 package Filter;
 
-import Message.Message;
-import Message.MessageParser;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+
+import Email.Email;
+import Email.EmailParser;
 
 public class Mailbox {
     String name;
@@ -69,9 +69,9 @@ public class Mailbox {
             e.printStackTrace();
         }
 
-        MessageParser parser = new MessageParser();
+        EmailParser parser = new EmailParser();
         parser.parseHeaderAndContent(rawMessage);
-        Message email = parser.createMessage();
+        Email email = parser.createMessage();
 
         if (filters == null)
             return;
