@@ -16,11 +16,11 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import Email.Email;
+import Email.EmailParser;
 import Filter.Mailbox;
 import JSON.ReadMessageStatus;
 import JSON.WriteMessageStatus;
-import Message.Message;
-import Message.MessageParser;
 import net.lecousin.framework.concurrent.async.MutualExclusion;
 // import Config.Config;
 import scala.collection.mutable.StringBuilder;
@@ -53,15 +53,14 @@ public class POP3Socket extends MailSocket {
             try {
                 String MessageStatusJSONDirectory = DEFAULT_WORKING_DIRECTORY + "MessageStatus.json";
                 File file = new File(MessageStatusJSONDirectory);
-                if (file.exists()){
+                if (file.exists()) {
                     messageList = (JSONObject) parser.parse(new FileReader(MessageStatusJSONDirectory));
                     String msgID = new String();
                     for (Object e : messageList.keySet()) {
                         msgID = (new StringBuilder()).append(msgID).append(" ").append(e.toString()).toString();
                     }
                     messagesID = msgID.split(" ");
-                }
-                else
+                } else
                     messageList = new JSONObject();
                 connect();
                 login();

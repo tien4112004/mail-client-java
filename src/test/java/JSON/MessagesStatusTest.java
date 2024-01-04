@@ -2,23 +2,13 @@ package JSON;
 
 import java.util.Map;
 
-import java.io.EOFException;
-import java.io.FileReader;
 import java.io.IOException;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.assertTrue;
 
-import JSON.WriteMessageStatus;
 import Socket.POP3Socket;
-
-import java.nio.file.Paths;
-import java.nio.file.Path;
-import java.nio.file.Files;
 
 public class MessagesStatusTest {
     JSONObject messageList = null;
@@ -46,15 +36,15 @@ public class MessagesStatusTest {
 
     // @Test
     // public void writeJSONTest() throws Exception {
-    //     JSONArray messageList = new JSONArray();
-    //     WriteMessageStatus msg = new WriteMessageStatus(messageList);
-    //     msgObject.put("1", false);
-    //     messageList.add(msgObject);
-    //     msg.writeJSON();
+    // JSONArray messageList = new JSONArray();
+    // WriteMessageStatus msg = new WriteMessageStatus(messageList);
+    // msgObject.put("1", false);
+    // messageList.add(msgObject);
+    // msg.writeJSON();
 
-    //     Path filePath = Paths.get("src/main/java/JSON/MessageStatus.json");
-    //     boolean actual = Files.exists(filePath);
-    //     assertTrue(actual);
+    // Path filePath = Paths.get("src/main/java/JSON/MessageStatus.json");
+    // boolean actual = Files.exists(filePath);
+    // assertTrue(actual);
     // }
 
     @Test

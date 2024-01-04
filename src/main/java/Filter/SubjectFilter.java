@@ -3,7 +3,7 @@ package Filter;
 import java.util.ArrayList;
 import java.util.List;
 
-import Message.Message;
+import Email.Email;
 
 public class SubjectFilter implements Filter {
     private List<String> subjectKeywords;
@@ -13,7 +13,7 @@ public class SubjectFilter implements Filter {
         addKeywords(subjectKeywords);
     }
 
-    public boolean matches(Message email) {
+    public boolean matches(Email email) {
         if (subjectKeywords == null)
             return false;
 

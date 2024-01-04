@@ -2,12 +2,8 @@ package Socket;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-
 import java.io.IOException;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class MailSocketTest {
     private TestMailSocket mailSocket;

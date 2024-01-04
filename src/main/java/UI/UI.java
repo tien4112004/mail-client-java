@@ -21,7 +21,7 @@ public class UI {
 
     protected final String EMPTY_PROMPT = "";
 
-    protected final int TIME_3_SECONDS = 3000;
+    protected final int TIME_2_5_SECONDS = 2500;
     protected final int TIME_2_SECONDS = 2000;
 
     protected final String DEFAULT_WORKING_DIRECTORY = System.getProperty("./");
@@ -67,8 +67,7 @@ public class UI {
 
     protected boolean isInvalidOptions(String userInput) {
         if (userInput.length() > 1 || !userInput.matches("[0-9]+")) {
-            System.out.printf("%s[ERROR] Invalid option!%s\n", ANSI_TEXT_RED, ANSI_RESET);
-            sleep(TIME_2_SECONDS);
+            displayErrorMessage(userInput + " is not a valid option!");
             return true;
         }
         return false;
@@ -78,8 +77,28 @@ public class UI {
         try {
             Thread.sleep(milisecond);
         } catch (InterruptedException e) {
-            System.out.printf("%sKeyboard interupted%s", ANSI_TEXT_RED, ANSI_RESET);
+            displayErrorMessage("Keyboard Interrupted!");
             e.printStackTrace();
         }
     }
+
+    protected void displayErrorMessage(String message) {
+        System.out.printf("%s[ERROR] %s%s\n", ANSI_TEXT_RED, message, ANSI_RESET);
+        sleep(TIME_2_SECONDS);
+    }
+
+    protected void displaySuccessMessage(String message) {
+        System.out.printf("%s[INFO] %s%s\n", ANSI_TEXT_GREEN, message, ANSI_RESET);
+        sleep(TIME_2_SECONDS);
+    }
+
+    protected void displayStatusMessage(String message, int delaySeconds) {
+        System.out.printf("%s%s%s\n", ANSI_TEXT_YELLOW, message, ANSI_RESET);
+        sleep(delaySeconds * 1000);
+    }
+
+    protected void displayStatusMessage(String message) {
+        displayStatusMessage(message, 0);
+    }
+
 }

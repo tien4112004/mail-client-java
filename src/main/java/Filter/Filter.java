@@ -1,7 +1,7 @@
 package Filter;
 
-import Message.Message;
+import Email.Email;
 
 public interface Filter {
-    public abstract boolean matches(Message email);
+    public abstract boolean matches(Email email);
 }

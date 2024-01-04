@@ -1,9 +1,8 @@
 package UI;
 
-import Message.MessageParser;
-
 import java.util.List;
 
+import Email.EmailParser;
 import Filter.Mailbox;
 
 import java.nio.file.Files;
@@ -18,7 +17,7 @@ public class ViewEmail extends UI {
     private String emailDirectory;
     private List<String> mailList;
     private List<Mailbox> mailboxes;
-    private MessageParser parser;
+    private EmailParser parser;
     private String[] attachmentDirectories;
 
     private int emailIndex;
@@ -34,15 +33,16 @@ public class ViewEmail extends UI {
 
     public void showEmail() {
         clearConsole();
+        displayStatusMessage("Loading email...", 0);
         String rawEmail;
         try {
             rawEmail = readEmail();
         } catch (IOException e) {
             return;
         }
-
-        parser = new MessageParser();
+        parser = new EmailParser();
         parser.fullParse(rawEmail);
+        clearConsole();
         displayEmailContent();
         handleUserInput();
     }
@@ -52,7 +52,7 @@ public class ViewEmail extends UI {
         try {
             return new String(java.nio.file.Files.readAllBytes(emailPath));
         } catch (IOException e) {
-            System.out.println(ANSI_TEXT_RED + "[ERROR] Error in reading email." + ANSI_RESET);
+            displayErrorMessage("Error in reading email.");
             e.printStackTrace();
             throw e;
         }
@@ -96,14 +96,18 @@ public class ViewEmail extends UI {
 
         switch (userInput) {
             case "Q":
+            case "q":
                 return;
             case "A":
+            case "a":
                 saveAllAttachments();
                 return;
             case "D":
+            case "d":
                 deleteEmail();
                 return;
             case "M":
+            case "m":
                 moveEmail();
                 return;
             default:
@@ -114,36 +118,35 @@ public class ViewEmail extends UI {
 
     private void deleteEmail() {
         Path emailPath = Paths.get(emailDirectory);
+        displayStatusMessage("Deleting email...");
         try {
             Files.delete(emailPath);
         } catch (IOException e) {
-            System.out.println(ANSI_TEXT_RED + "[ERROR] Error in deleting email." + ANSI_RESET);
-            sleep(1500);
+            displayErrorMessage("Error in deleting email.");
             e.printStackTrace();
         }
         mailList.remove(emailIndex);
-        System.out.printf("%s%s%s\n", ANSI_TEXT_GREEN, "Email removed.", ANSI_RESET);
-        sleep(2000);
+        displaySuccessMessage("Email deleted.");
     }
 
     private void moveEmail() {
         String destination = inputHandler.dialog("Destination mailbox: ");
+        displayStatusMessage("Moving email...");
         Mailbox.moveMailToFolder(emailDirectory, destination);
-        System.out.printf("%s%s%s\n", ANSI_TEXT_GREEN, "Email moved to " + destination + ".", ANSI_RESET);
-        sleep(TIME_2_SECONDS);
         mailList.remove(emailIndex);
+        displaySuccessMessage("Email moved to " + destination + ".");
     }
 
     private void saveAttachment(int attachmentIndex, String saveDirectory) {
         try {
             Path attachmentPath = Paths.get(attachmentDirectories[attachmentIndex - 1]);
             Path savePath = Paths.get(saveDirectory + "/" + attachmentPath.getFileName());
+            displayStatusMessage("Saving attachment...");
             Files.copy(attachmentPath, savePath);
-            System.out.printf("%sAttachment #%d saved to %s.%s\n", ANSI_TEXT_GREEN, attachmentIndex, saveDirectory,
-                    ANSI_RESET);
+            displaySuccessMessage(String.format("Attachment #%d saved to %s.", attachmentIndex, saveDirectory));
         } catch (IOException e) {
-            System.out.println(ANSI_TEXT_RED + "[ERROR] Error in saving attachment." + ANSI_RESET);
-            e.printStackTrace();
+            displayErrorMessage("Error in saving attachment.");
+            // e.printStackTrace();
         }
     }
 
@@ -152,7 +155,7 @@ public class ViewEmail extends UI {
         for (int i = 1; i <= attachmentDirectories.length; i++) {
             saveAttachment(i, saveDirectory);
         }
-        sleep(TIME_3_SECONDS);
+        sleep(TIME_2_5_SECONDS);
     }
 
     private void saveAttachment(String attachmentIndex) {

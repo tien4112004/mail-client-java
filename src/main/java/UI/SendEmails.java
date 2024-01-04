@@ -1,6 +1,6 @@
 package UI;
 
-import Message.Message;
+import Email.Email;
 import Socket.SMTPSocket;
 
 public class SendEmails extends UI {
@@ -38,7 +38,6 @@ public class SendEmails extends UI {
         attachments = getInputList("Attachments: " + ANSI_TEXT_YELLOW
                 + "[Input the directory of attachment, seperated by commas]" + ANSI_RESET + "\n");
 
-        // Read content from user
         System.out.printf("Content: %s[End with a single dot on a line '.']%s\n", ANSI_TEXT_YELLOW, ANSI_RESET);
         String line;
         content = "";
@@ -60,25 +59,24 @@ public class SendEmails extends UI {
 
     public void send() {
         compose();
-        Message message = new Message(sender, recipientsTo, recipientsCc, recipientsBcc, subject, content,
-                attachments);
-        SMTPSocket smtpSocket = new SMTPSocket(SMTPServer, SMTPPort);
-
-        System.out.println(ANSI_TEXT_YELLOW + "Sending email..." + ANSI_RESET);
 
         try {
+            System.out.println(ANSI_TEXT_YELLOW + "Sending email..." + ANSI_RESET);
+            SMTPSocket smtpSocket = new SMTPSocket(SMTPServer, SMTPPort);
+            Email message = new Email(sender, recipientsTo, recipientsCc,
+                    recipientsBcc, subject, content,
+                    attachments);
             smtpSocket.connect();
             smtpSocket.sendEmail(message);
+            displaySuccessMessage("Email sent!");
         } catch (Exception e) {
-            System.out.printf("%s[ERROR]%s " + e.getMessage() + "\n", ANSI_TEXT_RED, ANSI_RESET);
-            sleep(TIME_3_SECONDS);
-            e.printStackTrace();
+            displayErrorMessage(e.getMessage());
+            // e.printStackTrace();
             return;
+        } finally {
+            // smtpSocket.quit();
+            sleep(TIME_2_5_SECONDS);
+            clearConsole();
         }
-
-        System.out.println(ANSI_TEXT_GREEN + "Email sent." + ANSI_RESET);
-        sleep(TIME_3_SECONDS);
-
-        clearConsole();
     }
 }

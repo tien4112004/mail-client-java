@@ -3,7 +3,7 @@ package Filter;
 import java.util.ArrayList;
 import java.util.List;
 
-import Message.Message;
+import Email.Email;
 
 public class SenderFilter implements Filter {
     // private String[] senderKeywords;
@@ -14,7 +14,7 @@ public class SenderFilter implements Filter {
         addKeywords(senderKeywords);
     }
 
-    public boolean matches(Message email) {
+    public boolean matches(Email email) {
         if (senderKeywords == null)
             return false;
 

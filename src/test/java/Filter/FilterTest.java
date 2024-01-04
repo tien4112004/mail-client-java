@@ -1,8 +1,9 @@
 package Filter;
 
-import Message.Message;
-
 import org.junit.jupiter.api.Test;
+
+import Email.Email;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class FilterTest {
@@ -15,8 +16,8 @@ class FilterTest {
         String[] recipientsBcc = new String[] { "example@fit.hcmus.edu.vn" };
         String subject = "Test Email";
         String content = "This is a test email";
-        String[] attachments = { "attachments/test.cpp", "attachments/test.txt" };
-        Message message = new Message(sender, recipientsTo, recipientsCc,
+        String[] attachments = { "src/test/java/attachmentsTest/test.cpp", "src/test/java/attachmentsTest/test.txt" };
+        Email message = new Email(sender, recipientsTo, recipientsCc,
                 recipientsBcc, subject, content, attachments);
 
         assertFalse(filter.matches(message));
@@ -31,8 +32,8 @@ class FilterTest {
         String[] recipientsBcc = new String[] { "example@fit.hcmus.edu.vn" };
         String subject = "Test Email";
         String content = "This is a test email";
-        String[] attachments = { "attachments/test.cpp", "attachments/test.txt" };
-        Message message = new Message(sender, recipientsTo, recipientsCc,
+        String[] attachments = { "src/test/java/attachmentsTest/test.cpp", "src/test/java/attachmentsTest/test.txt" };
+        Email message = new Email(sender, recipientsTo, recipientsCc,
                 recipientsBcc, subject, content, attachments);
         assertTrue(filter.matches(message));
 
@@ -49,8 +50,8 @@ class FilterTest {
         String[] recipientsBcc = new String[] { "example@fit.hcmus.edu.vn" };
         String subject = "Test Email";
         String content = "This is a test email";
-        String[] attachments = { "attachments/test.cpp", "attachments/test.txt" };
-        Message message = new Message(sender, recipientsTo, recipientsCc,
+        String[] attachments = { "src/test/java/attachmentsTest/test.cpp", "src/test/java/attachmentsTest/test.txt" };
+        Email message = new Email(sender, recipientsTo, recipientsCc,
                 recipientsBcc, subject, content, attachments);
         assertFalse(filter.matches(message));
 

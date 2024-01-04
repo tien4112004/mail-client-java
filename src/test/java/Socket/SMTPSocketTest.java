@@ -5,10 +5,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import Email.Email;
+
 import java.io.IOException;
 import java.net.UnknownHostException;
-
-import Message.Message;
 
 public class SMTPSocketTest {
     private SMTPSocket SMTPSocket;
@@ -41,7 +41,7 @@ public class SMTPSocketTest {
         String[] recipientsBcc = new String[] { "example@fit.hcmus.edu.vn" };
         String subject = "Test Email";
         String content = "This is a test email";
-        Message message = new Message(sender, recipientsTo, recipientsCc,
+        Email message = new Email(sender, recipientsTo, recipientsCc,
                 recipientsBcc, subject, content, new String[] {});
         assertArrayEquals(new String[] { "pttien@fit.hcmus.edu.vn", "example@localhost", "example@fit.hcmus.edu.vn" },
                 message.getRecipients());
@@ -57,7 +57,7 @@ public class SMTPSocketTest {
         String subject = "Test Email w/ attachments";
         String content = "This is a test email with long content...This is a test email with long content...This is a test email with long content...This is a test email with long content...This is a test email with long content...This is a test email with long content...This is a test email with long content...This is a test email with long content...";
         String[] attachments = { "src/test/java/attachmentsTest/test.cpp", "src/test/java/attachmentsTest/test.txt" };
-        Message message = new Message(sender, recipientsTo, recipientsCc,
+        Email message = new Email(sender, recipientsTo, recipientsCc,
                 recipientsBcc, subject, content, attachments);
         assertArrayEquals(new String[] { "pttien@fit.hcmus.edu.vn", "example@localhost", "example@fit.hcmus.edu.vn" },
                 message.getRecipients());
@@ -73,7 +73,7 @@ public class SMTPSocketTest {
         String subject = "pdf test";
         String content = "Pdf test";
         String[] attachments = { "src/test/java/attachmentsTest/test.pdf" };
-        Message message = new Message(sender, recipientsTo, recipientsCc,
+        Email message = new Email(sender, recipientsTo, recipientsCc,
                 recipientsBcc, subject, content, attachments);
         assertArrayEquals(new String[] { "pttien@fit.hcmus.edu.vn", "example@localhost", "example@fit.hcmus.edu.vn" },
                 message.getRecipients());

@@ -59,7 +59,7 @@ public class ListMailboxes extends UI {
                 { "<", "Previous page" },
                 { ">", "Next page" },
                 { "#", "Open mailbox #" },
-                { "N", "New mailbox" },
+                //{ "N", "New mailbox" },
                 { "Q", "Quit" }
         };
         showOptions(options);
@@ -75,9 +75,11 @@ public class ListMailboxes extends UI {
                 previousPage();
                 return true;
             case "N":
+            case "n":
                 createNewMailbox();
                 return true;
             case "Q":
+            case "q":
                 return false;
             default:
                 handleMailboxSelection(userInput);
@@ -88,7 +90,7 @@ public class ListMailboxes extends UI {
     @Override
     protected boolean isInvalidOptions(String userInput) {
         if (userInput.length() > 1 || !userInput.matches("[1-9]+")) {
-            System.out.printf("%s[ERROR] Invalid option!%s\n", ANSI_TEXT_RED, ANSI_RESET);
+            displayErrorMessage("Invalid option!");
             sleep(TIME_2_SECONDS);
             return true;
         }
@@ -103,8 +105,7 @@ public class ListMailboxes extends UI {
         int mailboxIndex = (currentPage - 1) * 10 + order;
 
         if (mailboxIndex > mailboxes.size() || order > 9 || order < 0) {
-            System.out.printf("%s[ERROR] Invalid mailbox number!%s\n", ANSI_TEXT_RED, ANSI_RESET);
-            sleep(TIME_2_SECONDS);
+            displayErrorMessage("Invalid mailbox number!");
             return;
         }
 
@@ -116,7 +117,7 @@ public class ListMailboxes extends UI {
     private void createNewMailbox() {
         String newMailboxName = inputHandler.dialog("New mailbox name: ");
         mailboxes.add(new Mailbox(newMailboxName));
-        System.out.println(ANSI_TEXT_GREEN + "New mailbox created!" + ANSI_RESET);
-        sleep(1500);
+        displaySuccessMessage("New mailbox created!");
+        sleep(TIME_2_SECONDS);
     }
 }
