@@ -1,7 +1,5 @@
 package UI;
 
-import java.io.IOException;
-import java.io.FileNotFoundException;
 import java.util.Map;
 import java.util.List;
 
@@ -92,7 +90,7 @@ public class UserInformation extends UI {
         Password = inputHandler.dialog("Password: ");
 
         WriteConfig writeConfig = new WriteConfig();
-        Mailbox defaultMailboxes[] = { new Mailbox("Inbox"), new Mailbox("Sent"), new Mailbox("Spam") };
+        Mailbox defaultMailboxes[] = { new Mailbox("Inbox"), new Mailbox("Important"), new Mailbox("Spam") };
         try {
             writeConfig.writeConfig(defaultMailboxes, Username, Password);
             displaySuccessMessage("Configuration file created!");

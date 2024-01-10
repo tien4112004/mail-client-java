@@ -52,7 +52,6 @@ public class EmailParser {
 
     public void parseHeaderAndContent(String rawMessage) {
         String[] lines = rawMessage.split(CRLF);
-        int headerEndIndex = parseHeader(lines);
 
         for (int i = 0; i < lines.length; i++) {
             if (lines[i].equals(CONTENT_TRANSFER_ENCODING)) {

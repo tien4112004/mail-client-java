@@ -8,7 +8,6 @@ import javax.activation.MimetypesFileTypeMap;
 
 import java.util.Base64;
 import java.util.Date;
-import java.io.EOFException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -18,7 +17,6 @@ public class Email {
     private static final String CRLF = "\r\n";
     private static final String DEFAULT_CHARSET = "UTF-8";
     private static final String ERROR_RECIPIENT_EMPTY = "[ERROR][Message] Recipients cannot be empty.";
-    private static final String ERROR_FILE_NOT_FOUND = "[ERROR][Message] File \"%s\" not found.";
     private static final String MIME_VERSION = "MIME-Version: 1.0";
     private static final String USER_AGENT = "User-Agent: "; // Add User-Agent's name here
     private static final String CONTENT_LANGUAGE = "Content-Language: en-US";
@@ -40,8 +38,9 @@ public class Email {
 
     public Email(String sender, String[] recipientsTo, String[] recipientsCC, String[] recipientsBCC,
             String subject, String content, String... attachments) {
-        this.sender = sender.trim();
-        this.subject = subject.trim();
+        // handle null value 
+        this.sender = (sender == null) ? "" : sender.trim();
+        this.subject = (subject == null) ? "" : subject.trim();
         this.recipientsTo = recipientsTo;
         this.recipientsCc = recipientsCC;
         this.recipientsBcc = recipientsBCC;
@@ -56,6 +55,7 @@ public class Email {
 
         if (attachments != null)
             processAttachments(attachments, boundary);
+       
     }
 
     private String buildRecipientString(String[] recipients) {
@@ -122,14 +122,51 @@ public class Email {
         body += content + CRLF + CRLF;
     }
 
+    // private void processAttachments(String[] attachments, String boundary) throws IllegalArgumentException {
+    //     if (attachments == null || attachments.length == 0 || attachments[0].length() == 0) {
+    //         return;
+    //     }
+    //     for (String attachment : attachments) {
+    //         try {
+    //             Path filePath = Paths.get(attachment);
+    //             validateFileSize(filePath);
+    //             String MimeType = new MimetypesFileTypeMap().getContentType(filePath.toString());
+    //             byte[] fileContent = Files.readAllBytes(filePath);
+    //             String encodedFile = Base64.getEncoder().encodeToString(fileContent).replaceAll("(.{76})",
+    //                     "$1" + CRLF);
+    //             body += "--" + boundary + CRLF;
+    //             body += "Content-Type: " + MimeType + ";";
+    //             body += " charset=" + DEFAULT_CHARSET + ";";
+    //             body += " name=\"" + filePath.getFileName() + "\"" + CRLF;
+    //             body += String.format(CONTENT_DISPOSITION, filePath.getFileName()) + CRLF;
+    //             body += CONTENT_TRANSFER_ENCODING_BASE64 + CRLF + CRLF;
+    //             body += encodedFile + CRLF;
+    //         } catch (Exception e) {
+    //             throw new IllegalArgumentException("Error in reading attachment: " + e.getMessage());
+    //         }
+    //     }
+    //     body += "--" + boundary + "--" + CRLF;
+    // }
+
+    // private void validateFileSize(Path filePath) throws IOException, IllegalArgumentException {
+    //     long fileSize = Files.size(filePath);
+    //     if (fileSize > 3 * 1024 * 1024) {
+    //         throw new IllegalArgumentException("File size exceeds 3MB");
+    //     }
+    // }
+
     private void processAttachments(String[] attachments, String boundary) throws IllegalArgumentException {
         if (attachments == null || attachments.length == 0 || attachments[0].length() == 0) {
             return;
         }
+        long fileSize = 0;
         for (String attachment : attachments) {
             try {
                 Path filePath = Paths.get(attachment);
-                validateFileSize(filePath);
+                fileSize += validateFileSize(filePath);
+                if (fileSize > 3 * 1024 * 1024) {
+                    throw new IllegalArgumentException("File size exceeds 3MB");
+                }
                 String MimeType = new MimetypesFileTypeMap().getContentType(filePath.toString());
                 byte[] fileContent = Files.readAllBytes(filePath);
                 String encodedFile = Base64.getEncoder().encodeToString(fileContent).replaceAll("(.{76})",
@@ -148,24 +185,13 @@ public class Email {
         body += "--" + boundary + "--" + CRLF;
     }
 
-    private void validateFileSize(Path filePath) throws IOException, IllegalArgumentException {
+    private long validateFileSize(Path filePath) throws IOException, IllegalArgumentException {
         long fileSize = Files.size(filePath);
         if (fileSize > 3 * 1024 * 1024) {
             throw new IllegalArgumentException("File size exceeds 3MB");
         }
+        return fileSize;
     }
-    //
-    /*
-     * private boolean isValidEmailAddress(String email) {
-     * String regex = "^[A-Za-z0-9+_.-]+@(.+)$";
-     * 
-     * int atPosition = email.indexOf('@');
-     * boolean isInvalidEmail = email.matches(regex) && (atPosition < 1 ||
-     * email.length() - atPosition <= 1)
-     * && atPosition != email.lastIndexOf('@');
-     * return !isInvalidEmail;
-     * }
-     */
 
     public String getSender() {
         return sender;

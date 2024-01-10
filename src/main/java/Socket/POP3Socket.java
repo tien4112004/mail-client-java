@@ -4,31 +4,23 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.io.FileReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.nio.file.Paths;
 import java.nio.file.Path;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
-import Email.Email;
-import Email.EmailParser;
 import Filter.Mailbox;
 import JSON.ReadMessageStatus;
 import JSON.WriteMessageStatus;
-import net.lecousin.framework.concurrent.async.MutualExclusion;
-// import Config.Config;
-import scala.collection.mutable.StringBuilder;
 
 public class POP3Socket extends MailSocket {
     private final String OK = "+OK";
     private final String ERR = "-ERR";
     private final String DEFAULT_WORKING_DIRECTORY = "./";
+    private final String SPCE = " ";
 
     private String[] messagesID = null;
     private ReadMessageStatus readMessageStatus = new ReadMessageStatus();
@@ -82,9 +74,9 @@ public class POP3Socket extends MailSocket {
             if (line == null)
                 throw new IOException("Server closed the connection");
 
-            if (line.length() > 0 && line.startsWith(OK)) {
-                line = line.substring(1);
-            }
+            // if (line.length() > 0 && (line.startsWith(OK + SPCE) || line.startsWith(OK + CRLF)) ) {
+            //     line = line.substring(1);
+            // }
 
             lines.add(line);
 
