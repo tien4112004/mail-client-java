@@ -55,7 +55,6 @@ public class Email {
 
         if (attachments != null)
             processAttachments(attachments, boundary);
-       
     }
 
     private String buildRecipientString(String[] recipients) {
@@ -121,39 +120,6 @@ public class Email {
         body += CONTENT_TRANSFER_ENCODING + CRLF + CRLF;
         body += content + CRLF + CRLF;
     }
-
-    // private void processAttachments(String[] attachments, String boundary) throws IllegalArgumentException {
-    //     if (attachments == null || attachments.length == 0 || attachments[0].length() == 0) {
-    //         return;
-    //     }
-    //     for (String attachment : attachments) {
-    //         try {
-    //             Path filePath = Paths.get(attachment);
-    //             validateFileSize(filePath);
-    //             String MimeType = new MimetypesFileTypeMap().getContentType(filePath.toString());
-    //             byte[] fileContent = Files.readAllBytes(filePath);
-    //             String encodedFile = Base64.getEncoder().encodeToString(fileContent).replaceAll("(.{76})",
-    //                     "$1" + CRLF);
-    //             body += "--" + boundary + CRLF;
-    //             body += "Content-Type: " + MimeType + ";";
-    //             body += " charset=" + DEFAULT_CHARSET + ";";
-    //             body += " name=\"" + filePath.getFileName() + "\"" + CRLF;
-    //             body += String.format(CONTENT_DISPOSITION, filePath.getFileName()) + CRLF;
-    //             body += CONTENT_TRANSFER_ENCODING_BASE64 + CRLF + CRLF;
-    //             body += encodedFile + CRLF;
-    //         } catch (Exception e) {
-    //             throw new IllegalArgumentException("Error in reading attachment: " + e.getMessage());
-    //         }
-    //     }
-    //     body += "--" + boundary + "--" + CRLF;
-    // }
-
-    // private void validateFileSize(Path filePath) throws IOException, IllegalArgumentException {
-    //     long fileSize = Files.size(filePath);
-    //     if (fileSize > 3 * 1024 * 1024) {
-    //         throw new IllegalArgumentException("File size exceeds 3MB");
-    //     }
-    // }
 
     private void processAttachments(String[] attachments, String boundary) throws IllegalArgumentException {
         if (attachments == null || attachments.length == 0 || attachments[0].length() == 0) {

@@ -29,7 +29,7 @@ public class EmailParser {
     private String[] recipientsCc;
     private String subject;
     private String contentType;
-    private String content;
+    private String content = "";
     private String body;
     private String header;
     List<String> attachmentDirectories = new ArrayList<String>();
@@ -52,8 +52,9 @@ public class EmailParser {
 
     public void parseHeaderAndContent(String rawMessage) {
         String[] lines = rawMessage.split(CRLF);
+        int headerEndIndex = parseHeader(lines) - 1;
 
-        for (int i = 0; i < lines.length; i++) {
+        for (int i = headerEndIndex; i < lines.length; i++) {
             if (lines[i].equals(CONTENT_TRANSFER_ENCODING)) {
                 parseContent(lines, i + 2);
             }
@@ -143,6 +144,8 @@ public class EmailParser {
 
     protected void parseContent(String[] bodyLines, int startIndex) {
         String encodedContent = joinLinesUntilBoundary(startIndex, bodyLines);
+        if (encodedContent == null)
+            content = "";
         content = encodedContent.toString();
     }
 
