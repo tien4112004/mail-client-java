@@ -26,48 +26,34 @@ import net.lecousin.framework.concurrent.async.MutualExclusion;
 import scala.collection.mutable.StringBuilder;
 
 public class POP3Socket extends MailSocket {
-    // STAT: Get number of messages and total size
-    // LIST: Get size of message
-    // UIDL: Get the unique id of message
-    // RETR: Get message
-    // DELE: Delete message
-    // QUIT: Close connection
     private final String OK = "+OK";
     private final String ERR = "-ERR";
     private final String DEFAULT_WORKING_DIRECTORY = "./";
 
-    public String[] messagesID = null;
+    private String[] messagesID = null;
     private ReadMessageStatus readMessageStatus = new ReadMessageStatus();
     private String username;
     private String password;
     private JSONParser parser = new JSONParser();
     private JSONObject messageList = null;
-    private WriteMessageStatus writeMessageStatus = null;
     private List<Mailbox> mailboxes;
 
     public POP3Socket(String server, int port, String username, String password) {
         super(server, port);
-        synchronized (MutualExclusion.class) {
-            this.username = username;
-            this.password = password;
-            try {
-                String MessageStatusJSONDirectory = DEFAULT_WORKING_DIRECTORY + "MessageStatus.json";
-                File file = new File(MessageStatusJSONDirectory);
-                if (file.exists()) {
-                    messageList = (JSONObject) parser.parse(new FileReader(MessageStatusJSONDirectory));
-                    String msgID = new String();
-                    for (Object e : messageList.keySet()) {
-                        msgID = (new StringBuilder()).append(msgID).append(" ").append(e.toString()).toString();
-                    }
-                    messagesID = msgID.split(" ");
-                } else
-                    messageList = new JSONObject();
-                connect();
-                login();
-            } catch (Exception e) {
-                System.err.println("[POP3] Error: " + e.getMessage());
-                // e.printStackTrace();
-            }
+        this.username = username;
+        this.password = password;
+        try {
+            String MessageStatusJSONDirectory = DEFAULT_WORKING_DIRECTORY + "MessageStatus.json";
+            File file = new File(MessageStatusJSONDirectory);
+            if (file.exists()) {
+                messageList = (JSONObject) parser.parse(new FileReader(MessageStatusJSONDirectory));
+            } else
+                messageList = new JSONObject();
+            connect();
+            login();
+        } catch (Exception e) {
+            System.err.println("[POP3] Error: " + e.getMessage());
+            // e.printStackTrace();
         }
     }
 
@@ -239,5 +225,9 @@ public class POP3Socket extends MailSocket {
 
     public void quit() throws IOException {
         doCommand("QUIT", OK);
+    }
+
+    public String[] getMessagesID() {
+        return messagesID;
     }
 }

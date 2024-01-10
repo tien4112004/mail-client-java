@@ -48,7 +48,7 @@ public class POP3SocketTest {
         POP3Socket = new POP3Socket("localhost", 3335, "example@localhost", "123");
         POP3Socket.addMailboxes(mailboxes);
         POP3Socket.retrieveMessage();
-        this.messagesID = POP3Socket.messagesID;
+        this.messagesID = POP3Socket.getMessagesID();
     }
 
     @Test
