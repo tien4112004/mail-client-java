@@ -13,7 +13,6 @@ import UI.MainMenu;
 public class ConfigJSONTest {
     @BeforeEach
     void setUp() {
-        Mailbox mailbox = new Mailbox("test", "./test/");
         try {
             Files.copy(Paths.get("./src/test/java/Message/testEmail.msg"), Paths.get("./test/testEmail.msg"));
             System.out.println("[INFO] [MailboxTest] Test initiation successful.");

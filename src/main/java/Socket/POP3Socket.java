@@ -4,70 +4,48 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.io.FileReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.nio.file.Paths;
 import java.nio.file.Path;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
-import Email.Email;
-import Email.EmailParser;
 import Filter.Mailbox;
 import JSON.ReadMessageStatus;
 import JSON.WriteMessageStatus;
-import net.lecousin.framework.concurrent.async.MutualExclusion;
-// import Config.Config;
-import scala.collection.mutable.StringBuilder;
 
 public class POP3Socket extends MailSocket {
-    // STAT: Get number of messages and total size
-    // LIST: Get size of message
-    // UIDL: Get the unique id of message
-    // RETR: Get message
-    // DELE: Delete message
-    // QUIT: Close connection
     private final String OK = "+OK";
     private final String ERR = "-ERR";
     private final String DEFAULT_WORKING_DIRECTORY = "./";
+    private final String SPCE = " ";
 
-    public String[] messagesID = null;
+    private String[] messagesID = null;
     private ReadMessageStatus readMessageStatus = new ReadMessageStatus();
     private String username;
     private String password;
     private JSONParser parser = new JSONParser();
     private JSONObject messageList = null;
-    private WriteMessageStatus writeMessageStatus = null;
     private List<Mailbox> mailboxes;
 
     public POP3Socket(String server, int port, String username, String password) {
         super(server, port);
-        synchronized (MutualExclusion.class) {
-            this.username = username;
-            this.password = password;
-            try {
-                String MessageStatusJSONDirectory = DEFAULT_WORKING_DIRECTORY + "MessageStatus.json";
-                File file = new File(MessageStatusJSONDirectory);
-                if (file.exists()) {
-                    messageList = (JSONObject) parser.parse(new FileReader(MessageStatusJSONDirectory));
-                    String msgID = new String();
-                    for (Object e : messageList.keySet()) {
-                        msgID = (new StringBuilder()).append(msgID).append(" ").append(e.toString()).toString();
-                    }
-                    messagesID = msgID.split(" ");
-                } else
-                    messageList = new JSONObject();
-                connect();
-                login();
-            } catch (Exception e) {
-                System.err.println("[POP3] Error: " + e.getMessage());
-                // e.printStackTrace();
-            }
+        this.username = username;
+        this.password = password;
+        try {
+            String MessageStatusJSONDirectory = DEFAULT_WORKING_DIRECTORY + "MessageStatus.json";
+            File file = new File(MessageStatusJSONDirectory);
+            if (file.exists()) {
+                messageList = (JSONObject) parser.parse(new FileReader(MessageStatusJSONDirectory));
+            } else
+                messageList = new JSONObject();
+            connect();
+            login();
+        } catch (Exception e) {
+            System.err.println("[POP3] Error: " + e.getMessage());
+            // e.printStackTrace();
         }
     }
 
@@ -96,9 +74,9 @@ public class POP3Socket extends MailSocket {
             if (line == null)
                 throw new IOException("Server closed the connection");
 
-            if (line.length() > 0 && line.startsWith(OK)) {
-                line = line.substring(1);
-            }
+            // if (line.length() > 0 && (line.startsWith(OK + SPCE) || line.startsWith(OK + CRLF)) ) {
+            //     line = line.substring(1);
+            // }
 
             lines.add(line);
 
@@ -239,5 +217,9 @@ public class POP3Socket extends MailSocket {
 
     public void quit() throws IOException {
         doCommand("QUIT", OK);
+    }
+
+    public String[] getMessagesID() {
+        return messagesID;
     }
 }

@@ -12,9 +12,6 @@ import Email.*;
 import java.util.ArrayList;
 
 public class EmailSearcher extends UI {
-    private static final int PAGE_SIZE = 10;
-    private int currentPage = 0;
-
     private Filter filter;
     private List<String> emailDirectories;
     private InputHandler inputHandler;
