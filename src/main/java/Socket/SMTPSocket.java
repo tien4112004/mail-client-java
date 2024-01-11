@@ -45,10 +45,6 @@ public class SMTPSocket extends MailSocket {
         return response.charAt(RESPONSE_CODE_LENGTH) == '-';
     }
 
-    // protected String parseReplyCode(String response) {
-    // return response.substring(0, RESPONSE_CODE_LENGTH);
-    // }
-
     public void sendEmail(Email email) throws IOException {
         connect();
         doCommand("HELO " + server, OK);

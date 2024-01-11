@@ -20,7 +20,6 @@ public class POP3Socket extends MailSocket {
     private final String OK = "+OK";
     private final String ERR = "-ERR";
     private final String DEFAULT_WORKING_DIRECTORY = "./";
-    private final String SPCE = " ";
 
     private String[] messagesID = null;
     private ReadMessageStatus readMessageStatus = new ReadMessageStatus();
@@ -45,7 +44,6 @@ public class POP3Socket extends MailSocket {
             login();
         } catch (Exception e) {
             System.err.println("[POP3] Error: " + e.getMessage());
-            // e.printStackTrace();
         }
     }
 
@@ -70,16 +68,7 @@ public class POP3Socket extends MailSocket {
         String line = fromServer.readLine();
 
         while (!line.equals(".")) {
-            // System.out.println(line);
-            if (line == null)
-                throw new IOException("Server closed the connection");
-
-            // if (line.length() > 0 && (line.startsWith(OK + SPCE) || line.startsWith(OK + CRLF)) ) {
-            //     line = line.substring(1);
-            // }
-
             lines.add(line);
-
             line = fromServer.readLine();
         }
 
@@ -154,12 +143,8 @@ public class POP3Socket extends MailSocket {
     }
 
     public String getMessageID(int messageOrder) throws IOException {
-        return messagesID[messageOrder]; // UIDL + number
+        return messagesID[messageOrder];
     }
-
-    // private boolean exist(JSONObject messageObject) {
-    // return (messageList == null) ? false : messageList.contains(messageObject);
-    // }
 
     public String RETR(String messageOrder) throws IOException {
         String keyObject = messagesID[Integer.parseInt(messageOrder) - 1];
@@ -188,7 +173,6 @@ public class POP3Socket extends MailSocket {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        // quit();
     }
 
     private void saveEmail(String filename, String rawMessage) {

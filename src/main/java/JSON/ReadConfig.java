@@ -38,7 +38,7 @@ public class ReadConfig {
         JSONObject generalObject = (JSONObject) Config.get("General");
 
         for (Object obj : generalObject.entrySet()) {
-            Map.Entry entry = (Map.Entry) obj;
+            Map.Entry<String,Object> entry = (Map.Entry<String,Object>) obj;
             String key = entry.getKey().toString();
             String value = entry.getValue().toString();
             generalMap.put(key, value);
@@ -47,7 +47,7 @@ public class ReadConfig {
         return generalMap;
     }
 
-    public Mailbox createMailbox(JSONObject mailboxObject, String mailboxName) {
+    private Mailbox createMailbox(JSONObject mailboxObject, String mailboxName) {
         // Mailbox's directory
         String directory = mailboxObject.get("Directory").toString();
 

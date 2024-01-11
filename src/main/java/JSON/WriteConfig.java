@@ -8,6 +8,8 @@ import com.google.gson.JsonElement;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import Filter.*;
 
@@ -15,10 +17,10 @@ public class WriteConfig {
     private final String DEFAULT_WORKING_DIRECTORY = "./";
 
     private JSONObject createMailbox(Mailbox mailbox, Filter[] filters) {
-        JSONObject mailboxObject = new JSONObject();
+        Map<String, Object> mailboxObject = new HashMap<String, Object>();
         mailboxObject.put("Directory", mailbox.getMailboxDirectory().toString());
 
-        JSONObject filterObject = new JSONObject();
+        Map<String, Object> filterObject =  new HashMap<String, Object>();
         if (filters == null) {
             filters = new Filter[3];
             filters[0] = new SenderFilter();
@@ -36,11 +38,11 @@ public class WriteConfig {
         }
 
         mailboxObject.put("Filters", filterObject);
-        return mailboxObject;
+        return new JSONObject(mailboxObject);
     }
 
     private JSONObject createGeneral(String username, String password) throws IOException {
-        JSONObject general = new JSONObject();
+        Map<String, Object> general = new HashMap<String, Object>();
 
         general.put("Username", username);
         general.put("Password", password);
@@ -50,23 +52,23 @@ public class WriteConfig {
         general.put("POP3port", 3335);
         general.put("RetrieveIntervalSecond", 10);
 
-        return general;
+        return new JSONObject(general);
     }
 
     public void writeConfig(Mailbox[] mailboxes, String username, String password) throws IOException {
-        JSONObject namedFilter = new JSONObject();
-        namedFilter.put("General", createGeneral(username, password));
+        Map<String, Object> namedFilterMap = new HashMap<String, Object>();
+        namedFilterMap.put("General", createGeneral(username, password));
 
-        JSONObject mailboxFilters = new JSONObject();
+        Map<String, Object> mailboxFilters = new HashMap<String, Object>();
         for (Mailbox mailbox : mailboxes) {
             mailboxFilters.put(mailbox.getMailboxName(), createMailbox(mailbox, mailbox.getFilters()));
         }
-        namedFilter.put("Mailboxes", mailboxFilters);
+        namedFilterMap.put("Mailboxes", mailboxFilters);
+
+        JSONObject namedFilter = new JSONObject(namedFilterMap);
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonElement je = gson.toJsonTree(namedFilter);
-        // JSONArray jsonArray = new JSONArray();
-        // jsonArray.add(je);
         String prettyJson = gson.toJson(je);
         String configDirectory = DEFAULT_WORKING_DIRECTORY + "Config.json";
         try (FileWriter file = new FileWriter(configDirectory)) {

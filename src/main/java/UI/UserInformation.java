@@ -77,7 +77,6 @@ public class UserInformation extends UI {
         Username = (String) generalMap.get("Username");
         Password = (String) generalMap.get("Password");
         mailboxes = readConfig.readMailboxes();
-        // server informations
         retrieveIntervalSeconds = Integer.parseInt((String) generalMap.get("RetrieveIntervalSecond"));
         SMTPServer = (String) generalMap.get("SMTPServer");
         SMTPPort = Integer.parseInt((String) generalMap.get("SMTPport"));

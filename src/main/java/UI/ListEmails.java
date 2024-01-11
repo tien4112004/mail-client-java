@@ -105,14 +105,12 @@ public class ListEmails extends MainMenu {
         int start = currentPage * PAGE_SIZE;
         int end = Math.min(start + PAGE_SIZE, mailList.size());
         for (int i = start; i < end; i++) {
-            String rawMessage = readRawMessage(mailList.get(i));
+            String emailDirectory = mailList.get(i);
+            String rawMessage = readRawMessage(emailDirectory);
             EmailParser parser = new EmailParser();
             parser.quickParse(rawMessage);
-            String msgID = mailList.get(i).split("/")[2];
-            msgID = msgID.substring(0, msgID.length() - 4);
-            boolean status = readMessageStatus.isRead(messagesID, msgID);
+            boolean status = readMessageStatus.getStatus(messagesID, emailDirectory);
             String readStatus = (status == true) ? " " : "*";
-            // String readStatus = "*";
             String sender = parser.getSender();
             sender = formatString(sender, 20);
             String subject = parser.getSubject();
@@ -130,7 +128,6 @@ public class ListEmails extends MainMenu {
                 { ">", "Next page" },
                 { "#", "Read email #" },
                 { "S", "Search email" },
-                // { "F", "Add new filter" },
                 { "D", "Delete mail" },
                 { "M", "Move email " },
                 { "Q", "Quit" }
@@ -216,15 +213,13 @@ public class ListEmails extends MainMenu {
 
         String emailDirectory = mailList.get(emailIndex);
         ViewEmail emailViewer = new ViewEmail(emailDirectory, mailList, emailIndex, mailboxes, inputHandler);
-        String msgID = mailList.get(emailIndex).split("/")[2];
-        readMessageStatus.setStatus(messagesID, msgID.substring(0, msgID.length() - 4), true);
+        readMessageStatus.setStatus(messagesID, emailDirectory, true);
         try {
             WriteMessageStatus writeMessageStatus = new WriteMessageStatus(messagesID);
             writeMessageStatus.writeJSON();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        // END
 
         emailViewer.showEmail();
     }
