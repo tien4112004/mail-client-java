@@ -16,7 +16,6 @@ public class ViewEmail extends UI {
     private InputHandler inputHandler;
     private String emailDirectory;
     private List<String> mailList;
-    private List<Mailbox> mailboxes;
     private EmailParser parser;
     private String[] attachmentDirectories;
 
@@ -27,7 +26,6 @@ public class ViewEmail extends UI {
         this.emailDirectory = emailDirectory;
         this.mailList = mailList;
         this.emailIndex = emailIndex;
-        this.mailboxes = mailboxes;
         this.inputHandler = inputHandler;
     }
 
@@ -146,7 +144,6 @@ public class ViewEmail extends UI {
             displaySuccessMessage(String.format("Attachment #%d saved to %s.", attachmentIndex, saveDirectory));
         } catch (IOException e) {
             displayErrorMessage("Error in saving attachment.");
-            // e.printStackTrace();
         }
     }
 

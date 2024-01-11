@@ -26,8 +26,9 @@ public class ReadMessageStatus{
         }
     } 
 
-    public void setStatus(JSONObject messagesID, String messageID, boolean value) {
-        Map<String, Object> entry = new HashMap<>(messagesID);
+    public void setStatus(JSONObject messagesID, String path, boolean value) {
+        String messageID = getMessageID(path);
+        Map<String, Object> entry = new HashMap<String, Object>(messagesID);
         for (Map.Entry<String, Object> e : entry.entrySet()) {
             String key = e.getKey();
             if (key.equals(messageID)) {
@@ -37,7 +38,8 @@ public class ReadMessageStatus{
         }
     }
 
-    public boolean isRead(JSONObject messagesID, String messageID) {
+    public boolean getStatus(JSONObject messagesID, String path) {
+        String messageID = getMessageID(path);
         Map<String, Object> entry = new HashMap<>(messagesID);
         for (Map.Entry<String, Object> e : entry.entrySet()) {
             String key = (String) e.getKey();
@@ -73,5 +75,11 @@ public class ReadMessageStatus{
 
     public JSONObject getMessageList() {
         return messageList;
+    }
+
+    private String getMessageID(String path) {
+        String[] pathSplited = path.split("/");
+        String messageID = pathSplited[pathSplited.length - 1];
+        return messageID.substring(0, messageID.length() - 4);
     }
 }

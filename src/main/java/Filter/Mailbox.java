@@ -62,10 +62,8 @@ public class Mailbox {
 
     public void addEmailIfMatches(Path emailPath) {
         String rawMessage = null;
-        String[] test;
         try {
             rawMessage = new String(Files.readAllBytes(emailPath));
-            test = rawMessage.split("\r\n");
         } catch (IOException e) {
             System.out.println("[ERROR] Error reading email file.");
             e.printStackTrace();

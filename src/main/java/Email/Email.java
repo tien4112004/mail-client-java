@@ -1,6 +1,5 @@
 package Email;
 
-// import java.security.cert.CRL;
 import java.text.SimpleDateFormat;
 import java.util.UUID;
 
@@ -38,7 +37,6 @@ public class Email {
 
     public Email(String sender, String[] recipientsTo, String[] recipientsCC, String[] recipientsBCC,
             String subject, String content, String... attachments) {
-        // handle null value 
         this.sender = (sender == null) ? "" : sender.trim();
         this.subject = (subject == null) ? "" : subject.trim();
         this.recipientsTo = recipientsTo;

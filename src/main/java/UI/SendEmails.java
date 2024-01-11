@@ -4,7 +4,7 @@ import Email.Email;
 import Socket.SMTPSocket;
 
 public class SendEmails extends UI {
-    private String sender = "example@localhost"; // get from JSON
+    private String sender;
     private String[] recipientsTo;
     private String[] recipientsCc;
     private String[] recipientsBcc;
@@ -71,10 +71,8 @@ public class SendEmails extends UI {
             displaySuccessMessage("Email sent!");
         } catch (Exception e) {
             displayErrorMessage(e.getMessage());
-            // e.printStackTrace();
             return;
         } finally {
-            // smtpSocket.quit();
             sleep(TIME_2_5_SECONDS);
             clearConsole();
         }
