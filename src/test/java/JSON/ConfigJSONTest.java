@@ -25,17 +25,18 @@ public class ConfigJSONTest {
 
     @Test
     public void testWrite() {
-        String[] senderKeywords = { "null", "null", "null", "null", "null" };
-        String[] subjectKeywords = { "null", "null", "null", "null", "null" };
-        String[] contentKeywords = { "null", "null", "null", "null", "null" };
+        String[] senderKeywords = { "null", "null", "null" };
+        String[] subjectKeywords = { "null", "null", "null" };
+        String[] contentKeywords = { "null", "null", "null" };
 
         Mailbox testMailbox = new Mailbox("Inbox", "./Inbox/", senderKeywords, subjectKeywords, contentKeywords);
 
-        Mailbox exampleMailbox = new Mailbox("example", "./example/", senderKeywords, subjectKeywords, contentKeywords);
+        Mailbox spamMailbox = new Mailbox("Spam", "./Spam/", senderKeywords, subjectKeywords, contentKeywords);
 
-        Mailbox emailMailbox = new Mailbox("email", "./email/", senderKeywords, subjectKeywords, contentKeywords);
+        Mailbox importantMailbox = new Mailbox("Important", "./Important/", senderKeywords, subjectKeywords,
+                contentKeywords);
 
-        Mailbox[] mailboxes = { testMailbox, exampleMailbox, emailMailbox };
+        Mailbox[] mailboxes = { testMailbox, spamMailbox, importantMailbox };
 
         MainMenu UI = new MainMenu();
         UI.username = "example@localhost";

@@ -1,10 +1,8 @@
 {
   "Mailboxes": {
-    "Inbox": {
+    "Important": {
       "Filters": {
         "SubjectFilter": [
-          "null",
-          "null",
           "null",
           "null",
           "null"
@@ -12,13 +10,29 @@
         "SenderFilter": [
           "null",
           "null",
-          "null",
-          "null",
           "null"
         ],
         "ContentFilter": [
           "null",
           "null",
+          "null"
+        ]
+      },
+      "Directory": "./Important"
+    },
+    "Inbox": {
+      "Filters": {
+        "SubjectFilter": [
+          "null",
+          "null",
+          "null"
+        ],
+        "SenderFilter": [
+          "null",
+          "null",
+          "null"
+        ],
+        "ContentFilter": [
           "null",
           "null",
           "null"
@@ -26,11 +40,9 @@
       },
       "Directory": "./Inbox"
     },
-    "email": {
+    "Spam": {
       "Filters": {
         "SubjectFilter": [
-          "null",
-          "null",
           "null",
           "null",
           "null"
@@ -38,45 +50,15 @@
         "SenderFilter": [
           "null",
           "null",
-          "null",
-          "null",
           "null"
         ],
         "ContentFilter": [
           "null",
           "null",
-          "null",
-          "null",
           "null"
         ]
       },
-      "Directory": "./email"
-    },
-    "example": {
-      "Filters": {
-        "SubjectFilter": [
-          "null",
-          "null",
-          "null",
-          "null",
-          "null"
-        ],
-        "SenderFilter": [
-          "null",
-          "null",
-          "null",
-          "null",
-          "null"
-        ],
-        "ContentFilter": [
-          "null",
-          "null",
-          "null",
-          "null",
-          "null"
-        ]
-      },
-      "Directory": "./example"
+      "Directory": "./Spam"
     }
   },
   "General": {
