@@ -2,6 +2,9 @@ package UI;
 
 import static org.junit.Assert.assertEquals;
 
+import UI.InputHandler;
+import UI.UserInformation;
+
 public class UserInformationTest {
     // @Test
     public void test() {

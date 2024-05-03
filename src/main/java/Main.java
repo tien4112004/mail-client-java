@@ -70,6 +70,15 @@ public class Main {
                 mailboxes, retrieveIntervalSeconds);
         reloadInterval.start();
 
+        Path AttachmentsPath = Paths.get("./attachments");
+        if (!Files.exists(AttachmentsPath)) {
+            try {
+                Files.createDirectory(AttachmentsPath);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         Path MessageStatusPath = Paths.get("./MessageStatus.json");
         if (!Files.exists(MessageStatusPath)) {
             System.out.println("\u001B[33mPreparing for the first launch...\u001B[0m");
